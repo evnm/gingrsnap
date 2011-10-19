@@ -1,0 +1,11 @@
+lib
+notes.txt
+logs
+modules
+out
+test-result
+tmp
+precompiled
+*iml
+server.pid
+dist
