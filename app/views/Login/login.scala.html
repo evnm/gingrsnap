@@ -1,0 +1,48 @@
+@(
+  title: String
+)(
+  implicit
+  flash: play.mvc.Scope.Flash
+)
+
+@main("Log in") {
+
+<div id="login">
+	<h1>Log in</h1>
+  <form id="LoginForm" name="LoginForm" method="POST" action="/authenticate">
+    @if(flash.get("error") !=null) {
+      <p class="alert-message error">
+        @flash.get("error")
+      </p>
+    }
+    @if(flash.get("success") != null) {
+      <p class="alert-message success">
+        @flash.get("success")
+      </p>
+    }
+
+		<div class="clearfix">
+			<label for="username">Email address</label>
+      <div class="input">
+			  <input type="text" name="username" id="username" value="@flash.get("username")" />
+      </div>
+		</div>
+		<div class="clearfix">
+			<label for="password">Password</label>
+      <div class="input">
+			  <input type="password" name="password" id="password" value="" />
+      </div>
+		</div>
+		<div class="clearfix">
+      <label for="remember">Remember me</label>
+      <div class="input">
+			  <input type="checkbox" name="remember" id="remember" value="true" @if(flash.get("remember")) { checked="true" } />
+      </div>
+		</div>
+    <div class="actions">
+			<input type="submit" class="btn primary" id="signin" value="Sign in" />
+		</div>
+	</form>
+</div>
+
+}

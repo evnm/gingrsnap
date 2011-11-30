@@ -1,0 +1,64 @@
+@(
+  fullname: String = "",
+  location: String = "",
+  imgUrl: String = "",
+  twAccessToken: String = "",
+  twAccessTokenSecret: String = ""
+)(
+  implicit
+  params: play.mvc.Scope.Params,
+  flash: play.mvc.Scope.Flash,
+  errors: Map[String, play.data.validation.Error]
+)
+
+@main("Create an account") {
+  <h1>Create an identity on Gingrsnap!</h1>
+  @if(!imgUrl.isEmpty) {
+    <img src="@imgUrl" />
+  }
+  <form id="signup-form" method="post">
+
+    @if(errors) {
+			<p class="alert-message error">
+				@errors.values.mkString
+			</p>
+		}
+		@if(flash.get("success") != null) {
+			<p class="alert-message success">
+				@flash.get("success")
+			</p>
+		}
+
+    <div class="clearfix">
+      <label for="fullname">Name</label>
+      <div class="input">
+        <input class="xlarge" id="fullname" name="fullname" size="30" type="text" value="@fullname" />
+      </div>
+    </div>
+
+    <div class="clearfix">
+      <label for="emailAddr">Email Address</label>
+      <div class="input">
+        <input class="xlarge" id="emailAddr" name="emailAddr" size="30" type="text" />
+      </div>
+    </div>
+
+    <div class="clearfix">
+      <label for="password">Password</label>
+      <div class="input">
+        <input class="xlarge" id="password" name="password" size="30" type="password" />
+      </div>
+    </div>
+
+    <div class="clearfix">
+      <label for="confirmpassword">Confirm Password</label>
+      <div class="input">
+        <input class="xlarge" id="confirmpassword" name="confirmpassword" size="30" type="password" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <input class="btn primary" type="submit" value="Submit"/>
+    </div>
+  </form>
+}
