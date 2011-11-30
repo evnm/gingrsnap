@@ -12,19 +12,17 @@ trait RenderCachedUser { self: Controller =>
    *
    * TODO: Unit test this, somehow.
    */
-  private[this] def getCachedUser(): Option[User] = {
-    Cache.get[User](UserObjKey) match {
-      case userOpt: Some[User] => userOpt
-      case None =>
-        if (self.session.get("username") == null) {
-          None
-        } else {
-          User.getByEmail(self.session.get("username")) map { user =>
-            Cache.set(UserObjKey, user, "30mn")
-            user
-          }
+  private[this] def getCachedUser() = Cache.get[User](UserObjKey) match {
+    case userOpt: Some[User] => userOpt
+    case None =>
+      if (self.session.get("username") == null) {
+        None
+      } else {
+        User.getByEmail(self.session.get("username")) map { user =>
+          Cache.set(UserObjKey, user, "30mn")
+          user
         }
-    }
+      }
   }
 
   /**
