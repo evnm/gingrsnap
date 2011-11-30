@@ -1,3 +1,4 @@
+conf/application.conf
 conf/twitter4j.properties
 lib
 notes.txt
