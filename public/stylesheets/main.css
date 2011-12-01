@@ -4,4 +4,29 @@ body {
 
 .topbar a.brand {
   font-family: Lobster;
+  color: black;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .1);
+}
+
+.topbar a.brand:hover {
+  background: inherit;
+  color: black;
+}
+
+input, textarea, .input-append .add-on {
+  padding: 6px;
+}
+
+.add-on button.btn {
+  padding: 3px 6px;
+}
+
+input.big {
+  font-size: 24px;
+  height: 24px;
+  line-height: 24px;
+}
+
+form#recipe-form textarea {
+  height: 300px;
 }
