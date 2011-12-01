@@ -5,22 +5,24 @@ import play._
 import play.mvc._
 
 object Recipes extends Controller with RenderCachedUser {
-//  import views.Recipes.html
+  import views.Recipes.html
 
   /*
-   * TODO
+   * Recipe creation page.
    */
-  def neue() = {}
+  def neue() = {
+    html.neue()
+  }
 
   /*
-   * TODO
+   * Recipe creation POST handler.
    */
   def create() = {}
 
   /**
    * TODO
    */
-  def show(userId: Long, recipeId: Long) {
+  def show(userId: Long, recipeId: Long) = {
     // TODO: Add full recipe page.
   }
 }

@@ -1,0 +1,63 @@
+@()(
+  implicit
+  params: play.mvc.Scope.Params,
+  flash: play.mvc.Scope.Flash,
+  errors: Map[String, play.data.validation.Error],
+  renderArgs: play.mvc.Scope.RenderArgs
+)
+
+@main("Create a new recipe") {
+  <form class="form-stacked" id="recipe-form" method="post">
+    <fieldset>
+      <legend>Create a new recipe</legend>
+
+      @if(errors) {
+        <p class="alert-message error">
+          @errors.values.mkString
+        </p>
+      }
+      @if(flash.get("success") != null) {
+        <p class="alert-message success">
+          @flash.get("success")
+        </p>
+      }
+
+      <div class="clearfix">
+        <label for="title">Title</label>
+        <div class="input">
+          <input class="big span10" id="title" name="title" type="text" />
+        </div>
+      </div>
+
+      <div class="clearfix">
+        <label for="ingredients">Ingredients</label>
+        <ul>
+          <li class="span4"><span>1 can of pumpkin</span><a class="close" href="#">x</a></li>
+          <li class="span4"><span>&#189; cup sugar</span><a class="close" href="#">x</a></li>
+          <li class="span4"><span>1 tspn love</span><a class="close" href="#">x</a></li>
+        </ul>
+        <div class="input">
+          <div class="input-append">
+            <input class="span4" id="ingredient" name="ingredient" type="text" />
+            <label class="add-on">
+              <button class="small success btn">Add</button>
+            </label>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="clearfix">
+        <label for="body">Recipe</label>
+        <div class="input">
+          <textarea class="span10" id="body" name="body" type="text"></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="submit">Submit</button>
+        <button class="btn" type="reset">Cancel</button>
+      </div>
+    </fieldset>
+  </form>
+}
