@@ -11,7 +11,7 @@ object EmptyUser extends User(NotAssigned, "", "", "", "", null, None, None)
 
 /**
  * NOTE: email -> user is bijective.
-*/
+ */
 object User extends Magic[User] {
   def apply(
     emailAddr: String,
@@ -21,15 +21,8 @@ object User extends Magic[User] {
     twSecret: Option[String]
   ) = {
     val salt = scala.util.Random.nextInt.abs.toString
-    new User(
-      NotAssigned,
-      emailAddr,
-      Crypto.passwordHash(salt + password),
-      salt,
-      fullname,
-      new Date(),
-      twToken,
-      twSecret)
+    new User(NotAssigned, emailAddr, Crypto.passwordHash(salt + password),
+             salt, fullname, new Date(), twToken, twSecret)
   }
 
   /**
