@@ -3,7 +3,7 @@ package controllers
 import Constants.UserObjKey
 import models.User
 import play.cache.Cache
-import play.mvc._
+import play.mvc.{Before, Controller}
 
 trait RenderCachedUser { self: Controller =>
   /**
