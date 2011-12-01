@@ -13,9 +13,7 @@
 
 @main("Create an account") {
   <h1>Create an identity on Gingrsnap!</h1>
-  @if(!imgUrl.isEmpty) {
-    <img src="@imgUrl" />
-  }
+
   <form id="signup-form" method="post">
 
     @if(errors) {
@@ -29,31 +27,34 @@
 			</p>
 		}
 
+    @if(!imgUrl.isEmpty) {
+      <img src="@imgUrl" />
+    }
     <div class="clearfix">
       <label for="fullname">Name</label>
       <div class="input">
-        <input class="xlarge" id="fullname" name="fullname" size="30" type="text" value="@fullname" />
+        <input class="span10" id="fullname" name="fullname" type="text" value="@fullname" />
       </div>
     </div>
 
     <div class="clearfix">
       <label for="emailAddr">Email Address</label>
       <div class="input">
-        <input class="xlarge" id="emailAddr" name="emailAddr" size="30" type="text" />
+        <input class="span10" id="emailAddr" name="emailAddr" type="text" />
       </div>
     </div>
 
     <div class="clearfix">
       <label for="password">Password</label>
       <div class="input">
-        <input class="xlarge" id="password" name="password" size="30" type="password" />
+        <input class="span10" id="password" name="password" type="password" />
       </div>
     </div>
 
     <div class="clearfix">
       <label for="confirmpassword">Confirm Password</label>
       <div class="input">
-        <input class="xlarge" id="confirmpassword" name="confirmpassword" size="30" type="password" />
+        <input class="span10" id="confirmpassword" name="confirmpassword" type="password" />
       </div>
     </div>
 
