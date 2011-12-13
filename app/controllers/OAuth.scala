@@ -5,7 +5,7 @@ import models.User
 import play._
 import play.cache.Cache
 import play.mvc._
-import secure.Security
+import secure.{Security, TwAuthCredential}
 import twitter4j.{Twitter, TwitterException, TwitterFactory}
 import twitter4j.auth.RequestToken
 
@@ -18,7 +18,7 @@ object OAuth extends Controller {
   val callbackUrl = "http://localhost:9000/oauth/twitter"
 
   /**
-   * TODO
+   * Authenticate a user against an external service. (i.e. Twitter)
    */
   def authenticate(
     externalService: String,
@@ -53,23 +53,20 @@ object OAuth extends Controller {
     } else {
       val accessToken = twitterIface.getOAuthAccessToken(requestToken, oauth_verifier)
       Cache.delete(TwRequestTokenCacheKey)
-      val user = User.find("twAccessToken = {token} and twAccessTokenSecret = {secret}")
-        .on(
-          "token" -> accessToken.getToken(),
-          "secret" -> accessToken.getTokenSecret()
-        ).first()
+      val user = User.getByTwAuth(accessToken)
 
       if (user.isDefined) {
         // If user with oauth creds is in db, log them in.
         user map { u =>
-          Security.authenticate(u.emailAddr, u.password)
+          Authentication.authenticate(u.emailAddr, TwAuthCredential(accessToken))
         }
+        Action(Application.index)
       } else {
         // Otherwise, redirect to signup page.
         Cache.set(TwAccessTokenCacheKey, accessToken, "15mn")
         Cache.set(TwUserObjCacheKey, twitterIface.verifyCredentials(), "15mn")
         Cache.delete(TwIfaceCacheKey)
-        Action(Users.neue())
+        Action(Users.neue)
       }
     }
   } catch {

@@ -8,4 +8,5 @@ object Constants {
   val TwUserObjCacheKey = "twUserObj"
 
   val UserObjKey = "userObj"
+  val AccountObjKey = "accountObj"
 }

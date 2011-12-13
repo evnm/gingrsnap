@@ -1,5 +1,6 @@
 @(
-  user: models.User
+  user: models.User,
+  recipes: Seq[models.Recipe]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -8,6 +9,19 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
+@import controllers._
+
 @main(title = user.fullname) {
-  <h1>Welcome @user.fullname!</h1>
+  <h1>This is @user.fullname's profile page!</h1>
+  @if(recipes.isEmpty) {
+    <p>
+      You haven't written any recipes yet! <a href="@action(Recipes.neue)" title="Create a new recipe">Go start one now!</a>
+    </p>
+  } else {
+    <ul>
+      @for(recipe <- recipes) {
+        <li><a href="@action(Recipes.show(user.id(), recipe.slug))">@recipe.title</a></li>
+      }
+    </ul>
+  }
 }

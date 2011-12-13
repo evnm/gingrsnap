@@ -14,18 +14,8 @@
 @main("Create an account") {
   <h1>Create an identity on Gingrsnap!</h1>
 
-  <form id="signup-form" method="post">
-
-    @if(errors) {
-			<p class="alert-message error">
-				@errors.values.mkString
-			</p>
-		}
-		@if(flash.get("success") != null) {
-			<p class="alert-message success">
-				@flash.get("success")
-			</p>
-		}
+  <form id="signup-form" method="POST">
+    @views.common.html.alertMessage()
 
     @if(!imgUrl.isEmpty) {
       <img src="@imgUrl" />
@@ -33,28 +23,28 @@
     <div class="clearfix">
       <label for="fullname">Name</label>
       <div class="input">
-        <input class="span10" id="fullname" name="fullname" type="text" value="@fullname" />
+        <input class="medium span6" id="fullname" name="fullname" type="text" value="@fullname" />
       </div>
     </div>
 
     <div class="clearfix">
       <label for="emailAddr">Email Address</label>
       <div class="input">
-        <input class="span10" id="emailAddr" name="emailAddr" type="text" />
+        <input class="medium span6" id="emailAddr" name="emailAddr" type="text" />
       </div>
     </div>
 
     <div class="clearfix">
       <label for="password">Password</label>
       <div class="input">
-        <input class="span10" id="password" name="password" type="password" />
+        <input class="medium span6" id="password" name="password" type="password" />
       </div>
     </div>
 
     <div class="clearfix">
       <label for="confirmpassword">Confirm Password</label>
       <div class="input">
-        <input class="span10" id="confirmpassword" name="confirmpassword" type="password" />
+        <input class="medium span6" id="confirmpassword" name="confirmpassword" type="password" />
       </div>
     </div>
 

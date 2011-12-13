@@ -1,0 +1,13 @@
+@(
+  user: models.User
+)(
+  implicit
+  params: play.mvc.Scope.Params,
+  flash: play.mvc.Scope.Flash,
+  errors: Map[String, play.data.validation.Error],
+  renderArgs: play.mvc.Scope.RenderArgs
+)
+
+@main(title = "Your dashboard") {
+  <h1>Welcome @user.fullname!</h1>
+}

@@ -11,6 +11,3 @@ CREATE TABLE Account (
 # --- !Downs
 
 DROP TABLE Account;
-
-
-

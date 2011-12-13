@@ -12,4 +12,13 @@ case class Ingredient(
   createdAt: Date
 )
 
-object Ingredient extends Magic[Ingredient]
+object Ingredient extends Magic[Ingredient] {
+  def apply(name: String) = new Ingredient(NotAssigned, name, new Date())
+
+  /**
+   * Gets all of the ingredients associated with a given recipe.
+   */
+  def getByRecipeId(recipeId: Long): Seq[Ingredient] = {
+    Seq()
+  }
+}

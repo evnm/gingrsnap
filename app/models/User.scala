@@ -6,6 +6,7 @@ import play.db.anorm._
 import play.db.anorm.defaults.Magic
 import play.db.anorm.SqlParser._
 import play.libs.Crypto
+import twitter4j.auth.AccessToken
 
 object EmptyUser extends User(NotAssigned, "", "", "", "", null, None, None)
 
@@ -26,13 +27,18 @@ object User extends Magic[User] {
   }
 
   /**
+   * Looks up a user by id. Optionally returns the looked-up user.
+   */
+  def getById(userId: Long) =
+    User.find("id = {userId}").on("userId" -> userId).first()
+
+  /**
    * Looks up a user by email. Optionally returns the looked-up user.
    *
    * NOTE: Does not verify password.
    */
-  def getByEmail(emailAddr: String): Option[User] = {
+  def getByEmail(emailAddr: String): Option[User] =
     User.find("emailAddr = {e}").on("e" -> emailAddr).first()
-  }
 
   /**
    * Looks up a user by email and verifies by password. Optionally returns
@@ -43,6 +49,15 @@ object User extends Magic[User] {
       case Some(user) if Crypto.passwordHash(user.salt + password) == user.password => Some(user)
       case _ => None
     }
+  }
+
+  /**
+   * Looks up a user by Twitter access token and access token secret.
+   */
+  def getByTwAuth(token: AccessToken) = {
+    User.find("twAccessToken = {token} and twAccessTokenSecret = {secret}")
+      .on("token" -> token.getToken, "secret" -> token.getTokenSecret)
+      .first()
   }
 }
 

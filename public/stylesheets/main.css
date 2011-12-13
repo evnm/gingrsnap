@@ -4,16 +4,16 @@ body {
 
 .topbar a.brand {
   font-family: Lobster;
-  color: black;
+  //  color: black;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .1);
 }
 
 .topbar a.brand:hover {
   background: inherit;
-  color: black;
+  //color: black;
 }
 
-input, textarea, .input-append .add-on {
+input, textarea, .input-prepend .add-on, .input-append .add-on {
   padding: 6px;
 }
 
@@ -21,10 +21,31 @@ input, textarea, .input-append .add-on {
   padding: 3px 6px;
 }
 
+input.medium {
+  font-size: 20px;
+  height: 20px;
+  line-height: 20px;
+}
+
 input.big {
   font-size: 24px;
   height: 24px;
   line-height: 24px;
+}
+
+form#recipe-form ul#ingredients {
+  margin: 0;
+  list-style-type: none;
+}
+
+form#recipe-form ul#ingredients li {
+  margin: 3px 0;
+  clear: both;
+}
+
+form#recipe-form ul#ingredients label.add-on a {
+  height: 100%;
+  width: 100%;
 }
 
 form#recipe-form textarea {

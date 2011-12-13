@@ -1,13 +1,13 @@
 package controllers
 
 import java.util.Date
-import models.{Account, User}
+import models.{Account, Recipe, User}
 import play._
 import play.cache.Cache
+import play.mvc.Controller
 import play.data.validation.Validation
-import play.mvc._
 import scala.collection.JavaConversions._
-import secure.NonSecure
+import secure.{PasswordCredential, Security}
 import twitter4j.{User => TwUser}
 import twitter4j.auth.{AccessToken => TwAccessToken}
 
@@ -23,13 +23,9 @@ object Users extends Controller with RenderCachedUser {
       val (fullname, location, imgUrl) = Cache.get[TwUser](TwUserObjCacheKey) map { twUser =>
         (twUser.getName(), twUser.getLocation(), twUser.getProfileImageURL().toString)
       } getOrElse(("", "", ""))
-      Cache.delete(TwUserObjCacheKey)
-      html.neue(
-        fullname,
-        location,
-        imgUrl,
-        twAccessToken.getToken(),
-        twAccessToken.getTokenSecret())
+
+      html.neue(fullname, location, imgUrl,
+                twAccessToken.getToken(), twAccessToken.getTokenSecret())
     }
     case None => html.neue()
   }
@@ -58,22 +54,29 @@ object Users extends Controller with RenderCachedUser {
         (Some(at.getToken()), Some(at.getTokenSecret()))
       } getOrElse((None, None))
       Cache.delete(TwAccessTokenCacheKey)
+      Cache.delete(TwUserObjCacheKey)
 
-      val user = User.create(User(emailAddr, password, fullname, twToken, twSecret))
-//      Account.create(Account(user.id))
-      // TODO: Action(Application.index)
+      User.create(User(emailAddr, password, fullname, twToken, twSecret)).e match {
+        case Right(user) => {
+          Account.create(Account(user.id()))
+          Authentication.authenticate(emailAddr, PasswordCredential(password))
+          Action(Application.index)
+        }
+        case Left(error) => {
+          println("Error during creation of user, emailAddr(%s),password(%s),fullname(%s): %s",
+                  emailAddr, password, fullname, error)
+          flash.error("Unfortunately, there was an error while creating your account. Please try again.")
+        }
+      }
     }
   }
 
   /**
    * Show a user's profile
    */
-  def show(userId: Long) = {
-    println(User.find("id = {userId}").on("userId" -> userId).first())
-    User.find("id = {userId}").on("userId" -> userId).first() map {
-      html.show(_)
-    } getOrElse {
-      NotFound("No such user")
-    }
+  def show(userId: Long) = User.getById(userId) map { user =>
+    html.show(user, Recipe.getByUserId(user.id()))
+  } getOrElse {
+    NotFound("No such user")
   }
 }
