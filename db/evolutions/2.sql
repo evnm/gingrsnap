@@ -6,6 +6,7 @@ CREATE TABLE Recipe (
     slug varChar(255) NOT NULL,
     authorId bigint(20) NOT NULL,
     createdAt date NOT NULL,
+    modifiedAt date NOT NULL,
     body text NOT NULL,
     FOREIGN KEY (authorId) REFERENCES User(id) ON DELETE CASCADE,
     PRIMARY KEY (id)

@@ -13,6 +13,7 @@ case class Recipe(
   slug: String,
   authorId: Long,
   createdAt: Date,
+  modifiedAt: Date,
   body: String
 )
 
@@ -22,7 +23,10 @@ object Recipe extends Magic[Recipe] {
     slug: String,
     authorId: Long,
     body: String
-  ) = new Recipe(NotAssigned, title, slug, authorId, new Date(), body)
+  ) = {
+    val date = new Date()
+    new Recipe(NotAssigned, title, slug, authorId, date, date, body)
+  }
 
   /**
    * Create a recipe with a set of ingredients.
@@ -41,15 +45,30 @@ object Recipe extends Magic[Recipe] {
   }
 
   /**
+   * Get the n most recently-posted recipes.
+   */
+  def getMostRecent(n: Int): Seq[Recipe] = {
+    SQL("""
+        select * from Recipe r
+        order by r.modifiedAt desc
+        limit {n}
+        """)
+      .on("n" -> n)
+      .as(Recipe *)
+  }
+
+  /**
    * Get all of a user's recipes.
    */
-  def getByUserId(userId: Long) =
+  def getByUserId(userId: Long): Seq[Recipe] =
     Recipe.find("authorId = {userId}").on("userId" -> userId).list()
 
   /**
    * Looks up a recipe by userId and url slug. Optionally returns the looked-up recipe.
    */
-  def getByAuthorIdAndSlug(authorId: Long, slug: String) = {
+  def getByAuthorIdAndSlug(
+    authorId: Long, slug: String
+  ): Option[(Recipe, Seq[Ingredient])] = {
     SQL("""
         select * from Recipe r
         join RecipeIngredient ri on r.id = ri.recipeId
@@ -65,7 +84,9 @@ object Recipe extends Magic[Recipe] {
   /**
    * Looks up a recipe by userId and recipeId. Optionally returns the looked-up recipe.
    */
-  def getByAuthorIdAndRecipeId(authorId: Long, recipeId: Long) = {
+  def getByAuthorIdAndRecipeId(
+    authorId: Long, recipeId: Long
+  ): Option[(Recipe, Seq[Ingredient])] = {
     SQL("""
         select * from Recipe r
         join RecipeIngredient ri on r.id = ri.recipeId
