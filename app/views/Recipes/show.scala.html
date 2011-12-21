@@ -1,6 +1,7 @@
 @(
-  recipe: models.Recipe,
-  ingredients: Seq[models.Ingredient]
+  title: String,
+  ingredients: Seq[String],
+  bodyHtml: String
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -9,15 +10,15 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
-@main(title = recipe.title) {
-  <h1>@recipe.title<h1>
+@main(title) {
+  <h1>@title<h1>
 
   <h2>Ingredients</h2>
   <ul id="ingredients">
     @for(ingr <- ingredients) {
-    <li>@ingr.name</li>
+    <li>@ingr</li>
     }
   </ul>
 
-  <p>@recipe.body</p>
+  @Html(bodyHtml)
 }

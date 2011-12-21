@@ -5,7 +5,21 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
+@import controllers._
+
 @main(title) {
-  <h1>What is Gingrsnap?</h1>
-  <p>Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
+  <div class="row">
+    <div class="span10">
+      <div class="hero-unit">
+        <h1>Escape from cookbooks.</h1>
+        <p>Sign up now and find out what the world tastes like.</p>
+      </div>
+    </div>
+    <div class="span6">
+      <div class="hero-unit">
+        <a class="btn large primary" href="@action(Users.neue)">Create an account</a>
+        <p>This is some copy explaining the benefit of signing up for Gingrsnap.</p>
+      </div>
+    </div>
+  </div>
 }

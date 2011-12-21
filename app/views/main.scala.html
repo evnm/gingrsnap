@@ -13,7 +13,12 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>@title - Gingrsnap</title>
+    <title>
+      @if(title.nonEmpty) {
+      @title -
+      }
+      Gingrsnap
+    </title>
     <meta name="description" content="">
     <meta name="Evan Meagher" content="">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -27,36 +32,33 @@
     <script type="text/javascript" src="@asset("public/javascripts/app.js")"></script>
   </head>
   <body>
-    <div class="topbar">
-      <div class="fill">
-        <div class="container">
-          <a class="brand" href="@action(Application.index)">Gingrsnap</a>
-          <ul class="nav secondary-nav">
-            @accountLinks(user: models.User) = {
-              <li><a href="@action(Users.show(user.id()))">@user.fullname</a></li>
-              <li class="divider"></li>
-              <li><a href="@action(Accounts.edit)">Account settings</a></li>
-              <li class="divider"></li>
-              <li><a href="@action(Authentication.logout)">Logout</a></li>
-            }
-            @loginLink = {
-              <li><a href="@action(Application.about)">About</a></li>
-              <li><a href="@action(Authentication.login)">Login</a></li>
-            }
-            @if(renderArgs != null) {
-              @(renderArgs.get(Constants.UserObjKey) match {
-                case Some(user: models.User) => accountLinks(user)
-                case None => loginLink
-              })
-            }
-          </ul>
-        </div>
+    <header>
+      <div class="container">
+        <a class="brand" href="@action(Application.index)">Gingrsnap</a>
+        <ul class="nav secondary-nav">
+          @accountLinks(user: models.User) = {
+            <li><a href="@action(Users.show(user.id()))">@user.fullname</a></li>
+            <li><a href="@action(Accounts.edit)">Account settings</a></li>
+            <li><a href="@action(Authentication.logout)">Logout</a></li>
+          }
+          @loginLink = {
+            <li><a class="btn" href="@action(Authentication.login)">Login</a></li>
+          }
+          @if(renderArgs != null) {
+            @(renderArgs.get(Constants.UserObjKey) match {
+              case Some(user: models.User) => accountLinks(user)
+              case None => loginLink
+            })
+          }
+        </ul>
       </div>
-    </div>
+    </header>
     <div class="container">
       @body
     <footer>
-      <p>&copy; Gingrsnap 2011</p>
+      <ul class="nav">
+        <li><a href="@action(Application.about)">About</a></li>
+      </ul>
     </footer>
     </div>
   </body>

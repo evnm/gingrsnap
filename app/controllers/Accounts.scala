@@ -52,6 +52,10 @@ object Accounts extends Controller with RenderCachedUser with Secure {
     if (!newPassword.isEmpty) {
       Validation.required("oldPassword", oldPassword)
         .message("Old password is required when updating to new one")
+      Validation.isTrue(
+        "oldPassword",
+        User.validatePassword(user, oldPassword)
+      ).message("Old password is incorrect")
     }
 
     if (!Validation.hasErrors) {

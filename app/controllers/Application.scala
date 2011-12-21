@@ -9,9 +9,19 @@ object Application extends Controller with RenderCachedUser {
   /**
    * Root page.
    */
-  def index = Cache.get[User](Constants.UserObjKey) match {
-    case Some(user: User) => views.Users.html.home(user)
-    case None => views.Application.html.index()
+  def index = {
+    val mostRecentRecipes = models.Recipe.getMostRecent(10)
+    Cache.get[User](Constants.UserObjKey) match {
+      case Some(user: User) => views.Application.html.index(
+        "Your dashboard",
+        Some(user),
+        mostRecentRecipes)
+      case None => views.Application.html.index(
+        "",
+        None,
+        mostRecentRecipes
+      )
+    }
   }
 
   /**

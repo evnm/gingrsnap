@@ -1,5 +1,6 @@
 @(
-  user: models.User
+  user: models.User,
+  mostRecentRecipes: Seq[models.Recipe]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -10,4 +11,10 @@
 
 @main(title = "Your dashboard") {
   <h1>Welcome @user.fullname!</h1>
+
+  <ol>
+  @mostRecentRecipes.map { recipe =>
+  <li><a href="@action(controllers.Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a></li>
+  }
+  </ol>
 }

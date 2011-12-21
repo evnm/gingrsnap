@@ -1,20 +1,94 @@
 body {
-  padding-top: 60px;
+  background-color: whiteSmoke;
 }
 
-.topbar a.brand {
-  font-family: Lobster;
-  //  color: black;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, .1);
+/**
+ * Basic elements.
+ */
+a {
+  color: #AF541F;
 }
 
-.topbar a.brand:hover {
-  background: inherit;
-  //color: black;
+/**
+ * Header
+ */
+header {
+  padding: 8px 0 14px 0;
+  background-color: white;
+  -moz-box-shadow: inset 0 0 5px #ccc;
+  -webkit-box-shadow: inset 0 0 5px #ccc;
+  box-shadow: inset 0 0 5px #ccc;
 }
 
+.brand {
+  font: 32px Lobster;
+  color: #363636;
+  text-shadow: 0 2px 0 rgba(150, 150, 150, .3);
+  -webkit-font-smoothing: antialiased;
+}
+
+a.brand:hover {
+  text-decoration: none;
+  color: #404040;
+}
+
+ul.secondary-nav li {
+  margin-left: 6px;
+}
+
+/**
+ * Navigation lists.
+ */
+.nav a.btn {
+  padding: 4px 15px;
+}
+
+.nav a {
+  color: #606060;
+}
+
+.nav a:hover {
+  color: #363636;
+}
+
+/**
+ * Splash stuff.
+ */
+.hero-unit {
+  padding: 32px 0;
+  border-radius: 4px;
+}
+
+.hero-unit h1 {
+  margin-bottom: 12px;
+  font-size: 44px;
+  font-weight: normal;
+  text-shadow: 0 2px rgba(212, 212, 212, .5);
+  -webkit-font-smoothing: antialiased;
+}
+
+/**
+ * Main body content area.
+ */
+header + div.container {
+  padding: 20px 0;
+}
+
+/**
+ * Footer
+ */
+footer p {
+  clear: both;
+}
+
+/**
+ * Forms
+ */
 input, textarea, .input-prepend .add-on, .input-append .add-on {
   padding: 6px;
+}
+.form-stacked {
+  padding-left: 0px;
 }
 
 .add-on button.btn {
@@ -50,4 +124,46 @@ form#recipe-form ul#ingredients label.add-on a {
 
 form#recipe-form textarea {
   height: 300px;
+}
+
+/**
+ * Login page.
+ */
+div.login {
+  margin: 0 auto;
+  padding: 16px 0;
+  width: 600px;
+  text-align: center;
+}
+
+div.login a.brand {
+  display: block;
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+div.login > form, div.login > div#external-auth {
+  width: 280px;
+  text-align: left;
+}
+
+div.login > form {
+  float: left;
+}
+
+div.login > div#external-auth {
+  float: right;
+  margin-top: 18px;
+}
+
+div.login > div#external-auth > p {
+  margin-top: 16px;
+  font-size: .9em;
+  line-height: 1.6em;
+}
+
+div.login > p#notamember {
+  clear: both;
+  padding-top: 18px;
+  font-size: 1.2em;
 }

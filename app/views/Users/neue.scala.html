@@ -11,10 +11,13 @@
   errors: Map[String, play.data.validation.Error]
 )
 
+@import controllers._
+
 @main("Create an account") {
   <h1>Create an identity on Gingrsnap!</h1>
+  <p><a class="btn primary" href="/oauth/twitter">Sign up with Twitter&raquo;</a></p>
 
-  <form id="signup-form" method="POST">
+  <form id="signup-form" class="form-stacked" method="POST">
     @views.common.html.alertMessage()
 
     @if(!imgUrl.isEmpty) {
@@ -50,6 +53,7 @@
 
     <div class="actions">
       <input class="btn primary" type="submit" value="Submit"/>
+      <a class="btn" href="@action(controllers.Application.index)">Cancel</a>
     </div>
   </form>
 }

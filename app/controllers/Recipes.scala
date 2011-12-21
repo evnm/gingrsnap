@@ -2,6 +2,7 @@ package controllers
 
 import collection.JavaConversions._
 import Constants.UserObjKey
+import markdown.Markdown
 import models.{Ingredient, Recipe, User}
 import play._
 import play.cache.Cache
@@ -61,7 +62,10 @@ object Recipes extends Controller with RenderCachedUser with Secure {
    */
   @NonSecure def show(userId: Long, slug: String) = {
     Recipe.getByAuthorIdAndSlug(userId, slug) map { case (recipe, ingredients) =>
-      html.show(recipe, ingredients)
+      html.show(
+        recipe.title,
+        ingredients map { _.name },
+        Markdown.transformMarkdown(recipe.body))
     } getOrElse {
       NotFound("No such recipe")
     }
