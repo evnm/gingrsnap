@@ -27,6 +27,12 @@ object User extends Magic[User] {
   }
 
   /**
+   * Validates a user against a password string.
+   */
+  def validatePassword(user: User, password: String): Boolean =
+    user.password == Crypto.passwordHash(user.salt + password)
+
+  /**
    * Looks up a user by id. Optionally returns the looked-up user.
    */
   def getById(userId: Long) =
