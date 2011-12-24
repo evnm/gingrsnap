@@ -75,7 +75,7 @@ object Users extends Controller with RenderCachedUser {
    * Show a user's profile
    */
   def show(userId: Long) = User.getById(userId) map { user =>
-    html.show(user, Recipe.getByUserId(user.id()))
+    html.show(user, Account.getByUserId(user.id()).get, Recipe.getByUserId(user.id()))
   } getOrElse {
     NotFound("No such user")
   }

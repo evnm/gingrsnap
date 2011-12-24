@@ -8,6 +8,7 @@ CREATE TABLE Recipe (
     createdAt date NOT NULL,
     modifiedAt date NOT NULL,
     body text NOT NULL,
+    parentRecipe bigint(20),
     FOREIGN KEY (authorId) REFERENCES User(id) ON DELETE CASCADE,
     PRIMARY KEY (id)
 );

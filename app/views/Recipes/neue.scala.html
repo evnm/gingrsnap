@@ -1,5 +1,9 @@
 @(
-  userId: Long
+  userId: Long,
+  title: String,
+  slug: String,
+  ingredients: java.util.List[String],
+  recipeBody: String
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -21,7 +25,7 @@
         <div class="clearfix">
           <label for="title">Title</label>
           <div class="input">
-            <input class="big span10" id="title" name="title" type="text" />
+            <input class="big span10" id="title" name="title" type="text" value="@title" />
           </div>
         </div>
 
@@ -30,7 +34,7 @@
           <div class="input">
             <div class="input-prepend">
               <span class="add-on">http://gingrsnap.com/@userId/</span>
-              <input class="slug span3" id="slug" name="slug" type="text" />
+              <input class="slug span3" id="slug" name="slug" type="text" value="@slug" />
             </div>
           </div>
         </div>
@@ -48,6 +52,19 @@
           <div class="clearfix">
             <ul id="ingredients">
               <li class="clearfix"></li>
+              @ingredients.map { ingr =>
+              <li>
+                <div class="input">
+                  <div class="input-append">
+                    <input class="span4" type="text" value="@ingr" />
+                    <label class="add-on">
+                      <a class="close" href="#">x</a>
+                    </label>
+                  </div>
+                </div>
+              </li>
+              <li class="clearfix"></li>
+              }
             </ul>
           </div>
         </div>
@@ -55,7 +72,7 @@
         <div class="clearfix">
           <label for="recipeBody">Body</label>
           <div class="input">
-            <textarea class="span10" id="recipeBbody" name="recipeBody" type="text"></textarea>
+            <textarea class="span10" id="recipeBody" name="recipeBody" type="text">@recipeBody</textarea>
           </div>
         </div>
 

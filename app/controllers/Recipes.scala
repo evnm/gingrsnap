@@ -17,9 +17,19 @@ object Recipes extends Controller with RenderCachedUser with Secure {
   /*
    * Recipe creation page.
    */
-  def neue() = {
+  def neue(
+    title: Option[String] = None,
+    slug: Option[String] = None,
+    ingredients: java.util.List[String] = new java.util.ArrayList[String],
+    recipeBody: Option[String] = None
+  ) = {
     val user = Cache.get[User](UserObjKey).get
-    html.neue(user.id())
+    html.neue(
+      user.id(),
+      title.getOrElse(""),
+      slug.getOrElse(""),
+      ingredients,
+      recipeBody.getOrElse(""))
   }
 
   /*
@@ -29,7 +39,7 @@ object Recipes extends Controller with RenderCachedUser with Secure {
     title: String,
     slug: String,
     authorId: Long,
-    ingredients: java.util.List[String], // comma-separated list as string
+    ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: String
   ) = {
     def handleError(error: SqlRequestError) = {
@@ -41,20 +51,33 @@ object Recipes extends Controller with RenderCachedUser with Secure {
                   "Please try again.")
     }
 
-    Validation.required("title", title).message("Title is required")
-    Validation.required("slug", slug).message("You must provide a URL for your recipe")
+    Validation.required("title", title)
+      .message("Title is required")
+    Validation.required("slug", slug)
+      .message("You must provide a URL for your recipe")
     // TODO: Validate slug format.
-    Validation.isTrue("slug", true).message("URL can only contain letters, numbers, and hyphens.")
-    Validation.required("recipeBody", recipeBody).message("Your recipe must contain body text")
+    Validation.isTrue("slug", true)
+      .message("URL can only contain letters, numbers, and hyphens.")
+    Validation.isTrue("ingredients", !ingredients.isEmpty)
+      .message("You must provide at least one ingredient")
+    Validation.required("recipeBody", recipeBody)
+      .message("Your recipe must contain body text")
 
     if (Validation.hasErrors) {
-      neue()
+      neue(Some(title), Some(slug), ingredients, Some(recipeBody))
     } else {
       Recipe.create(Recipe(title, slug, authorId, recipeBody), ingredients)
         .toOptionLoggingError map { recipe =>
           Action(Recipes.show(recipe.authorId, recipe.slug))
         }
     }
+  }
+
+  /**
+   * GET request to recipe edit page.
+   */
+  def edit() = {
+
   }
 
   /**

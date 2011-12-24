@@ -11,10 +11,11 @@ case class Recipe(
   id: Pk[Long],
   title: String,
   slug: String,
-  authorId: Long,
+  authorId: Long, // TODO: Change to ownerId?
   createdAt: Date,
   modifiedAt: Date,
-  body: String
+  body: String,
+  parentRecipe: Option[Long] = None
 )
 
 object Recipe extends Magic[Recipe] {
@@ -43,6 +44,10 @@ object Recipe extends Magic[Recipe] {
       MayErr(Right(createdRecipe))
     }
   }
+
+  /**
+   *
+   */
 
   /**
    * Get the n most recently-posted recipes.

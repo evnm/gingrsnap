@@ -1,5 +1,6 @@
 @(
-  location: String
+  location: String = "",
+  url: String = ""
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -35,6 +36,13 @@
         <label for="location">Location</label>
         <div class="input">
           <input class="xlarge" id="location" name="location" type="text" value="@location" />
+        </div>
+      </div>
+
+      <div class="clearfix">
+        <label for="url">Website</label>
+        <div class="input">
+          <input class="xlarge" id="url" name="url" type="text" value="@url" />
         </div>
       </div>
     </fieldset>

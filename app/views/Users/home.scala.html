@@ -1,6 +1,7 @@
 @(
   user: models.User,
-  mostRecentRecipes: Seq[models.Recipe]
+  usersRecipes: Seq[models.Recipe],
+  recipeFeed: Seq[models.Recipe]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -9,12 +10,28 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
-@main(title = "Your dashboard") {
-  <h1>Welcome @user.fullname!</h1>
+@import controllers._
 
-  <ol>
-  @mostRecentRecipes.map { recipe =>
-  <li><a href="@action(controllers.Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a></li>
+@genRecipeList(recipes: Seq[models.Recipe]) = {
+  @recipes.map { recipe =>
+    <li><a href="@action(controllers.Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a></li>
   }
-  </ol>
+}
+
+@main(title = "Your dashboard") {
+  <div class="row">
+    <div class="span10">
+      <h1>Most recent recipes</h1>
+      <ol>
+        @genRecipeList(recipeFeed)
+      </ol>
+    </div>
+    <div class="span6">
+      <a class="btn large primary" href="@action(Recipes.neue())">Create an new recipe</a>
+      <h2>Your recipes</h2>
+      <ul>
+        @genRecipeList(usersRecipes)
+      </ul>
+    </div>
+  </div>
 }

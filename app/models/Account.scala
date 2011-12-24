@@ -18,5 +18,6 @@ object Account extends Magic[Account] {
 case class Account(
   id: Pk[Long],
   userId: Long,
-  location: Option[String] = None
+  location: Option[String] = None,
+  url: Option[String] = None
 )

@@ -1,5 +1,6 @@
 @(
   user: models.User,
+  account: models.Account,
   recipes: Seq[models.Recipe]
 )(
   implicit
@@ -12,16 +13,23 @@
 @import controllers._
 
 @main(title = user.fullname) {
-  <h1>This is @user.fullname's profile page!</h1>
+  <div id="userinfo">
+    <h1>@user.fullname</h1>
+    @account.location.map { location =>
+    <p class="location">@location</p>
+    }
+  </div>
+
+  <h2>Recipes</h2>
   @if(recipes.isEmpty) {
-    <p>
-      You haven't written any recipes yet! <a href="@action(Recipes.neue)" title="Create a new recipe">Go start one now!</a>
-    </p>
+  <p>
+    You haven't written any recipes yet! <a href="@action(Recipes.neue())" title="Create a new recipe">Go start one now!</a>
+  </p>
   } else {
-    <ul>
-      @for(recipe <- recipes) {
-        <li><a href="@action(Recipes.show(user.id(), recipe.slug))">@recipe.title</a></li>
-      }
-    </ul>
+  <ul>
+    @for(recipe <- recipes) {
+    <li><a href="@action(Recipes.show(user.id(), recipe.slug))">@recipe.title</a></li>
+    }
+  </ul>
   }
 }

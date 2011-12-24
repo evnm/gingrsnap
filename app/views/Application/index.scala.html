@@ -1,6 +1,4 @@
 @(
-  title: String = "",
-  user: Option[models.User],
   mostRecentRecipes: Seq[models.Recipe]
 )(
   implicit
@@ -9,11 +7,21 @@
 
 @import controllers._
 
-@main(title) {
-  <h1>Most recent recipes</h1>
-  <ol>
-    @mostRecentRecipes.map { recipe =>
-    <li><a href="@action(controllers.Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a></li>
-    }
-  </ol>
+@main("") {
+  <div class="row">
+    <div class="span10">
+      <h1>Most recent recipes</h1>
+      <ol>
+        @mostRecentRecipes.map { recipe =>
+        <li><a href="@action(controllers.Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a></li>
+        }
+      </ol>
+    </div>
+    <div class="span6">
+      <div class="hero-unit">
+        <a class="btn large primary" href="@action(Users.neue)">Create an account</a>
+        <p>This is some copy explaining the benefit of signing up for Gingrsnap.</p>
+      </div>
+    </div>
+  </div>
 }
