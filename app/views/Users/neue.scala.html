@@ -15,7 +15,9 @@
 
 @main("Create an account") {
   <h1>Create an identity on Gingrsnap!</h1>
-  <p><a class="btn primary" href="/oauth/twitter">Sign up with Twitter&raquo;</a></p>
+  @if(twAccessToken.isEmpty && twAccessTokenSecret.isEmpty) {
+    <p><a class="btn primary" href="/oauth/twitter">Sign up with Twitter&raquo;</a></p>
+  }
 
   <form id="signup-form" class="form-stacked" method="POST">
     @views.common.html.alertMessage()
