@@ -123,7 +123,7 @@ form#recipe-form ul#ingredients label.add-on a {
 }
 
 form#recipe-form textarea {
-  height: 300px;
+  height: 200px;
 }
 
 /**
