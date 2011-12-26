@@ -13,7 +13,6 @@ import play.jobs.{OnApplicationStart, Job}
           case p:  Account => Account.create(p)
           case r:  Recipe => Recipe.create(r)
           case i:  Ingredient => Ingredient.create(i)
-          case ri: RecipeIngredient => RecipeIngredient.create(ri)
         }
       }
     }

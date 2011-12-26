@@ -9,16 +9,18 @@ import play.db.anorm.SqlParser._
 case class Ingredient(
   id: Pk[Long],
   name: String,
+  recipeId: Long,
   createdAt: Date
 )
 
 object Ingredient extends Magic[Ingredient] {
-  def apply(name: String) = new Ingredient(NotAssigned, name, new Date())
+  def apply(name: String, recipeId: Long) =
+    new Ingredient(NotAssigned, name, recipeId, new Date())
 
   /**
    * Gets all of the ingredients associated with a given recipe.
    */
   def getByRecipeId(recipeId: Long): Seq[Ingredient] = {
-    Seq()
+    Ingredient.find("recipeId = {recipeId}").on("recipeId" -> recipeId).list()
   }
 }

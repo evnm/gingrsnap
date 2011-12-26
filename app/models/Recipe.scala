@@ -37,9 +37,7 @@ object Recipe extends Magic[Recipe] {
   ): MayErr[SqlRequestError, Recipe] = {
     Recipe.create(recipe) flatMap { createdRecipe =>
       for (ingr <- ingredients) {
-        Ingredient.create(Ingredient(ingr)) flatMap { createdIngr =>
-          RecipeIngredient.create(RecipeIngredient(createdRecipe.id(), createdIngr.id()))
-        }
+        Ingredient.create(Ingredient(ingr, createdRecipe.id()))
       }
       MayErr(Right(createdRecipe))
     }
@@ -76,30 +74,10 @@ object Recipe extends Magic[Recipe] {
   ): Option[(Recipe, Seq[Ingredient])] = {
     SQL("""
         select * from Recipe r
-        join RecipeIngredient ri on r.id = ri.recipeId
-        join Ingredient i on ri.ingredientId = i.id
+        join Ingredient i on i.recipeId = r.id
         where r.authorId = {authorId} and r.slug = {slug}
         """)
       .on("authorId" -> authorId, "slug" -> slug)
       .as(Recipe ~< Recipe.spanM(Ingredient) ^^ flatten ?)
   }
-
-
-
-  /**
-   * Looks up a recipe by userId and recipeId. Optionally returns the looked-up recipe.
-   */
-  def getByAuthorIdAndRecipeId(
-    authorId: Long, recipeId: Long
-  ): Option[(Recipe, Seq[Ingredient])] = {
-    SQL("""
-        select * from Recipe r
-        join RecipeIngredient ri on r.id = ri.recipeId
-        join Ingredient i on ri.ingredientId = i.id
-        where r.authorId = {authorId} and r.id = {recipeId}
-        """)
-      .on("authorId" -> authorId, "recipeId" -> recipeId)
-      .as(Recipe ~< Recipe.spanM(Ingredient) ^^ flatten ?)
-  }
-
 }

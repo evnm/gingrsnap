@@ -10,6 +10,7 @@ CREATE TABLE Recipe (
     body text NOT NULL,
     parentRecipe bigint(20),
     FOREIGN KEY (authorId) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (parentRecipe) REFERENCES Recipe(id),
     PRIMARY KEY (id)
 );
 
