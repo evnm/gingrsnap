@@ -9,6 +9,7 @@ import play.cache.Cache
 import play.data.validation.Validation
 import play.db.anorm.SqlRequestError
 import play.mvc._
+import scala.collection.JavaConversions._
 import secure.NonSecure
 
 object Recipes extends Controller with RenderCachedUser with Secure {
@@ -76,7 +77,35 @@ object Recipes extends Controller with RenderCachedUser with Secure {
   /**
    * GET request to recipe edit page.
    */
-  def edit() = {
+  def edit(recipeId: Long) = {
+    val user = Cache.get[User](UserObjKey).get
+    Recipe.getById(recipeId) match {
+      case Some(recipe) => {
+        if (recipe.authorId != user.id()) {
+          // TODO: Add error msg to flash
+          Application.index
+        } else {
+          html.edit(
+            user.id(),
+            recipeId,
+            recipe.title,
+            recipe.slug,
+            Ingredient.getByRecipeId(recipeId) map { _.name },
+            recipe.body
+          )
+        }
+      }
+      case None => {
+        // TODO: Add error msg to flash
+        Application.index
+      }
+    }
+  }
+
+  /**
+   * POST request to recipe edit page.
+   */
+  def update() = {
 
   }
 
