@@ -60,6 +60,9 @@ object Recipe extends Magic[Recipe] {
       .as(Recipe *)
   }
 
+  def getById(recipeId: Long): Option[Recipe] =
+    Recipe.find("id = {recipeId}").on("recipeId" -> recipeId).first()
+
   /**
    * Get all of a user's recipes.
    */
