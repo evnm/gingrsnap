@@ -68,7 +68,7 @@ $(document).ready(function() {
     )
   });
 
-  // TODO
+  // Translate "return" in ingredient input to add-button click.
   $("input#ingredient").keypress(function(event) {
     var code = event.keyCode || event.which;
     if (code == 13) {
@@ -106,6 +106,14 @@ $(document).ready(function() {
       .each(function(i, input) {
         $(input).attr("name", "ingredients[" + i + "]");
       });
+  });
+
+  // Cancel button pops up confirmation, then redirects.
+  $("form#recipe-form button.cancel").click(function(event) {
+    if (confirm("Cancel editing this recipe? All progress will be lost")) {
+      window.location.href = "/";
+    }
+    event.preventDefault();
   });
 });
 

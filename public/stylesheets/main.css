@@ -126,6 +126,11 @@ form#recipe-form textarea {
   height: 200px;
 }
 
+div.actions button.cancel {
+  float: right;
+  color: #A60101;
+}
+
 /**
  * Login page.
  */
