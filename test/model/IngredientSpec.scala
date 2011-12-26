@@ -21,4 +21,14 @@ class IngredientSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfte
     potato should not be (None)
     potato.get.name should be ("potato")
   }
+
+  it should "lookup by recipe id" in {
+    Ingredient.create(Ingredient(Id(1), "potato", 1, date))
+    Ingredient.create(Ingredient(Id(2), "carrot", 1, date))
+    val ingrs = Ingredient.getByRecipeId(1)
+
+    ingrs should not be (Seq.empty)
+    ingrs(0).name should be ("potato")
+    ingrs(1).name should be ("carrot")
+  }
 }
