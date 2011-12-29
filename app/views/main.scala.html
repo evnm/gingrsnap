@@ -4,7 +4,9 @@
   body: => Html
 )(
   implicit
-  renderArgs: play.mvc.Scope.RenderArgs = null // This is a hack
+  renderArgs: play.mvc.Scope.RenderArgs = null, // This is a hack
+  flash: play.mvc.Scope.Flash = null,
+  errors: Map[String, play.data.validation.Error] = null
 )
 
 @import controllers._
@@ -53,13 +55,25 @@
         </ul>
       </div>
     </header>
-    <div class="container">
-      @body
-    <footer>
-      <ul class="nav">
-        <li><a href="@action(Application.about)">About</a></li>
-      </ul>
-    </footer>
+
+    <div id="wrapper">
+      <div class="container">
+        @views.common.html.alertMessage()
+        @body
+      </div>
     </div>
+
+    <footer>
+      <div class="container">
+        <ul class="nav">
+          <li><a href="@action(Application.about)">About</a></li>
+          <li><a href="@action(Application.contact)">Contact</a></li>
+          <li><a href="https://twitter.com/gingrsnap">@@gingrsnap</a></li>
+        </ul>
+        <ul class="nav secondary-nav">
+          <span class="brand" href="@action(Application.index)">Gingrsnap</span>
+        </ul>
+      </div>
+    </footer>
   </body>
 </html>

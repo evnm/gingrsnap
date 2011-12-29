@@ -1,7 +1,7 @@
 @(
   user: models.User,
   usersRecipes: Seq[models.Recipe],
-  recipeFeed: Seq[models.Recipe]
+  recipeFeed: Seq[(models.Recipe, models.User)]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -11,27 +11,34 @@
 )
 
 @import controllers._
-
-@genRecipeList(recipes: Seq[models.Recipe]) = {
-  @recipes.map { recipe =>
-    <li><a href="@action(controllers.Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a></li>
-  }
-}
+@import java.text.DateFormat
 
 @main(title = "Your dashboard") {
   <div class="row">
     <div class="span10">
       <h1>Most recent recipes</h1>
-      <ol>
-        @genRecipeList(recipeFeed)
+      <ol class="recipe-feed">
+        @recipeFeed.map { case (recipe, author) =>
+          <li>
+            <a href="@action(Users.show(author.id()))">@author.fullname</a>
+            created
+            <a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a>
+            on
+            @DateFormat.getDateInstance.format(recipe.createdAt)
+          </li>
+        }
       </ol>
     </div>
     <div class="span6">
-      <a class="btn large primary" href="@action(Recipes.neue())">Create an new recipe</a>
-      <h2>Your recipes</h2>
-      <ul>
-        @genRecipeList(usersRecipes)
-      </ul>
+      <div class="well">
+        <h2>Your recipes</h2>
+        <a class="btn primary new-recipe" href="@action(Recipes.neue())">Create a new recipe</a>
+        <ul>
+          @usersRecipes.map { recipe =>
+            <li><a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a></li>
+          }
+        </ul>
+      </div>
     </div>
   </div>
 }

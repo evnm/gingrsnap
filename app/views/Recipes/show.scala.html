@@ -1,7 +1,10 @@
 @(
+  recipeId: Long,
   title: String,
+  authorId: Long,
   ingredients: Seq[String],
-  bodyHtml: String
+  bodyHtml: String,
+  userOpt: Option[models.User]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -10,15 +13,31 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
+@import controllers._
+
 @main(title) {
-  <h1>@title<h1>
+  <div class="row">
+    <div class="span10">
+      <h1>@title</h1>
+      <h2>Ingredients</h2>
+      <ul id="ingredients">
+        @for(ingr <- ingredients) {
+          <li>@ingr</li>
+        }
+      </ul>
+      @Html(bodyHtml)
+    </div>
 
-  <h2>Ingredients</h2>
-  <ul id="ingredients">
-    @for(ingr <- ingredients) {
-    <li>@ingr</li>
-    }
-  </ul>
-
-  @Html(bodyHtml)
+    <div class="span6">
+      <div class="well">
+        @userOpt.map { connectedUser =>
+          @if(connectedUser.id() == authorId) {
+            <a class="btn" href="@action(Recipes.edit(recipeId))">Edit this recipe</a>
+          } else {
+            <a class="btn" href="@action(Recipes.fork(recipeId))">Fork this recipe</a>
+          }
+        }
+      </div>
+    </div>
+  </div>
 }

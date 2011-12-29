@@ -1,4 +1,7 @@
 @(
+  fullname: String,
+  emailAddr: String,
+  hasTwitterConnection: Boolean,
   location: String = "",
   url: String = ""
 )(
@@ -9,70 +12,86 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
+@import controllers._
 @import controllers.Constants.UserObjKey
 
 @main(title = "Your account") {
-  @views.common.html.alertMessage()
+  <div class="row">
+    <div class="span10">
+      <h1>Edit your account</h1>
+      <form id="edit-account" method="POST">
+        <fieldset>
+          <legend>Profile Info</legend>
+          <div class="clearfix">
+            <label for="fullname">Name</label>
+            <div class="input">
+              <input class="xlarge" id="fullname" name="fullname" type="text" value="@renderArgs.get(UserObjKey, classOf[Option[models.User]]).get.fullname" />
+            </div>
+          </div>
 
-  <h1>Edit your account</h1>
-  <form id="edit-account" method="POST">
-    <fieldset>
-      <legend>Profile Info</legend>
-      <div class="clearfix">
-        <label for="fullname">Name</label>
-        <div class="input">
-          <input class="xlarge" id="fullname" name="fullname" type="text" value="@renderArgs.get(UserObjKey, classOf[Option[models.User]]).get.fullname" />
+          <div class="clearfix">
+            <label for="emailAddr">Email Address</label>
+            <div class="input">
+              <input class="xlarge" id="emailAddr" name="emailAddr" type="text" value="@renderArgs.get(UserObjKey, classOf[Option[models.User]]).get.emailAddr"/>
+            </div>
+          </div>
+
+          <div class="clearfix">
+            <label for="location">Location</label>
+            <div class="input">
+              <input class="xlarge" id="location" name="location" type="text" value="@location" />
+            </div>
+          </div>
+
+          <div class="clearfix">
+            <label for="url">Website</label>
+            <div class="input">
+              <input class="xlarge" id="url" name="url" type="text" value="@url" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Password</legend>
+          <div class="clearfix">
+            <label for="oldPassword">Old Password</label>
+            <div class="input">
+              <input class="xlarge" id="oldPassword" name="oldPassword" type="password" />
+            </div>
+          </div>
+
+          <div class="clearfix">
+            <label for="newPassword">New Password</label>
+            <div class="input">
+              <input class="xlarge" id="newPassword" name="newPassword" type="password" />
+            </div>
+          </div>
+
+          <div class="clearfix">
+            <label for="confirmnewpassword">Confirm New Password</label>
+            <div class="input">
+              <input class="xlarge" id="confirmnewpassword" name="confirmnewpassword" type="password" />
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <input class="btn primary" type="submit" value="Submit"/>
         </div>
-      </div>
-
-      <div class="clearfix">
-        <label for="emailAddr">Email Address</label>
-        <div class="input">
-          <input class="xlarge" id="emailAddr" name="emailAddr" type="text" value="@renderArgs.get(UserObjKey, classOf[Option[models.User]]).get.emailAddr"/>
-        </div>
-      </div>
-
-      <div class="clearfix">
-        <label for="location">Location</label>
-        <div class="input">
-          <input class="xlarge" id="location" name="location" type="text" value="@location" />
-        </div>
-      </div>
-
-      <div class="clearfix">
-        <label for="url">Website</label>
-        <div class="input">
-          <input class="xlarge" id="url" name="url" type="text" value="@url" />
-        </div>
-      </div>
-    </fieldset>
-
-    <fieldset>
-      <legend>Password</legend>
-      <div class="clearfix">
-        <label for="oldPassword">Old Password</label>
-        <div class="input">
-          <input class="xlarge" id="oldPassword" name="oldPassword" type="password" />
-        </div>
-      </div>
-
-      <div class="clearfix">
-        <label for="newPassword">New Password</label>
-        <div class="input">
-          <input class="xlarge" id="newPassword" name="newPassword" type="password" />
-        </div>
-      </div>
-
-      <div class="clearfix">
-        <label for="confirmnewpassword">Confirm New Password</label>
-        <div class="input">
-          <input class="xlarge" id="confirmnewpassword" name="confirmnewpassword" type="password" />
-        </div>
-      </div>
-    </fieldset>
-
-    <div class="actions">
-      <input class="btn primary" type="submit" value="Submit"/>
+	    </form>
     </div>
-	</form>
+
+    <div class="span6">
+      <div class="well">
+        <h2>Connections</h2>
+        @if(hasTwitterConnection) {
+          <div class="oauth-connection-badge">
+            <span class="twitter-icon">Twitter</span><a class="close" href="#">x</a>
+          </div>
+        } else {
+          <a class="btn primary" href="@action(OAuth.authenticate("twitter"))">Connect with Twitter&raquo;</a>
+        }
+      </div>
+    </div>
+  </div>
 }

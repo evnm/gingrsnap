@@ -3,21 +3,31 @@
   successPrelude: String = ""
 )(
   implicit
-  flash: play.mvc.Scope.Flash,
-  errors: Map[String, play.data.validation.Error]
+  flash: play.mvc.Scope.Flash = null,
+  errors: Map[String, play.data.validation.Error] = null
 )
 
-@if(errors) {
-<div class="alert-message error">
-  <p><strong>@errorPrelude</strong></p>
+@if(errors || (flash != null && flash.get("error"))) {
+  <div class="alert-message error">
+    <p><strong>@errorPrelude</strong></p>
+    @for(err <- errors) {
+      <p>@err._2</p>
+    }
 
-  @for(err <- errors) {
-  <p>@err._2</p>
-  }
-</div>
+    @if(flash.get("error")) {
+      <p>@flash.get("error")</p>
+    }
+  </div>
 }
-@if(flash.get("success") != null) {
-<div class="alert-message success">
-  @successPrelude @flash.get("success")
-</div>
+
+@if(flash != null && flash.get("warning")) {
+  <div class="alert-message warning">
+    <p>@flash.get("warning")</p>
+  </div>
+}
+
+@if(flash != null && flash.get("success") != null) {
+  <div class="alert-message success">
+    @successPrelude @flash.get("success")
+  </div>
 }

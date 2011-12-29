@@ -1,19 +1,28 @@
 @(
-  mostRecentRecipes: Seq[models.Recipe]
+  mostRecentRecipes: Seq[(models.Recipe, models.User)]
 )(
   implicit
-  renderArgs: play.mvc.Scope.RenderArgs = null // This is a hack
+  renderArgs: play.mvc.Scope.RenderArgs = null, // This is a hack
+  flash: play.mvc.Scope.Flash,
+  errors: Map[String, play.data.validation.Error]
 )
 
 @import controllers._
+@import java.text.DateFormat
 
 @main("") {
   <div class="row">
     <div class="span10">
       <h1>Most recent recipes</h1>
-      <ol>
-        @mostRecentRecipes.map { recipe =>
-        <li><a href="@action(controllers.Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a></li>
+      <ol class="recipe-feed">
+        @mostRecentRecipes.map { case (recipe, author) =>
+          <li>
+            <a href="@action(Users.show(author.id()))">@author.fullname</a>
+            created
+            <a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a>
+            on
+            @DateFormat.getDateInstance.format(recipe.createdAt)
+          </li>
         }
       </ol>
     </div>

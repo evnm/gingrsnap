@@ -2,6 +2,7 @@ package controllers
 
 import collection.JavaConversions._
 import Constants.UserObjKey
+import java.util.Date
 import markdown.Markdown
 import models.{Ingredient, Recipe, User}
 import play._
@@ -15,7 +16,29 @@ import secure.NonSecure
 object Recipes extends Controller with RenderCachedUser with Secure {
   import views.Recipes.html
 
-  /*
+  /**
+   * Validates fields from recipe inputs.
+   */
+  protected[this] def validateRecipe(
+    title: String,
+    slug: String,
+    ingredients: java.util.List[String] = new java.util.ArrayList[String],
+    recipeBody: String
+  ) = {
+    Validation.required("title", title)
+      .message("Title is required")
+    Validation.required("slug", slug)
+      .message("You must provide a URL for your recipe")
+    // TODO: Validate slug format.
+    Validation.isTrue("slug", true)
+      .message("URL can only contain letters, numbers, and hyphens.")
+    Validation.isTrue("ingredients", !ingredients.isEmpty)
+      .message("You must provide at least one ingredient")
+    Validation.required("recipeBody", recipeBody)
+      .message("Your recipe must contain body text")
+  }
+
+  /**
    * Recipe creation page.
    */
   def neue(
@@ -33,7 +56,7 @@ object Recipes extends Controller with RenderCachedUser with Secure {
       recipeBody.getOrElse(""))
   }
 
-  /*
+  /**
    * Recipe creation POST handler.
    */
   def create(
@@ -43,33 +66,17 @@ object Recipes extends Controller with RenderCachedUser with Secure {
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: String
   ) = {
-    def handleError(error: SqlRequestError) = {
-      // TODO: Proper logging.
-      println("Error during creation of recipe, title(%s),slug(%s),authorId(%s)," +
-              "ingredients(%s),recipeBody(%s): %s"
-                .format(title, slug, authorId, ingredients.toString, recipeBody))
-      flash.error("Unfortunately, there was an error while creating your account. " +
-                  "Please try again.")
-    }
-
-    Validation.required("title", title)
-      .message("Title is required")
-    Validation.required("slug", slug)
-      .message("You must provide a URL for your recipe")
-    // TODO: Validate slug format.
-    Validation.isTrue("slug", true)
-      .message("URL can only contain letters, numbers, and hyphens.")
-    Validation.isTrue("ingredients", !ingredients.isEmpty)
-      .message("You must provide at least one ingredient")
-    Validation.required("recipeBody", recipeBody)
-      .message("Your recipe must contain body text")
-
+    validateRecipe(title, slug, ingredients, recipeBody)
     if (Validation.hasErrors) {
       neue(Some(title), Some(slug), ingredients, Some(recipeBody))
     } else {
       Recipe.create(Recipe(title, slug, authorId, recipeBody), ingredients)
         .toOptionLoggingError map { recipe =>
+          flash.success("Successfully created your recipe!")
           Action(Recipes.show(recipe.authorId, recipe.slug))
+        } getOrElse {
+          // TODO: Better error handling here.
+          NotFound("There was a problem creating your recipe. Please try again.")
         }
     }
   }
@@ -77,26 +84,33 @@ object Recipes extends Controller with RenderCachedUser with Secure {
   /**
    * GET request to recipe edit page.
    */
-  def edit(recipeId: Long) = {
+  def edit(
+    recipeId: Long,
+    title: Option[String] = None,
+    slug: Option[String] = None,
+    ingredients: java.util.List[String] = new java.util.ArrayList[String],
+    recipeBody: Option[String] = None
+  ) = {
     val user = Cache.get[User](UserObjKey).get
     Recipe.getById(recipeId) match {
       case Some(recipe) => {
         if (recipe.authorId != user.id()) {
-          // TODO: Add error msg to flash
+          flash += ("error" -> "Looks like you tried to edit someone else's recipe. Try forking it instead.")
           Application.index
         } else {
           html.edit(
             user.id(),
             recipeId,
-            recipe.title,
-            recipe.slug,
-            Ingredient.getByRecipeId(recipeId) map { _.name },
-            recipe.body
+            title.getOrElse(recipe.title),
+            slug.getOrElse(recipe.slug),
+            if (ingredients.isEmpty) Ingredient.getByRecipeId(recipeId) map { _.name }
+            else ingredients,
+            recipeBody.getOrElse(recipe.body)
           )
         }
       }
       case None => {
-        // TODO: Add error msg to flash
+        flash += ("error" -> "The recipe you're trying to edit doesn't exist!")
         Application.index
       }
     }
@@ -105,31 +119,117 @@ object Recipes extends Controller with RenderCachedUser with Secure {
   /**
    * POST request to recipe edit page.
    */
-  def update() = {
+  def update(
+    recipeId: Long,
+    title: String,
+    slug: String,
+    ingredients: java.util.List[String] = new java.util.ArrayList[String],
+    recipeBody: String
+  ) = {
+    val user = Cache.get[User](UserObjKey).get
+    Recipe.getById(recipeId) match {
+      case Some(recipe) => {
+        if (recipe.authorId != user.id()) {
+          flash.error("Looks like you tried to edit someone else's recipe. Try forking it instead.")
+          Application.index
+        } else {
+          validateRecipe(title, slug, ingredients, recipeBody)
+          if (Validation.hasErrors) {
+            edit(
+              recipeId,
+              title = if (title.isEmpty) None else Some(title),
+              slug = if (slug.isEmpty) None else Some(slug),
+              ingredients,
+              recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody))
+          } else {
+            Recipe.update(
+              recipe.copy(
+                title = title,
+                slug = slug,
+                modifiedAt = new Date(),
+                body = recipeBody))
 
+            // Update recipe's ingredient list.
+            Ingredient.deleteByRecipeId(recipeId)
+            Ingredient.createAllByRecipeId(recipeId, ingredients)
+
+            flash.success("Successfully updated your recipe!")
+            Action(Recipes.show(recipe.authorId, slug))
+          }
+        }
+      }
+      case None => {
+        flash.error("The recipe you're trying to edit doesn't exist!")
+        Application.index
+      }
+    }
+  }
+
+  /**
+   * Fork a recipe (i.e. copy it to another user's account).
+   */
+  def fork(recipeId: Long): java.lang.Object = {
+    val user = Cache.get[User](UserObjKey).get
+    _fork(recipeId, user.id())
+  }
+
+  /**
+   * Fork a recipe (i.e. copy it to another user's account).
+   *
+   * recipeId: Id of recipe to fork.
+   * userId:   Id of user doing the forking.
+   */
+  protected[this] def _fork(recipeId: Long, userId: Long) = Recipe.getById(recipeId) match {
+    case Some(recipe) => {
+      if (recipe.authorId == userId) {
+        flash += ("warning" -> "Oops. You can't fork your own recipes.")
+        Application.index
+      } else if (Recipe.getByAuthorIdAndSlug(userId, recipe.slug).isDefined) {
+        flash += ("warning" -> "You can't fork that recipe because you already have one by the same name.")
+        Application.index
+      } else {
+        val date = new Date()
+        Recipe.create(
+          recipe.copy(
+            id = play.db.anorm.NotAssigned,
+            authorId = userId,
+            createdAt = date,
+            modifiedAt = date,
+            parentRecipe = Some(recipeId)
+          ),
+          Ingredient.getByRecipeId(recipeId) map { _.name }
+        ).toOptionLoggingError map { newRecipe =>
+          flash.success("Successfully forked " + recipe.title + "!")
+          Action(Recipes.show(newRecipe.authorId, newRecipe.slug))
+        } getOrElse {
+          // TODO: Better error handling here.
+          NotFound("There was a problem while forking this recipe. Please try again.")
+        }
+      }
+    }
+    case None => {
+      flash += ("error" -> "The recipe you're trying to fork doesn't exist!")
+      Application.index
+    }
   }
 
   /**
    * Look up a recipe by userId and recipe slug.
    */
   @NonSecure def show(userId: Long, slug: String) = {
+    // Store request url so we can redirect back in case user subsequently logs in.
+    flash.put("url", request.url)
+
     Recipe.getByAuthorIdAndSlug(userId, slug) map { case (recipe, ingredients) =>
       html.show(
+        recipe.id(),
         recipe.title,
+        userId,
         ingredients map { _.name },
-        Markdown.transformMarkdown(recipe.body))
+        Markdown.transformMarkdown(recipe.body),
+        Cache.get[User](UserObjKey))
     } getOrElse {
       NotFound("No such recipe")
     }
   }
-
-  /**
-   * TODO
-  @NonSecure def show(userId: Long, recipeId: Long) =
-    Recipe.getByAuthorIdAndRecipeId(userId, recipeId) map { case (recipe, ingredients) =>
-      html.show(recipe, ingredients)
-    } getOrElse {
-      NotFound("No such recipe")
-    }
-  */
 }

@@ -15,7 +15,7 @@
 
 @import controllers.Constants.UserObjKey
 
-@main(title = "Editing \"@title\"") {
+@main(title = "Editing \"" + title + "\"") {
   <form class="form-stacked" id="recipe-form" method="POST">
     <input name="recipeId" type="hidden" value="@recipeId" />
 
@@ -23,7 +23,6 @@
       <div class="span10">
         <fieldset>
           <legend>Edit recipe</legend>
-          @views.common.html.alertMessage()
 
           <div class="clearfix">
             <label for="title">Title</label>
@@ -55,6 +54,7 @@
             <div class="clearfix">
               <ul id="ingredients">
                 <li class="clearfix"></li>
+
                 @ingredients.map { ingr =>
                 <li>
                   <div class="input">

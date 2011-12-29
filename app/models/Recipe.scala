@@ -30,22 +30,23 @@ object Recipe extends Magic[Recipe] {
   }
 
   /**
-   * Create a recipe with a set of ingredients.
+   * Create a recipe with a set of ingredient strings.
    */
   def create(
     recipe: Recipe, ingredients: Seq[String]
   ): MayErr[SqlRequestError, Recipe] = {
     Recipe.create(recipe) flatMap { createdRecipe =>
-      for (ingr <- ingredients) {
-        Ingredient.create(Ingredient(ingr, createdRecipe.id()))
-      }
+      Ingredient.createAllByRecipeId(createdRecipe.id(), ingredients)
       MayErr(Right(createdRecipe))
     }
   }
 
   /**
-   *
+   * Get the n most recently-posted recipes with associated Users.
    */
+  def getMostRecentWithAuthors(n: Int): Seq[(Recipe, User)] = getMostRecent(n) map { recipe =>
+    (recipe, User.getById(recipe.authorId).get)
+  }
 
   /**
    * Get the n most recently-posted recipes.

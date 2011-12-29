@@ -5,14 +5,14 @@ import models.User
 import play._
 import play.cache.Cache
 import play.mvc._
-import secure.{Security, TwAuthCredential}
-import twitter4j.{Twitter, TwitterException, TwitterFactory}
+import secure.{NonSecure, TwAuthCredential}
+import twitter4j.{Twitter, TwitterFactory}
 import twitter4j.auth.RequestToken
 
 /**
  * OAuth endpoint controller. Doesn't render any views.
  */
-object OAuth extends Controller {
+object OAuth extends Controller with RenderCachedUser with Secure {
   import Constants._
 
   val callbackUrl = "http://localhost:9000/oauth/twitter"
@@ -20,7 +20,7 @@ object OAuth extends Controller {
   /**
    * Authenticate a user against an external service. (i.e. Twitter)
    */
-  def authenticate(
+  @NonSecure def authenticate(
     externalService: String,
     oauth_token: String = "",
     oauth_verifier: String = ""
@@ -28,7 +28,7 @@ object OAuth extends Controller {
     case "twitter" => handleTwitter(oauth_token, oauth_verifier)
     case _ => {
       // TODO: Add proper error logging.
-      println("Invalid external authentication service provided: " + externalService)
+      println("Invalid external authentication service provided in authenticate: " + externalService)
       Action(Application.index)
     }
   }
@@ -36,7 +36,7 @@ object OAuth extends Controller {
   /**
    * Handles the OAuth dance of signing in with Twitter.
    */
-  private def handleTwitter(oauth_token: String, oauth_verifier: String) = try {
+  protected[this] def handleTwitter(oauth_token: String, oauth_verifier: String) = try {
     val twitterIface = Cache.get(TwIfaceCacheKey).getOrElse {
       new TwitterFactory().getInstance()
     }
@@ -52,7 +52,7 @@ object OAuth extends Controller {
       Redirect(requestToken.getAuthenticationURL())
     } else {
       val accessToken = twitterIface.getOAuthAccessToken(requestToken, oauth_verifier)
-      Cache.delete(TwRequestTokenCacheKey)
+      Cache.delete(TwRequestTokenCacheKey);
       val user = User.getByTwAuth(accessToken)
 
       if (user.isDefined) {
@@ -62,14 +62,50 @@ object OAuth extends Controller {
         }
         Action(Application.index)
       } else {
-        // Otherwise, redirect to signup page.
-        Cache.set(TwAccessTokenCacheKey, accessToken, "15mn")
-        Cache.set(TwUserObjCacheKey, twitterIface.verifyCredentials(), "15mn")
-        Cache.delete(TwIfaceCacheKey)
-        Action(Users.neue)
+        Cache.get[User](Constants.UserObjKey) match {
+          case Some(user: User) => {
+            // User is connected, so add the Twitter connection.
+            val newUser = user.copy(
+              twAccessToken = Some(accessToken.getToken()),
+              twAccessTokenSecret = Some(accessToken.getTokenSecret()))
+            User.update(newUser)
+            Cache.set(UserObjKey, newUser, "30mn")
+            Cache.delete(TwIfaceCacheKey)
+            Action(Accounts.edit)
+          }
+          case None => {
+            // Snag access token pair and redirect to signup page.
+            Cache.set(TwAccessTokenCacheKey, accessToken, "15mn")
+            Cache.set(TwUserObjCacheKey, twitterIface.verifyCredentials(), "15mn")
+            Cache.delete(TwIfaceCacheKey)
+            Action(Users.neue)
+          }
+        }
       }
     }
   } catch {
     case e: Throwable => e.printStackTrace()
+  }
+
+  /**
+   * Revokes a user's connection to an external auth service.
+   */
+  def revoke(externalService: String) = {
+    externalService match {
+      case "twitter" => revokeTwitter()
+      case _ => {
+        // TODO: Add proper error logging.
+        println("Invalid external authentication service provided in revoke: " + externalService)
+      }
+    }
+    Action(Accounts.edit)
+  }
+
+  protected[this] def revokeTwitter() = {
+    val user = Cache.get[User](Constants.UserObjKey).get
+    val newUser = user.copy(twAccessToken = None, twAccessTokenSecret = None)
+    User.update(newUser)
+    Cache.set(UserObjKey, newUser, "30mn")
+    Action(Accounts.edit)
   }
 }

@@ -53,7 +53,6 @@ $(document).ready(function() {
   });
 });
 
-
 /**
  * New recipe form logic.
  */
@@ -119,9 +118,22 @@ $(document).ready(function() {
 
 
 /**
- * Signup form validation.
+ * Account editing form.
  */
 $(document).ready(function() {
+  $("div.oauth-connection-badge a.close").click(function(event) {
+    if (confirm("Are you sure you want to revoke the connection of your Twitter account to Gingrsnap?")) {
+      var form = document.createElement("form");
+      form.style.display = "none";
+      this.parentNode.appendChild(form);
+      form.method = "POST";
+      form.action = "/oauth/revoke/twitter";
+      form.submit();
+    }
+    event.preventDefault();
+  });
+
+  // Validation.
   $("form#edit-account").validate({
     highlight: function(element, errorClass) {
       var inputDiv = $(element).parent("div");

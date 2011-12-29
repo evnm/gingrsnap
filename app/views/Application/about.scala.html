@@ -1,13 +1,13 @@
-@(
-  title: String = ""
-)(
+@()(
   implicit
-  renderArgs: play.mvc.Scope.RenderArgs
+  renderArgs: play.mvc.Scope.RenderArgs,
+  flash: play.mvc.Scope.Flash,
+  errors: Map[String, play.data.validation.Error]
 )
 
 @import controllers._
 
-@main(title) {
+@main("About") {
   <div class="row">
     <div class="span10">
       <div class="hero-unit">

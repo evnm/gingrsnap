@@ -22,7 +22,12 @@ object Accounts extends Controller with RenderCachedUser with Secure {
       Account.getByUserId(user.id()).get
     }
     Cache.add(AccountObjKey, account, "30mn")
-    html.edit(account.location.getOrElse(""), account.url.getOrElse(""))
+    html.edit(
+      user.fullname,
+      user.emailAddr,
+      user.twAccessToken.isDefined && user.twAccessTokenSecret.isDefined,
+      account.location.getOrElse(""),
+      account.url.getOrElse(""))
   }
 
   /*
@@ -36,7 +41,6 @@ object Accounts extends Controller with RenderCachedUser with Secure {
     oldPassword: String,
     newPassword: String
   ) = {
-    // TODO: Should be able to set location field to empty string.
     val user = Cache.get[User](UserObjKey).get
     val account = Cache.get[Account](AccountObjKey).getOrElse {
       Account.getByUserId(user.id()).get
