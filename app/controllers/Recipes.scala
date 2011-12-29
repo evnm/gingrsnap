@@ -72,7 +72,7 @@ object Recipes extends Controller with RenderCachedUser with Secure {
     } else {
       Recipe.create(Recipe(title, slug, authorId, recipeBody), ingredients)
         .toOptionLoggingError map { recipe =>
-          flash.success("Successfully created your recipe!")
+          flash.success("Success! Your recipe has been created!")
           Action(Recipes.show(recipe.authorId, recipe.slug))
         } getOrElse {
           // TODO: Better error handling here.

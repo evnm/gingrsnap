@@ -86,8 +86,9 @@ object Accounts extends Controller with RenderCachedUser with Secure {
       val newAccount = Account(Id(account.id()), account.userId, newLocation, newUrl)
       Account.update(newAccount)
       Cache.set(AccountObjKey, newAccount, "30mn")
+      flash.success("Saved.")
     }
 
-    edit()
+    Accounts.edit()
   }
 }

@@ -60,6 +60,7 @@ object Users extends Controller with RenderCachedUser {
         case Right(user) => {
           Account.create(Account(user.id()))
           Authentication.authenticate(emailAddr, PasswordCredential(password))
+          flash.success("Successfully created your account! Welcome to Gingrsnap, " + fullname + ".")
           Action(Application.index)
         }
         case Left(error) => {
