@@ -14,46 +14,56 @@
 @import controllers._
 
 @main("Create an account") {
-  <h1>Create an identity on Gingrsnap!</h1>
-  @if(twAccessToken.isEmpty && twAccessTokenSecret.isEmpty) {
-    <p><a class="btn primary" href="@action(OAuth.authenticate("twitter"))">Sign up with Twitter&raquo;</a></p>
-  }
+  <div class="row">
+    <div class="span10">
+      <h1>Create an identity on Gingrsnap!</h1>
+      <form id="signup-form" class="form-stacked" method="POST">
+        @if(!imgUrl.isEmpty) {
+          <img src="@imgUrl" />
+        }
+        <div class="clearfix">
+          <label for="fullname">Name</label>
+          <div class="input">
+            <input class="medium span6" id="fullname" name="fullname" type="text" value="@fullname" />
+          </div>
+        </div>
 
-  <form id="signup-form" class="form-stacked" method="POST">
-    @if(!imgUrl.isEmpty) {
-      <img src="@imgUrl" />
-    }
-    <div class="clearfix">
-      <label for="fullname">Name</label>
-      <div class="input">
-        <input class="medium span6" id="fullname" name="fullname" type="text" value="@fullname" />
+        <div class="clearfix">
+          <label for="emailAddr">Email Address</label>
+          <div class="input">
+            <input class="medium span6" id="emailAddr" name="emailAddr" type="text" />
+          </div>
+        </div>
+
+        <div class="clearfix">
+          <label for="password">Password</label>
+          <div class="input">
+            <input class="medium span6" id="password" name="password" type="password" />
+          </div>
+        </div>
+
+        <div class="clearfix">
+          <label for="confirmpassword">Confirm Password</label>
+          <div class="input">
+            <input class="medium span6" id="confirmpassword" name="confirmpassword" type="password" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <input class="btn primary" type="submit" value="Submit"/>
+          <a class="btn" href="@action(controllers.Application.index)">Cancel</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="span6">
+      <div class="well">
+        @if(twAccessToken.isEmpty && twAccessTokenSecret.isEmpty) {
+          <p><a class="btn primary" href="@action(OAuth.authenticate("twitter"))">Sign up with Twitter&raquo;</a></p>
+        } else {
+          <p><a class="btn" href="@action(Users.neue)">Don't connect with Twitter</a></p>
+        }
       </div>
     </div>
-
-    <div class="clearfix">
-      <label for="emailAddr">Email Address</label>
-      <div class="input">
-        <input class="medium span6" id="emailAddr" name="emailAddr" type="text" />
-      </div>
-    </div>
-
-    <div class="clearfix">
-      <label for="password">Password</label>
-      <div class="input">
-        <input class="medium span6" id="password" name="password" type="password" />
-      </div>
-    </div>
-
-    <div class="clearfix">
-      <label for="confirmpassword">Confirm Password</label>
-      <div class="input">
-        <input class="medium span6" id="confirmpassword" name="confirmpassword" type="password" />
-      </div>
-    </div>
-
-    <div class="actions">
-      <input class="btn primary" type="submit" value="Submit"/>
-      <a class="btn" href="@action(controllers.Application.index)">Cancel</a>
-    </div>
-  </form>
+  </div>
 }
