@@ -107,6 +107,11 @@ $(document).ready(function() {
       });
   });
 
+  // Clicking publish button sets hidden isPublished input to true.
+  $("button#publish").click(function() {
+    $("input#isPublished").val(true);
+  });
+
   // Cancel button pops up confirmation, then redirects.
   $("form#recipe-form button.cancel").click(function(event) {
     if (confirm("Cancel editing this recipe? All progress will be lost")) {

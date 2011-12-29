@@ -1,7 +1,8 @@
 @(
   user: models.User,
   account: models.Account,
-  recipes: Seq[models.Recipe]
+  publishedRecipes: Seq[models.Recipe],
+  drafts: Seq[models.Recipe]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -32,13 +33,13 @@
       </div>
 
       <h2>Recipes</h2>
-      @if(recipes.isEmpty) {
+      @if(publishedRecipes.isEmpty) {
         <p>
           You haven't written any recipes yet. <a href="@action(Recipes.neue())" title="Create a new recipe">Go start one now!</a>
         </p>
       } else {
         <ul>
-          @for(recipe <- recipes) {
+          @for(recipe <- publishedRecipes) {
             <li><a href="@action(Recipes.show(user.id(), recipe.slug))">@recipe.title</a></li>
           }
         </ul>
@@ -48,6 +49,14 @@
     <div class="span6">
       <div class="well">
         <a class="btn primary" href="@action(Recipes.neue())">Create a new recipe</a>
+        @if(drafts.nonEmpty) {
+          <h2>Drafts</h2>
+          <ul>
+            @for(draft <- drafts) {
+              <li><a href="@action(Recipes.edit(draft.id()))">@draft.title</a></li>
+            }
+          </ul>
+        }
       </div>
     </div>
   </div>

@@ -1,0 +1,83 @@
+@(
+  userId: Long,
+  recipeId: Option[Long],
+  title: String,
+  slug: String,
+  ingredients: java.util.List[String],
+  recipeBody: String
+)
+
+<form class="form-stacked" id="recipe-form" method="POST">
+  <input name="authorId" type="hidden" value="@userId" />
+  @recipeId.map { rId =>
+    <input name="recipeId" type="hidden" value="@rId" />
+  }
+  <input id="isPublished" name="isPublished" type="hidden" value="false" />
+
+  <div class="row">
+    <div class="span10">
+      <fieldset>
+        <legend>Create a new recipe</legend>
+        <div class="clearfix">
+          <label for="title">Title</label>
+          <div class="input">
+            <input class="big span10" id="title" name="title" type="text" value="@title" />
+          </div>
+        </div>
+
+        <div class="clearfix">
+          <label for="slug">URL</label>
+          <div class="input">
+            <div class="input-prepend">
+              <span class="add-on">http://gingrsnap.com/@userId/</span>
+              <input class="slug span6" id="slug" name="slug" type="text" value="@slug" />
+            </div>
+          </div>
+        </div>
+
+        <div class="clearfix">
+          <label for="ingredients">Ingredients</label>
+          <div class="input">
+            <div class="input-append">
+              <input class="span4" id="ingredient" type="text" />
+              <label class="add-on">
+                <button id="add-ingredient" class="small success btn" type="button">Add</button>
+              </label>
+            </div>
+          </div>
+          <div class="clearfix">
+            <ul id="ingredients">
+              <li class="clearfix"></li>
+              @ingredients.map { ingr =>
+              <li>
+                <div class="input">
+                  <div class="input-append">
+                    <input class="span4" type="text" value="@ingr" />
+                    <label class="add-on">
+                      <a class="close" href="#">x</a>
+                    </label>
+                  </div>
+                </div>
+              </li>
+              <li class="clearfix"></li>
+              }
+            </ul>
+          </div>
+        </div>
+
+        <div class="clearfix">
+          <label for="recipeBody">Body</label>
+          <div class="input">
+            <textarea class="span10" id="recipeBody" name="recipeBody" type="text">@recipeBody</textarea>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="publish" class="btn primary" type="submit">Publish</button>
+          <button class="btn" type="submit">Save as draft</button>
+          <button class="btn cancel">Cancel</button>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</form>

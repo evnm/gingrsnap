@@ -64,20 +64,28 @@ object Recipes extends Controller with RenderCachedUser with Secure {
     slug: String,
     authorId: Long,
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
-    recipeBody: String
+    recipeBody: String,
+    isPublished: Boolean
   ) = {
     validateRecipe(title, slug, ingredients, recipeBody)
     if (Validation.hasErrors) {
       neue(Some(title), Some(slug), ingredients, Some(recipeBody))
     } else {
-      Recipe.create(Recipe(title, slug, authorId, recipeBody), ingredients)
-        .toOptionLoggingError map { recipe =>
-          flash.success("Success! Your recipe has been created!")
+      Recipe.create(
+        Recipe(title, slug, authorId, recipeBody, isPublished),
+        ingredients
+      ).toOptionLoggingError map { recipe =>
+        if (isPublished) {
+          flash.success("Success! Your recipe has been published.")
           Action(Recipes.show(recipe.authorId, recipe.slug))
-        } getOrElse {
-          // TODO: Better error handling here.
-          NotFound("There was a problem creating your recipe. Please try again.")
+        } else {
+          flash.success("Success! Your recipe has been saved.")
+          Action(Recipes.edit(recipe.id()))
         }
+      } getOrElse {
+        // TODO: Better error handling here.
+        NotFound("There was a problem creating your recipe. Please try again.")
+      }
     }
   }
 
@@ -110,7 +118,7 @@ object Recipes extends Controller with RenderCachedUser with Secure {
         }
       }
       case None => {
-        flash += ("error" -> "The recipe you're trying to edit doesn't exist!")
+        flash += ("error" -> "The recipe you're trying to edit doesn't exist.")
         Application.index
       }
     }
@@ -124,7 +132,8 @@ object Recipes extends Controller with RenderCachedUser with Secure {
     title: String,
     slug: String,
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
-    recipeBody: String
+    recipeBody: String,
+    isPublished: Boolean
   ) = {
     val user = Cache.get[User](UserObjKey).get
     Recipe.getById(recipeId) match {
@@ -142,19 +151,26 @@ object Recipes extends Controller with RenderCachedUser with Secure {
               ingredients,
               recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody))
           } else {
+            val date = new Date()
             Recipe.update(
               recipe.copy(
                 title = title,
                 slug = slug,
-                modifiedAt = new Date(),
+                modifiedAt = date,
+                publishedAt = if (isPublished) Some(date) else None,
                 body = recipeBody))
 
             // Update recipe's ingredient list.
             Ingredient.deleteByRecipeId(recipeId)
             Ingredient.createAllByRecipeId(recipeId, ingredients)
 
-            flash.success("Successfully updated your recipe!")
-            Action(Recipes.show(recipe.authorId, slug))
+            if (isPublished) {
+              flash.success("Success! Your recipe has been published.")
+              Action(Recipes.show(recipe.authorId, recipe.slug))
+            } else {
+              flash.success("Success! Your recipe has been saved.")
+              Action(Recipes.edit(recipe.id()))
+            }
           }
         }
       }

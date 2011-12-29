@@ -14,6 +14,7 @@ case class Recipe(
   authorId: Long, // TODO: Change to ownerId?
   createdAt: Date,
   modifiedAt: Date,
+  publishedAt: Option[Date],
   body: String,
   parentRecipe: Option[Long] = None
 )
@@ -23,10 +24,19 @@ object Recipe extends Magic[Recipe] {
     title: String,
     slug: String,
     authorId: Long,
-    body: String
+    body: String,
+    isPublished: Boolean
   ) = {
     val date = new Date()
-    new Recipe(NotAssigned, title, slug, authorId, date, date, body)
+    new Recipe(
+      NotAssigned,
+      title,
+      slug,
+      authorId,
+      createdAt = date,
+      modifiedAt = date,
+      publishedAt = if (isPublished) Some(date) else None,
+      body = body)
   }
 
   /**
@@ -42,18 +52,19 @@ object Recipe extends Magic[Recipe] {
   }
 
   /**
-   * Get the n most recently-posted recipes with associated Users.
+   * Get the n most-recently published recipes with associated Users.
    */
   def getMostRecentWithAuthors(n: Int): Seq[(Recipe, User)] = getMostRecent(n) map { recipe =>
     (recipe, User.getById(recipe.authorId).get)
   }
 
   /**
-   * Get the n most recently-posted recipes.
+   * Get the n most-recently published recipes.
    */
   def getMostRecent(n: Int): Seq[Recipe] = {
     SQL("""
         select * from Recipe r
+        where r.publishedAt is not null
         order by r.modifiedAt desc
         limit {n}
         """)

@@ -1,3 +1,5 @@
+import java.util.Date
+import models.Recipe
 import play.jobs.{OnApplicationStart, Job}
 
 @OnApplicationStart class BootStrap extends Job {
@@ -14,6 +16,12 @@ import play.jobs.{OnApplicationStart, Job}
           case r:  Recipe => Recipe.create(r)
           case i:  Ingredient => Ingredient.create(i)
         }
+      }
+
+      // SnakeYAML can't handle Option[Date]s, so hand-publish each recipe.
+      val date = new Date()
+      Recipe.find().list() foreach { recipe =>
+        Recipe.update(recipe.copy(publishedAt = Some(date)))
       }
     }
   }
