@@ -70,6 +70,7 @@ object OAuth extends Controller with RenderCachedUser with Secure {
               twAccessTokenSecret = Some(accessToken.getTokenSecret()))
             User.update(newUser)
             Cache.set(UserObjKey, newUser, "30mn")
+            Cache.delete(TwAccessTokenCacheKey)
             Cache.delete(TwIfaceCacheKey)
             Action(Accounts.edit)
           }
