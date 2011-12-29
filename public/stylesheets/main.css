@@ -224,10 +224,13 @@ div.actions button.cancel {
  * Login page.
  */
 div.login {
-  margin: 0 auto;
-  padding: 16px 0;
+  margin: 22px auto;
+  padding: 24px 48px;
   width: 600px;
   text-align: center;
+  background-color: #f7f6f5;
+  border-radius: 4px;
+  box-shadow: 1px 1px 2px #666;
 }
 
 div.login a.brand {
