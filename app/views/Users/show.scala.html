@@ -11,25 +11,44 @@
 )
 
 @import controllers._
+@import java.text.DateFormat
 
 @main(title = user.fullname) {
-  <div id="userinfo">
-    <h1>@user.fullname</h1>
-    @account.location.map { location =>
-    <p class="location">@location</p>
-    }
-  </div>
+  <div class="row">
+    <div class="span10">
+      <div id="userinfo">
+        <h1>@user.fullname</h1>
+        <dl>
+        @account.location.map { location =>
+          <dt>Location</dt>
+          <dd>@location</dd>
+        }
+        @account.url.map { url =>
+          <dt>Website</dt>
+          <dd>@url</dd>
+        }
+        <dt>Member since</dt>
+        <dd>@DateFormat.getDateInstance.format(user.createdAt)</dd>
+      </div>
 
-  <h2>Recipes</h2>
-  @if(recipes.isEmpty) {
-  <p>
-    You haven't written any recipes yet! <a href="@action(Recipes.neue())" title="Create a new recipe">Go start one now!</a>
-  </p>
-  } else {
-  <ul>
-    @for(recipe <- recipes) {
-    <li><a href="@action(Recipes.show(user.id(), recipe.slug))">@recipe.title</a></li>
-    }
-  </ul>
-  }
+      <h2>Recipes</h2>
+      @if(recipes.isEmpty) {
+        <p>
+          You haven't written any recipes yet. <a href="@action(Recipes.neue())" title="Create a new recipe">Go start one now!</a>
+        </p>
+      } else {
+        <ul>
+          @for(recipe <- recipes) {
+            <li><a href="@action(Recipes.show(user.id(), recipe.slug))">@recipe.title</a></li>
+          }
+        </ul>
+      }
+    </div>
+
+    <div class="span6">
+      <div class="well">
+        <a class="btn primary" href="@action(Recipes.neue())">Create a new recipe</a>
+      </div>
+    </div>
+  </div>
 }
