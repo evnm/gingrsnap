@@ -9,9 +9,8 @@ import play.jobs.{OnApplicationStart, Job}
 
     // Import initial data if the database is empty.
     if (GingrsnapUser.count().single() == 0) {
-      Yaml[List[Any]]("init-data.yml") foreach { blob =>
-        println("blob: " + blob)
-        blob match {
+      Yaml[List[Any]]("init-data.yml") foreach {
+        _ match {
           case u:  GingrsnapUser => GingrsnapUser.create(u)
           case p:  Account => Account.create(p)
           case r:  Recipe => Recipe.create(r)
