@@ -13,4 +13,3 @@ server.pid
 dist/
 bin/
 data/
-db/
