@@ -1,21 +1,39 @@
 package models
 
-import java.util.Date
+import java.sql.Timestamp
 import play.db.anorm._
 import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm.SqlParser._
+import scala.reflect.Manifest
 
 case class Ingredient(
   id: Pk[Long],
   name: String,
   recipeId: Long,
-  createdAt: Date
+  createdAt: Timestamp
 )
 
 object Ingredient extends Magic[Ingredient] {
+  override def extendExtractor[C](f:(Manifest[C] =>
+    Option[ColumnTo[C]]), ma:Manifest[C]):Option[ColumnTo[C]] = (ma match {
+    case m if m == Manifest.classType(classOf[Timestamp]) =>
+      Some(rowToTimestamp)
+    case _ => None
+  }).asInstanceOf[Option[ColumnTo[C]]]
+
+  def rowToTimestamp: Column[Timestamp] = {
+    Column[Timestamp](transformer = { (value, meta) =>
+      val MetaDataItem(qualified, nullable, clazz) = meta
+      value match {
+        case time:java.sql.Timestamp => Right(time)
+        case _ => Left(TypeDoesNotMatch("Cannot convert " + value + " to Timestamp for column " + qualified))
+      }
+    })
+  }
+
   def apply(name: String, recipeId: Long) =
-    new Ingredient(NotAssigned, name, recipeId, new Date())
+    new Ingredient(NotAssigned, name, recipeId, new Timestamp(System.currentTimeMillis()))
 
   /**
    * Create a set of ingredients associated with a given recipe.

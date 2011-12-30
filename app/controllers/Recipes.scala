@@ -1,10 +1,10 @@
 package controllers
 
 import collection.JavaConversions._
-import Constants.UserObjKey
-import java.util.Date
+import Constants.GingrsnapUserObjKey
+import java.sql.Timestamp
 import markdown.Markdown
-import models.{Ingredient, Recipe, User}
+import models.{Ingredient, Recipe, GingrsnapUser}
 import play._
 import play.cache.Cache
 import play.data.validation.Validation
@@ -13,7 +13,7 @@ import play.mvc._
 import scala.collection.JavaConversions._
 import secure.NonSecure
 
-object Recipes extends Controller with RenderCachedUser with Secure {
+object Recipes extends Controller with RenderCachedGingrsnapUser with Secure {
   import views.Recipes.html
 
   /**
@@ -47,7 +47,7 @@ object Recipes extends Controller with RenderCachedUser with Secure {
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: Option[String] = None
   ) = {
-    val user = Cache.get[User](UserObjKey).get
+    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
     html.neue(
       user.id(),
       title.getOrElse(""),
@@ -99,7 +99,7 @@ object Recipes extends Controller with RenderCachedUser with Secure {
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: Option[String] = None
   ) = {
-    val user = Cache.get[User](UserObjKey).get
+    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
     Recipe.getById(recipeId) match {
       case Some(recipe) => {
         if (recipe.authorId != user.id()) {
@@ -135,7 +135,7 @@ object Recipes extends Controller with RenderCachedUser with Secure {
     recipeBody: String,
     isPublished: Boolean
   ) = {
-    val user = Cache.get[User](UserObjKey).get
+    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
     Recipe.getById(recipeId) match {
       case Some(recipe) => {
         if (recipe.authorId != user.id()) {
@@ -151,13 +151,13 @@ object Recipes extends Controller with RenderCachedUser with Secure {
               ingredients,
               recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody))
           } else {
-            val date = new Date()
+            val timestamp = new Timestamp(System.currentTimeMillis())
             Recipe.update(
               recipe.copy(
                 title = title,
                 slug = slug,
-                modifiedAt = date,
-                publishedAt = if (isPublished) Some(date) else None,
+                modifiedAt = timestamp,
+                publishedAt = if (isPublished) Some(timestamp) else None,
                 body = recipeBody))
 
             // Update recipe's ingredient list.
@@ -185,7 +185,7 @@ object Recipes extends Controller with RenderCachedUser with Secure {
    * Fork a recipe (i.e. copy it to another user's account).
    */
   def fork(recipeId: Long): java.lang.Object = {
-    val user = Cache.get[User](UserObjKey).get
+    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
     _fork(recipeId, user.id())
   }
 
@@ -204,13 +204,13 @@ object Recipes extends Controller with RenderCachedUser with Secure {
         flash += ("warning" -> "You can't fork that recipe because you already have one by the same name.")
         Application.index
       } else {
-        val date = new Date()
+        val timestamp = new Timestamp(System.currentTimeMillis())
         Recipe.create(
           recipe.copy(
             id = play.db.anorm.NotAssigned,
             authorId = userId,
-            createdAt = date,
-            modifiedAt = date,
+            createdAt = timestamp,
+            modifiedAt = timestamp,
             parentRecipe = Some(recipeId)
           ),
           Ingredient.getByRecipeId(recipeId) map { _.name }
@@ -243,7 +243,7 @@ object Recipes extends Controller with RenderCachedUser with Secure {
         userId,
         ingredients map { _.name },
         Markdown.transformMarkdown(recipe.body),
-        Cache.get[User](UserObjKey))
+        Cache.get[GingrsnapUser](GingrsnapUserObjKey))
     } getOrElse {
       NotFound("No such recipe")
     }

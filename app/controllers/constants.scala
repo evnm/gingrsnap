@@ -5,8 +5,8 @@ object Constants {
   val TwIfaceCacheKey = "twitterIface"
   val TwRequestTokenCacheKey = "twRequestToken"
   val TwAccessTokenCacheKey = "twAccessToken"
-  val TwUserObjCacheKey = "twUserObj"
+  val TwUserObjCacheKey = "twGingrsnapUserObj"
 
-  val UserObjKey = "userObj"
+  val GingrsnapUserObjKey = "userObj"
   val AccountObjKey = "accountObj"
 }

@@ -13,7 +13,7 @@
 )
 
 @import controllers._
-@import controllers.Constants.UserObjKey
+@import controllers.Constants.GingrsnapUserObjKey
 
 @main(title = "Your account") {
   <div class="row">
@@ -25,14 +25,14 @@
           <div class="clearfix">
             <label for="fullname">Name</label>
             <div class="input">
-              <input class="xlarge" id="fullname" name="fullname" type="text" value="@renderArgs.get(UserObjKey, classOf[Option[models.User]]).get.fullname" />
+              <input class="xlarge" id="fullname" name="fullname" type="text" value="@renderArgs.get(GingrsnapUserObjKey, classOf[Option[models.GingrsnapUser]]).get.fullname" />
             </div>
           </div>
 
           <div class="clearfix">
             <label for="emailAddr">Email Address</label>
             <div class="input">
-              <input class="xlarge" id="emailAddr" name="emailAddr" type="text" value="@renderArgs.get(UserObjKey, classOf[Option[models.User]]).get.emailAddr"/>
+              <input class="xlarge" id="emailAddr" name="emailAddr" type="text" value="@renderArgs.get(GingrsnapUserObjKey, classOf[Option[models.GingrsnapUser]]).get.emailAddr"/>
             </div>
           </div>
 

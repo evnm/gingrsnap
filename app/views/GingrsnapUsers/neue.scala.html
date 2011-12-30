@@ -61,7 +61,7 @@
         @if(twAccessToken.isEmpty && twAccessTokenSecret.isEmpty) {
           <p><a class="btn primary" href="@action(OAuth.authenticate("twitter"))">Sign up with Twitter&raquo;</a></p>
         } else {
-          <p><a class="btn" href="@action(Users.neue)">Don't connect with Twitter</a></p>
+          <p><a class="btn" href="@action(GingrsnapUsers.neue)">Don't connect with Twitter</a></p>
         }
       </div>
     </div>

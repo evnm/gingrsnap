@@ -13,7 +13,7 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
-@import controllers.Constants.UserObjKey
+@import controllers.Constants.GingrsnapUserObjKey
 
 @main(title = "Editing \"" + title + "\"") {
   @views.Recipes.html.form(userId, Some(recipeId), title, slug, ingredients, recipeBody)

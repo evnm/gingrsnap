@@ -4,7 +4,7 @@
   authorId: Long,
   ingredients: Seq[String],
   bodyHtml: String,
-  userOpt: Option[models.User]
+  userOpt: Option[models.GingrsnapUser]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -30,8 +30,8 @@
 
     <div class="span6">
       <div class="well">
-        @userOpt.map { connectedUser =>
-          @if(connectedUser.id() == authorId) {
+        @userOpt.map { connectedGingrsnapUser =>
+          @if(connectedGingrsnapUser.id() == authorId) {
             <a class="btn" href="@action(Recipes.edit(recipeId))">Edit this recipe</a>
           } else {
             <a class="btn" href="@action(Recipes.fork(recipeId))">Fork this recipe</a>

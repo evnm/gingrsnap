@@ -17,6 +17,7 @@ a:hover {
 h1, h2 {
   text-shadow: 0 2px rgba(212, 212, 212, .5);
   -webkit-font-smoothing: antialiased;
+  letter-spacing: -.05em;
 }
 
 h2 {

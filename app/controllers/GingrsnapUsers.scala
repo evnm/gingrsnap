@@ -1,7 +1,7 @@
 package controllers
 
 import java.util.Date
-import models.{Account, Recipe, User}
+import models.{Account, Recipe, GingrsnapUser}
 import play._
 import play.cache.Cache
 import play.mvc.Controller
@@ -11,17 +11,17 @@ import secure.{PasswordCredential, Security}
 import twitter4j.{User => TwUser}
 import twitter4j.auth.{AccessToken => TwAccessToken}
 
-object Users extends Controller with RenderCachedUser {
+object GingrsnapUsers extends Controller with RenderCachedGingrsnapUser {
   import Constants.{TwAccessTokenCacheKey, TwUserObjCacheKey}
-  import views.Users.html
+  import views.GingrsnapUsers.html
 
   /**
    * Handles GET to signup page.
    */
   def neue() = Cache.get[TwAccessToken](TwAccessTokenCacheKey) match {
     case Some(twAccessToken) => {
-      val (fullname, location, imgUrl) = Cache.get[TwUser](TwUserObjCacheKey) map { twUser =>
-        (twUser.getName(), twUser.getLocation(), twUser.getProfileImageURL().toString)
+      val (fullname, location, imgUrl) = Cache.get[TwUser](TwUserObjCacheKey) map { twGingrsnapUser =>
+        (twGingrsnapUser.getName(), twGingrsnapUser.getLocation(), twGingrsnapUser.getProfileImageURL().toString)
       } getOrElse(("", "", ""))
 
       html.neue(fullname, location, imgUrl,
@@ -43,7 +43,7 @@ object Users extends Controller with RenderCachedUser {
     Validation.email("emailAddr", emailAddr).message("Must provide a valid email address")
     Validation.isTrue(
       "emailAddr",
-      User.count("emailAddr = {emailAddr}").on("emailAddr" -> emailAddr).single() == 0
+      GingrsnapUser.count("emailAddr = {emailAddr}").on("emailAddr" -> emailAddr).single() == 0
     ).message("Email address has already been registered")
     Validation.required("password", password).message("Password is required")
 
@@ -56,7 +56,7 @@ object Users extends Controller with RenderCachedUser {
       Cache.delete(TwAccessTokenCacheKey)
       Cache.delete(TwUserObjCacheKey)
 
-      User.create(User(emailAddr, password, fullname, twToken, twSecret)).e match {
+      GingrsnapUser.create(GingrsnapUser(emailAddr, password, fullname, twToken, twSecret)).e match {
         case Right(user) => {
           Account.create(Account(user.id()))
           Authentication.authenticate(emailAddr, PasswordCredential(password))
@@ -75,13 +75,13 @@ object Users extends Controller with RenderCachedUser {
   /**
    * Show a user's profile
    */
-  def show(userId: Long) = User.getById(userId) map { user =>
-    val (publishedRecipes, drafts) = Recipe.getByUserId(user.id()).partition { recipe =>
+  def show(userId: Long) = GingrsnapUser.getById(userId) map { user =>
+    val (publishedRecipes, drafts) = Recipe.getByGingrsnapUserId(user.id()).partition { recipe =>
       recipe.publishedAt.isDefined
     }
     html.show(
       user,
-      Account.getByUserId(user.id()).get,
+      Account.getByGingrsnapUserId(user.id()).get,
       publishedRecipes,
       drafts)
   } getOrElse {

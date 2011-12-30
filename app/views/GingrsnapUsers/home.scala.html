@@ -1,7 +1,7 @@
 @(
-  user: models.User,
+  user: models.GingrsnapUser,
   usersRecipes: Seq[models.Recipe],
-  recipeFeed: Seq[(models.Recipe, models.User)]
+  recipeFeed: Seq[(models.Recipe, models.GingrsnapUser)]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -20,7 +20,7 @@
       <ol class="recipe-feed">
         @recipeFeed.map { case (recipe, author) =>
           <li>
-            <a href="@action(Users.show(author.id()))">@author.fullname</a>
+            <a href="@action(GingrsnapUsers.show(author.id()))">@author.fullname</a>
             created
             <a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a>
             on

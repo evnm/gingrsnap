@@ -1,25 +1,43 @@
 package models
 
-import java.util.Date
+import java.sql.Timestamp
 import play.db.anorm._
 import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm.SqlParser._
 import play.utils.Scala.MayErr
+import scala.reflect.Manifest
 
 case class Recipe(
   id: Pk[Long],
   title: String,
   slug: String,
   authorId: Long, // TODO: Change to ownerId?
-  createdAt: Date,
-  modifiedAt: Date,
-  publishedAt: Option[Date],
+  createdAt: Timestamp,
+  modifiedAt: Timestamp,
+  publishedAt: Option[Timestamp],
   body: String,
   parentRecipe: Option[Long] = None
 )
 
 object Recipe extends Magic[Recipe] {
+  override def extendExtractor[C](f:(Manifest[C] =>
+    Option[ColumnTo[C]]), ma:Manifest[C]):Option[ColumnTo[C]] = (ma match {
+    case m if m == Manifest.classType(classOf[Timestamp]) =>
+      Some(rowToTimestamp)
+    case _ => None
+  }).asInstanceOf[Option[ColumnTo[C]]]
+
+  def rowToTimestamp: Column[Timestamp] = {
+    Column[Timestamp](transformer = { (value, meta) =>
+      val MetaDataItem(qualified, nullable, clazz) = meta
+      value match {
+        case time:java.sql.Timestamp => Right(time)
+        case _ => Left(TypeDoesNotMatch("Cannot convert " + value + " to Timestamp for column " + qualified))
+      }
+    })
+  }
+
   def apply(
     title: String,
     slug: String,
@@ -27,15 +45,15 @@ object Recipe extends Magic[Recipe] {
     body: String,
     isPublished: Boolean
   ) = {
-    val date = new Date()
+    val timestamp = new Timestamp(System.currentTimeMillis())
     new Recipe(
       NotAssigned,
       title,
       slug,
       authorId,
-      createdAt = date,
-      modifiedAt = date,
-      publishedAt = if (isPublished) Some(date) else None,
+      createdAt = timestamp,
+      modifiedAt = timestamp,
+      publishedAt = if (isPublished) Some(timestamp) else None,
       body = body)
   }
 
@@ -52,10 +70,10 @@ object Recipe extends Magic[Recipe] {
   }
 
   /**
-   * Get the n most-recently published recipes with associated Users.
+   * Get the n most-recently published recipes with associated GingrsnapUsers.
    */
-  def getMostRecentWithAuthors(n: Int): Seq[(Recipe, User)] = getMostRecent(n) map { recipe =>
-    (recipe, User.getById(recipe.authorId).get)
+  def getMostRecentWithAuthors(n: Int): Seq[(Recipe, GingrsnapUser)] = getMostRecent(n) map { recipe =>
+    (recipe, GingrsnapUser.getById(recipe.authorId).get)
   }
 
   /**
@@ -78,7 +96,7 @@ object Recipe extends Magic[Recipe] {
   /**
    * Get all of a user's recipes.
    */
-  def getByUserId(userId: Long): Seq[Recipe] =
+  def getByGingrsnapUserId(userId: Long): Seq[Recipe] =
     Recipe.find("authorId = {userId}").on("userId" -> userId).list()
 
   /**

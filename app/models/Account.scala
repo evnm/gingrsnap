@@ -11,7 +11,7 @@ object Account extends Magic[Account] {
   /**
    * Get an account object by the associated user's id.
    */
-  def getByUserId(userId: Long) =
+  def getByGingrsnapUserId(userId: Long) =
     Account.find("userId = {userId}").on("userId" -> userId).first()
 }
 

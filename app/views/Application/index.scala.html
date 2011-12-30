@@ -1,5 +1,5 @@
 @(
-  mostRecentRecipes: Seq[(models.Recipe, models.User)]
+  mostRecentRecipes: Seq[(models.Recipe, models.GingrsnapUser)]
 )(
   implicit
   renderArgs: play.mvc.Scope.RenderArgs = null, // This is a hack
@@ -17,7 +17,7 @@
       <ol class="recipe-feed">
         @mostRecentRecipes.map { case (recipe, author) =>
           <li>
-            <a href="@action(Users.show(author.id()))">@author.fullname</a>
+            <a href="@action(GingrsnapUsers.show(author.id()))">@author.fullname</a>
             created
             <a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a>
             on
@@ -29,7 +29,7 @@
     <div class="span6">
       <div class="well">
         <div class="hero-unit">
-          <a class="btn large primary" href="@action(Users.neue)">Create an account</a>
+          <a class="btn large primary" href="@action(GingrsnapUsers.neue)">Create an account</a>
           <p>This is some copy explaining the benefit of signing up for Gingrsnap.</p>
         </div>
       </div>

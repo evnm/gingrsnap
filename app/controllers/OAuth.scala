@@ -1,7 +1,7 @@
 package controllers
 
 import java.lang.IllegalStateException
-import models.User
+import models.GingrsnapUser
 import play._
 import play.cache.Cache
 import play.mvc._
@@ -12,7 +12,7 @@ import twitter4j.auth.RequestToken
 /**
  * OAuth endpoint controller. Doesn't render any views.
  */
-object OAuth extends Controller with RenderCachedUser with Secure {
+object OAuth extends Controller with RenderCachedGingrsnapUser with Secure {
   import Constants._
 
   val callbackUrl = "http://localhost:9000/oauth/twitter"
@@ -53,7 +53,7 @@ object OAuth extends Controller with RenderCachedUser with Secure {
     } else {
       val accessToken = twitterIface.getOAuthAccessToken(requestToken, oauth_verifier)
       Cache.delete(TwRequestTokenCacheKey);
-      val user = User.getByTwAuth(accessToken)
+      val user = GingrsnapUser.getByTwAuth(accessToken)
 
       if (user.isDefined) {
         // If user with oauth creds is in db, log them in.
@@ -62,14 +62,14 @@ object OAuth extends Controller with RenderCachedUser with Secure {
         }
         Action(Application.index)
       } else {
-        Cache.get[User](Constants.UserObjKey) match {
-          case Some(user: User) => {
-            // User is connected, so add the Twitter connection.
-            val newUser = user.copy(
+        Cache.get[GingrsnapUser](Constants.GingrsnapUserObjKey) match {
+          case Some(user: GingrsnapUser) => {
+            // GingrsnapUser is connected, so add the Twitter connection.
+            val newGingrsnapUser = user.copy(
               twAccessToken = Some(accessToken.getToken()),
               twAccessTokenSecret = Some(accessToken.getTokenSecret()))
-            User.update(newUser)
-            Cache.set(UserObjKey, newUser, "30mn")
+            GingrsnapUser.update(newGingrsnapUser)
+            Cache.set(GingrsnapUserObjKey, newGingrsnapUser, "30mn")
             Cache.delete(TwAccessTokenCacheKey)
             Cache.delete(TwIfaceCacheKey)
             Action(Accounts.edit)
@@ -79,7 +79,7 @@ object OAuth extends Controller with RenderCachedUser with Secure {
             Cache.set(TwAccessTokenCacheKey, accessToken, "15mn")
             Cache.set(TwUserObjCacheKey, twitterIface.verifyCredentials(), "15mn")
             Cache.delete(TwIfaceCacheKey)
-            Action(Users.neue)
+            Action(GingrsnapUsers.neue)
           }
         }
       }
@@ -103,10 +103,10 @@ object OAuth extends Controller with RenderCachedUser with Secure {
   }
 
   protected[this] def revokeTwitter() = {
-    val user = Cache.get[User](Constants.UserObjKey).get
-    val newUser = user.copy(twAccessToken = None, twAccessTokenSecret = None)
-    User.update(newUser)
-    Cache.set(UserObjKey, newUser, "30mn")
+    val user = Cache.get[GingrsnapUser](Constants.GingrsnapUserObjKey).get
+    val newGingrsnapUser = user.copy(twAccessToken = None, twAccessTokenSecret = None)
+    GingrsnapUser.update(newGingrsnapUser)
+    Cache.set(GingrsnapUserObjKey, newGingrsnapUser, "30mn")
     Action(Accounts.edit)
   }
 }

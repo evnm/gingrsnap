@@ -1,7 +1,7 @@
 package controllers
 
-import Constants.{AccountObjKey, UserObjKey}
-import models.{Account, User}
+import Constants.{AccountObjKey, GingrsnapUserObjKey}
+import models.{Account, GingrsnapUser}
 import play._
 import play.cache.Cache
 import play.data.validation.Validation
@@ -10,16 +10,16 @@ import play.libs.Crypto
 import play.mvc._
 import secure._
 
-object Accounts extends Controller with RenderCachedUser with Secure {
+object Accounts extends Controller with RenderCachedGingrsnapUser with Secure {
   import views.Accounts.html
 
   /**
    * GET request to /account. Handles display of account editing form.
    */
   def edit() = {
-    val user = Cache.get[User](UserObjKey).get
+    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
     val account = Cache.get[Account](AccountObjKey).getOrElse {
-      Account.getByUserId(user.id()).get
+      Account.getByGingrsnapUserId(user.id()).get
     }
     Cache.add(AccountObjKey, account, "30mn")
     html.edit(
@@ -41,9 +41,9 @@ object Accounts extends Controller with RenderCachedUser with Secure {
     oldPassword: String,
     newPassword: String
   ) = {
-    val user = Cache.get[User](UserObjKey).get
+    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
     val account = Cache.get[Account](AccountObjKey).getOrElse {
-      Account.getByUserId(user.id()).get
+      Account.getByGingrsnapUserId(user.id()).get
     }
     Cache.add(AccountObjKey, account, "30mn")
 
@@ -51,7 +51,7 @@ object Accounts extends Controller with RenderCachedUser with Secure {
       Validation.email("emailAddr", emailAddr).message("Must provide a valid email address")
       Validation.isTrue(
         "emailAddr",
-        User.count("emailAddr = {emailAddr}").on("emailAddr" -> emailAddr).single() == 0
+        GingrsnapUser.count("emailAddr = {emailAddr}").on("emailAddr" -> emailAddr).single() == 0
       ).message("Email address has already been registered")
     }
 
@@ -65,12 +65,12 @@ object Accounts extends Controller with RenderCachedUser with Secure {
         .message("Old password is required when updating to new one")
       Validation.isTrue(
         "oldPassword",
-        User.validatePassword(user, oldPassword)
+        GingrsnapUser.validatePassword(user, oldPassword)
       ).message("Old password is incorrect")
     }
 
     if (!Validation.hasErrors) {
-      val newUser = user.copy(
+      val newGingrsnapUser = user.copy(
         emailAddr = if (emailAddr.isEmpty) user.emailAddr else emailAddr,
         password =
           if (newPassword.isEmpty)
@@ -78,8 +78,8 @@ object Accounts extends Controller with RenderCachedUser with Secure {
           else
             Crypto.passwordHash(user.salt + newPassword),
         fullname = if (fullname.isEmpty) user.fullname else fullname)
-      User.update(newUser)
-      Cache.set(UserObjKey, newUser, "30mn")
+      GingrsnapUser.update(newGingrsnapUser)
+      Cache.set(GingrsnapUserObjKey, newGingrsnapUser, "30mn")
 
       val newLocation = if (location.isEmpty) None else Some(location)
       val newUrl = if (url.isEmpty) None else Some(url)

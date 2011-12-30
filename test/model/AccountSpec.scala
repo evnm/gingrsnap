@@ -1,4 +1,4 @@
-import models.{Account, User}
+import models.{Account, GingrsnapUser}
 import play.db.anorm._
 import play.test._
 import org.scalatest._
@@ -8,8 +8,8 @@ class AccountSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfterEa
   override def beforeEach() = Fixtures.deleteDatabase()
 
   it should "create and retrieve a Account" in {
-    // TODO: Uncouple this with User creation.
-    User.create(User(Id(0), "bob@gmail.com", "secret", "1", "Bob", new java.util.Date, None, None))
+    // TODO: Uncouple this with GingrsnapUser creation.
+    GingrsnapUser.create(GingrsnapUser(Id(0), "bob@gmail.com", "secret", "1", "Bob", new java.util.Date, None, None))
     Account.create(Account(NotAssigned, 0, Some("Mountain Ranch, CA")))
     val acct = Account.find("userId={userId}").on("userId" -> 0).first()
 

@@ -1,5 +1,5 @@
 import java.util.Date
-import models.{Ingredient, Recipe, User}
+import models.{Ingredient, Recipe, GingrsnapUser}
 import play.db.anorm._
 import play.test._
 import org.scalatest._
@@ -8,13 +8,13 @@ import org.scalatest.matchers._
 class RecipeSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfterEach {
   override def beforeEach() = {
     Fixtures.deleteDatabase()
-    User.create(User(Id(0), "bob@gmail.com", "secret", "1", "Bob", date, None, None))
+    GingrsnapUser.create(GingrsnapUser(Id(0), "bob@gmail.com", "secret", "1", "Bob", date, None, None))
   }
 
   val date = new Date(System.currentTimeMillis)
 
   it should "create and retrieve a Recipe" in {
-    // TODO: Uncouple this with User creation.
+    // TODO: Uncouple this with GingrsnapUser creation.
     val date = new java.util.Date
     Recipe.create(Recipe(NotAssigned, "foo pie", "foo-pie", 0, date, date, "junk"))
     val recipes = Recipe.find("authorId={id}").on("id" -> 0).as(Recipe*)
@@ -45,7 +45,7 @@ class RecipeSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfterEac
   it should "lookup by user id" in {
     Recipe.create(Recipe(Id(1), "Fish sticks", "fish-sticks", 0, date, date, "dems tasty"))
     Recipe.create(Recipe(Id(2), "Cow pies", "cow-pies", 0, date, date, "Buy a cow."))
-    val recipes = Recipe.getByUserId(0)
+    val recipes = Recipe.getByGingrsnapUserId(0)
 
     recipes should not be (Seq.empty)
     recipes(0).title should be ("Fish sticks")

@@ -38,8 +38,8 @@
       <div class="container">
         <a class="brand" href="@action(Application.index)">Gingrsnap</a>
         <ul class="nav secondary-nav">
-          @accountLinks(user: models.User) = {
-            <li><a href="@action(Users.show(user.id()))">@user.fullname</a></li>
+          @accountLinks(user: models.GingrsnapUser) = {
+            <li><a href="@action(GingrsnapUsers.show(user.id()))">@user.fullname</a></li>
             <li><a href="@action(Accounts.edit)">Account settings</a></li>
             <li><a href="@action(Authentication.logout)">Logout</a></li>
           }
@@ -47,8 +47,8 @@
             <li><a class="btn" href="@action(Authentication.login)">Login</a></li>
           }
           @if(renderArgs != null) {
-            @(renderArgs.get(Constants.UserObjKey) match {
-              case Some(user: models.User) => accountLinks(user)
+            @(renderArgs.get(Constants.GingrsnapUserObjKey) match {
+              case Some(user: models.GingrsnapUser) => accountLinks(user)
               case None => loginLink
             })
           }

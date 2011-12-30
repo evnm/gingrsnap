@@ -1,14 +1,14 @@
 # --- !Ups
 
 CREATE TABLE Ingredient (
-    id bigint(20) NOT NULL AUTO_INCREMENT,
+    id bigserial NOT NULL,
     name varchar(255) NOT NULL,
-    recipeId bigInt(20) NOT NULL,
-    createdAt date NOT NULL,
+    recipeId bigInt NOT NULL,
+    createdAt timestamp NOT NULL,
     FOREIGN KEY (recipeId) REFERENCES Recipe(id) ON DELETE CASCADE,
     PRIMARY KEY (id)
 );
 
 # --- !Downs
 
-DROP TABLE Ingredient;
+DROP TABLE Ingredient CASCADE;
