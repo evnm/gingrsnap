@@ -50,7 +50,7 @@ header {
 }
 
 .brand {
-  font: 32px Lobster;
+  font: 32px 'Lobster Two';
   color: #363636;
   text-shadow: 0 2px 0 rgba(150, 150, 150, .3);
   -webkit-font-smoothing: antialiased;
