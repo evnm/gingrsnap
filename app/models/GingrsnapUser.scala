@@ -1,6 +1,8 @@
 package models
 
+import controllers.Constants.{EmailToUserIdKey, GingrsnapUserObjKey}
 import java.sql.Timestamp
+import play.cache.Cache
 import play.db.anorm._
 import play.db.anorm._
 import play.db.anorm.defaults.Magic
@@ -63,24 +65,52 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
   }
 
   /**
+   * Overridden update method to update cache as well as underlying store.
+   */
+  override def update(user: GingrsnapUser) = {
+    Cache.set(userIdCacheKey(user.id()), user, "30mn")
+    super.update(user)
+  }
+
+  /**
    * Validates a user against a password string.
    */
   def validatePassword(user: GingrsnapUser, password: String): Boolean =
     user.password == Crypto.passwordHash(user.salt + password)
 
+  protected[this] def userIdCacheKey(userId: Long) = GingrsnapUserObjKey + ":" + userId
+
   /**
-   * Looks up a user by id. Optionally returns the looked-up user.
+   * Looks up a user by id. Caches and returns the looked-up user, if it exists.
    */
-  def getById(userId: Long) =
-    GingrsnapUser.find("id = {userId}").on("userId" -> userId).first()
+  def getById(userId: Long): Option[GingrsnapUser] = {
+    Cache.get[GingrsnapUser](userIdCacheKey(userId)) orElse {
+      GingrsnapUser.find("id = {userId}").on("userId" -> userId).first() map { user =>
+        Cache.set(userIdCacheKey(userId), user, "30mn")
+        user
+      }
+    }
+  }
+
+  protected[this] def emailToUserIdCacheKey(emailAddr: String) = EmailToUserIdKey + ":" + emailAddr
 
   /**
    * Looks up a user by email. Optionally returns the looked-up user.
    *
    * NOTE: Does not verify password.
    */
-  def getByEmail(emailAddr: String): Option[GingrsnapUser] =
-    GingrsnapUser.find("emailAddr = {e}").on("e" -> emailAddr).first()
+  def getByEmail(emailAddr: String): Option[GingrsnapUser] = {
+    Cache.get[java.lang.Long](emailToUserIdCacheKey(emailAddr)) match {
+      case Some(userId) => getById(userId.longValue)
+      case None => {
+        GingrsnapUser.find("emailAddr = {e}").on("e" -> emailAddr).first() map { user =>
+          Cache.set(emailToUserIdCacheKey(emailAddr), java.lang.Long.valueOf(user.id()), "30mn")
+          Cache.set(userIdCacheKey(user.id()), user, "30mn")
+          user
+        }
+      }
+    }
+  }
 
   /**
    * Looks up a user by email and verifies by password. Optionally returns

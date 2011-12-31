@@ -6,14 +6,13 @@ import java.sql.Timestamp
 import markdown.Markdown
 import models.{Ingredient, Recipe, GingrsnapUser}
 import play._
-import play.cache.Cache
 import play.data.validation.Validation
 import play.db.anorm.SqlRequestError
 import play.mvc._
 import scala.collection.JavaConversions._
 import secure.NonSecure
 
-object Recipes extends Controller with RenderCachedGingrsnapUser with Secure {
+object Recipes extends BaseController with Secure {
   import views.Recipes.html
 
   /**
@@ -47,7 +46,7 @@ object Recipes extends Controller with RenderCachedGingrsnapUser with Secure {
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: Option[String] = None
   ) = {
-    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
+    val user = GingrsnapUser.getByEmail(session.get("username")).get
     html.neue(
       user.id(),
       title.getOrElse(""),
@@ -99,7 +98,7 @@ object Recipes extends Controller with RenderCachedGingrsnapUser with Secure {
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: Option[String] = None
   ) = {
-    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
+    val user = GingrsnapUser.getByEmail(session.get("username")).get
     Recipe.getById(recipeId) match {
       case Some(recipe) => {
         if (recipe.authorId != user.id()) {
@@ -135,7 +134,7 @@ object Recipes extends Controller with RenderCachedGingrsnapUser with Secure {
     recipeBody: String,
     isPublished: Boolean
   ) = {
-    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
+    val user = GingrsnapUser.getByEmail(session.get("username")).get
     Recipe.getById(recipeId) match {
       case Some(recipe) => {
         if (recipe.authorId != user.id()) {
@@ -184,8 +183,8 @@ object Recipes extends Controller with RenderCachedGingrsnapUser with Secure {
   /**
    * Fork a recipe (i.e. copy it to another user's account).
    */
-  def fork(recipeId: Long): java.lang.Object = {
-    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
+  def fork(recipeId: Long): Any = {
+    val user = GingrsnapUser.getByEmail(session.get("username")).get
     _fork(recipeId, user.id())
   }
 
@@ -243,7 +242,7 @@ object Recipes extends Controller with RenderCachedGingrsnapUser with Secure {
         userId,
         ingredients map { _.name },
         Markdown.transformMarkdown(recipe.body),
-        Cache.get[GingrsnapUser](GingrsnapUserObjKey))
+        GingrsnapUser.getById(userId))
     } getOrElse {
       NotFound("No such recipe")
     }

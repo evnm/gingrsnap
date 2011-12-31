@@ -7,7 +7,7 @@
   errors: Map[String, play.data.validation.Error] = null
 )
 
-@if(errors || (flash != null && flash.get("error"))) {
+@if(errors.nonEmpty || (flash != null && flash.get("error"))) {
   <div class="alert-message error">
     <p><strong>@errorPrelude</strong></p>
     @for(err <- errors) {

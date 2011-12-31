@@ -51,6 +51,8 @@
               case Some(user: models.GingrsnapUser) => accountLinks(user)
               case None => loginLink
             })
+          } else {
+            @loginLink
           }
         </ul>
       </div>

@@ -10,18 +10,18 @@ import play.libs.Crypto
 import play.mvc._
 import secure._
 
-object Accounts extends Controller with RenderCachedGingrsnapUser with Secure {
+object Accounts extends BaseController with Secure {
   import views.Accounts.html
 
   /**
    * GET request to /account. Handles display of account editing form.
    */
   def edit() = {
-    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
+    val user = GingrsnapUser.getByEmail(session.get("username")).get
     val account = Cache.get[Account](AccountObjKey).getOrElse {
       Account.getByGingrsnapUserId(user.id()).get
     }
-    Cache.add(AccountObjKey, account, "30mn")
+    Cache.add(user.id() + ":" + AccountObjKey, account, "30mn")
     html.edit(
       user.fullname,
       user.emailAddr,
@@ -41,11 +41,11 @@ object Accounts extends Controller with RenderCachedGingrsnapUser with Secure {
     oldPassword: String,
     newPassword: String
   ) = {
-    val user = Cache.get[GingrsnapUser](GingrsnapUserObjKey).get
+    val user = GingrsnapUser.getByEmail(session.get("username")).get
     val account = Cache.get[Account](AccountObjKey).getOrElse {
       Account.getByGingrsnapUserId(user.id()).get
     }
-    Cache.add(AccountObjKey, account, "30mn")
+    Cache.add(user.id() + ":" + AccountObjKey, account, "30mn")
 
     if (emailAddr.nonEmpty && emailAddr != user.emailAddr) {
       Validation.email("emailAddr", emailAddr).message("Must provide a valid email address")
@@ -79,13 +79,13 @@ object Accounts extends Controller with RenderCachedGingrsnapUser with Secure {
             Crypto.passwordHash(user.salt + newPassword),
         fullname = if (fullname.isEmpty) user.fullname else fullname)
       GingrsnapUser.update(newGingrsnapUser)
-      Cache.set(GingrsnapUserObjKey, newGingrsnapUser, "30mn")
+      val userId = newGingrsnapUser.id()
 
       val newLocation = if (location.isEmpty) None else Some(location)
       val newUrl = if (url.isEmpty) None else Some(url)
-      val newAccount = Account(Id(account.id()), account.userId, newLocation, newUrl)
+      val newAccount = Account(Id(account.id()), userId, newLocation, newUrl)
       Account.update(newAccount)
-      Cache.set(AccountObjKey, newAccount, "30mn")
+      Cache.set(userId + ":" + AccountObjKey, newAccount, "30mn")
       flash.success("Saved.")
     }
 

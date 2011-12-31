@@ -11,7 +11,7 @@ import secure.{PasswordCredential, Security}
 import twitter4j.{User => TwUser}
 import twitter4j.auth.{AccessToken => TwAccessToken}
 
-object GingrsnapUsers extends Controller with RenderCachedGingrsnapUser {
+object GingrsnapUsers extends BaseController {
   import Constants.{TwAccessTokenCacheKey, TwUserObjCacheKey}
   import views.GingrsnapUsers.html
 

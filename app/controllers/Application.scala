@@ -5,10 +5,10 @@ import play._
 import play.cache.Cache
 import play.mvc.Controller
 
-object Application extends Controller with RenderCachedGingrsnapUser {
+object Application extends BaseController {
   def index = {
     val mostRecentRecipes = Recipe.getMostRecentWithAuthors(10)
-    Cache.get[GingrsnapUser](Constants.GingrsnapUserObjKey) match {
+    GingrsnapUser.getByEmail(session.get("username")) match {
       case Some(user: GingrsnapUser) => views.GingrsnapUsers.html.home(
         user,
         usersRecipes = Recipe.getByGingrsnapUserId(user.id()),
