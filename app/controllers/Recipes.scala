@@ -242,7 +242,7 @@ object Recipes extends BaseController with Secure {
         userId,
         ingredients map { _.name },
         Markdown.transformMarkdown(recipe.body),
-        GingrsnapUser.getById(userId))
+        GingrsnapUser.getByEmail(session.get("username")))
     } getOrElse {
       NotFound("No such recipe")
     }
