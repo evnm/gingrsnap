@@ -201,7 +201,7 @@ object Recipes extends BaseController with Secure {
         Application.index
       } else if (Recipe.getByAuthorIdAndSlug(userId, recipe.slug).isDefined) {
         flash += ("warning" -> "You can't fork that recipe because you already have one by the same name.")
-        Recipes.show(recipeId)
+        _show(recipeId)
       } else {
         val timestamp = new Timestamp(System.currentTimeMillis())
         Recipe.create(
@@ -237,7 +237,7 @@ object Recipes extends BaseController with Secure {
       case Some(recipe) => {
         if (recipe.authorId != user.id()) {
           flash += ("warning" -> "You can't delete recipes that aren't yours.")
-          Recipes.show(recipeId)
+          _show(recipeId)
         } else {
           Recipe.delete(recipeId)
           flash.success("Successfully deleted " + recipe.title + ".")
@@ -254,7 +254,7 @@ object Recipes extends BaseController with Secure {
   /**
    * Look up and show a recipe by recipeId.
    */
-  @NonSecure def show(recipeId: Long): java.lang.Object = Recipe.getById(recipeId) match {
+  protected[this] def _show(recipeId: Long): java.lang.Object = Recipe.getById(recipeId) match {
     case Some(recipe) => show(recipe.authorId, recipe.slug)
     case None => NotFound("No such recipe")
   }
