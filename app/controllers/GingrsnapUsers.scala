@@ -18,9 +18,11 @@ object GingrsnapUsers extends BaseController {
   /**
    * Handles GET to signup page.
    */
-  def neue() = Cache.get[TwAccessToken](TwAccessTokenCacheKey) match {
+  def neue() = Cache.get[TwAccessToken](OAuth.mkCacheKey(TwAccessTokenCacheKey)) match {
     case Some(twAccessToken) => {
-      val (fullname, location, imgUrl) = Cache.get[TwUser](TwUserObjCacheKey) map { twGingrsnapUser =>
+      val (fullname, location, imgUrl) = Cache.get[TwUser](
+        OAuth.mkCacheKey(TwUserObjCacheKey)
+      ) map { twGingrsnapUser =>
         (twGingrsnapUser.getName(), twGingrsnapUser.getLocation(), twGingrsnapUser.getProfileImageURL().toString)
       } getOrElse(("", "", ""))
 
@@ -50,11 +52,13 @@ object GingrsnapUsers extends BaseController {
     if (Validation.hasErrors) {
       neue()
     } else {
-      val (twToken, twSecret) = Cache.get[TwAccessToken](TwAccessTokenCacheKey) map { at =>
+      val (twToken, twSecret) = Cache.get[TwAccessToken](
+        OAuth.mkCacheKey(TwAccessTokenCacheKey)
+      ) map { at =>
         (Some(at.getToken()), Some(at.getTokenSecret()))
       } getOrElse((None, None))
-      Cache.delete(TwAccessTokenCacheKey)
-      Cache.delete(TwUserObjCacheKey)
+      Cache.delete(OAuth.mkCacheKey(TwAccessTokenCacheKey))
+      Cache.delete(OAuth.mkCacheKey(TwUserObjCacheKey))
 
       GingrsnapUser.create(GingrsnapUser(emailAddr, password, fullname, twToken, twSecret)).e match {
         case Right(user) => {

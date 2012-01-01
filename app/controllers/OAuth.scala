@@ -33,27 +33,35 @@ object OAuth extends BaseController with Secure {
     }
   }
 
+  private[controllers] def mkCacheKey(key: String) = key + ":" + session.getId()
+
   /**
    * Handles the OAuth dance of signing in with Twitter.
    */
   protected[this] def handleTwitter(oauth_token: String, oauth_verifier: String) = try {
     // TODO: Rework this based on session.getId().
-    val twitterIface = Cache.get(TwIfaceCacheKey).getOrElse {
+    val twitterIface = Cache.get(mkCacheKey(TwIfaceCacheKey)).getOrElse {
       new TwitterFactory().getInstance()
     }
-    Cache.add(TwIfaceCacheKey, twitterIface, "15mn")
+    Cache.add(
+      mkCacheKey(TwIfaceCacheKey),
+      twitterIface,
+      "15mn")
 
-    val requestToken: RequestToken = Cache.get(TwRequestTokenCacheKey).getOrElse {
+    val requestToken: RequestToken = Cache.get(mkCacheKey(TwRequestTokenCacheKey)).getOrElse {
       twitterIface.getOAuthRequestToken(callbackUrl)
     }
-    Cache.add(TwRequestTokenCacheKey, requestToken, "15mn")
+    Cache.add(
+      mkCacheKey(TwRequestTokenCacheKey),
+      requestToken,
+      "15mn")
 
     if (oauth_token.isEmpty && oauth_verifier.isEmpty) {
       // Set Twitter OAuth flow in motion.
       Redirect(requestToken.getAuthenticationURL())
     } else {
       val accessToken = twitterIface.getOAuthAccessToken(requestToken, oauth_verifier)
-      Cache.delete(TwRequestTokenCacheKey);
+      Cache.delete(mkCacheKey(TwRequestTokenCacheKey));
       val user = GingrsnapUser.getByTwAuth(accessToken)
 
       if (user.isDefined) {
@@ -61,6 +69,7 @@ object OAuth extends BaseController with Secure {
         user map { u =>
           Authentication.authenticate(u.emailAddr, TwAuthCredential(accessToken))
         }
+        Cache.delete(mkCacheKey(TwIfaceCacheKey))
         Action(Application.index)
       } else {
         val emailAddr = session.get("username")
@@ -73,14 +82,20 @@ object OAuth extends BaseController with Secure {
               twAccessTokenSecret = Some(accessToken.getTokenSecret())
             )
           )
-          Cache.delete(TwAccessTokenCacheKey)
-          Cache.delete(TwIfaceCacheKey)
+          Cache.delete(mkCacheKey(TwAccessTokenCacheKey))
+          Cache.delete(mkCacheKey(TwIfaceCacheKey))
           Action(Accounts.edit)
         } else {
           // Snag access token pair and redirect to signup page.
-          Cache.set(TwAccessTokenCacheKey, accessToken, "15mn")
-          Cache.set(TwUserObjCacheKey, twitterIface.verifyCredentials(), "15mn")
-          Cache.delete(TwIfaceCacheKey)
+          Cache.set(
+            mkCacheKey(TwAccessTokenCacheKey),
+            accessToken,
+            "15mn")
+          Cache.set(
+            mkCacheKey(TwUserObjCacheKey),
+            twitterIface.verifyCredentials(),
+            "15mn")
+          Cache.delete(mkCacheKey(TwIfaceCacheKey))
           Action(GingrsnapUsers.neue)
         }
       }
