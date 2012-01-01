@@ -10,24 +10,13 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
-@import controllers._
-@import java.text.DateFormat
+@import controllers.Recipes
 
 @main(title = "Your dashboard") {
   <div class="row">
     <div class="span10">
       <h1>Most recent recipes</h1>
-      <ol class="recipe-feed">
-        @recipeFeed.map { case (recipe, author) =>
-          <li>
-            <a href="@action(GingrsnapUsers.show(author.id()))">@author.fullname</a>
-            created
-            <a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a>
-            on
-            @DateFormat.getDateInstance.format(recipe.createdAt)
-          </li>
-        }
-      </ol>
+      @views.common.html.recipeFeed(recipeFeed)
     </div>
 
     <div class="span6">

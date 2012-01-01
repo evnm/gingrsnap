@@ -7,29 +7,16 @@
   errors: Map[String, play.data.validation.Error]
 )
 
-@import controllers._
-@import java.text.DateFormat
-
 @main("") {
   <div class="row">
     <div class="span10">
       <h1>Most recent recipes</h1>
-      <ol class="recipe-feed">
-        @mostRecentRecipes.map { case (recipe, author) =>
-          <li>
-            <a href="@action(GingrsnapUsers.show(author.id()))">@author.fullname</a>
-            created
-            <a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a>
-            on
-            @DateFormat.getDateInstance.format(recipe.createdAt)
-          </li>
-        }
-      </ol>
+      @views.common.html.recipeFeed(mostRecentRecipes)
     </div>
     <div class="span6">
       <div class="well">
         <div class="hero-unit">
-          <a class="btn large primary" href="@action(GingrsnapUsers.neue)">Create an account</a>
+          <a class="btn large primary" href="@action(controllers.GingrsnapUsers.neue)">Create an account</a>
           <p>This is some copy explaining the benefit of signing up for Gingrsnap.</p>
         </div>
       </div>
