@@ -2,7 +2,6 @@ lib/
 notes.txt
 logs/
 modules/
-out
 test-result/
 tmp/
 precompiled
@@ -11,3 +10,4 @@ server.pid
 dist/
 bin/
 data/
+TODO
