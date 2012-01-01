@@ -18,6 +18,7 @@
 @main(title) {
   <div class="row">
     <div class="span10">
+      <span id="recipe-id" style="display: none;">@recipeId</span>
       <h1>@title</h1>
       <h2>Ingredients</h2>
       <ul id="ingredients">
@@ -33,6 +34,7 @@
         @userOpt.map { connectedGingrsnapUser =>
           @if(connectedGingrsnapUser.id() == authorId) {
             <a class="btn" href="@action(Recipes.edit(recipeId))">Edit this recipe</a>
+            <a class="btn danger" id="delete-recipe">Delete this recipe</a>
           } else {
             <a class="btn" href="@action(Recipes.fork(recipeId))">Fork this recipe</a>
           }

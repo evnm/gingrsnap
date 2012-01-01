@@ -54,7 +54,7 @@ $(document).ready(function() {
 });
 
 /**
- * New recipe form logic.
+ * Recipe form logic.
  */
 $(document).ready(function() {
   // Initially focus on title and generate slug on unfocus.
@@ -121,6 +121,42 @@ $(document).ready(function() {
   });
 });
 
+/**
+ * Recipe show page logic.
+ */
+$(document).ready(function() {
+  // Delete recipe button.
+  $("a#delete-recipe").click(function(event) {
+    if (confirm("Are you sure you want to delete this recipe?")) {
+      var form = document.createElement("form");
+      form.style.display = "none";
+      this.parentNode.appendChild(form);
+      form.method = "POST";
+      form.action = "/recipe/delete/" + $("span#recipe-id").text();
+      form.submit();
+    }
+    event.preventDefault();
+  });
+});
+
+/**
+ * User show page logic.
+ */
+$(document).ready(function() {
+  // Delete draft button.
+  $("ul.draft-list a.close").click(function(event) {
+    if (confirm("Are you sure you want to delete this draft?")) {
+      var form = document.createElement("form");
+      form.style.display = "none";
+      this.parentNode.appendChild(form);
+      form.method = "POST";
+      // Get recipeId from prev span element.
+      form.action = "/recipe/delete/" + $(this).prev().text();
+      form.submit();
+    }
+    event.preventDefault();
+  });
+});
 
 /**
  * Account editing form.

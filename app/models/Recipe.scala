@@ -113,4 +113,15 @@ object Recipe extends Magic[Recipe] {
       .on("authorId" -> authorId, "slug" -> slug)
       .as(Recipe ~< Recipe.spanM(Ingredient) ^^ flatten ?)
   }
+
+  /**
+   * Deletes a recipe.
+   *
+   * TODO: Delete from cache, once recipes are cached.
+   */
+  def delete(recipeId: Long): Boolean = {
+    SQL("delete from Recipe where id = {recipeId}")
+      .on("recipeId" -> recipeId)
+      .execute()
+  }
 }

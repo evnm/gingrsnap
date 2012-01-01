@@ -197,11 +197,11 @@ object Recipes extends BaseController with Secure {
   protected[this] def _fork(recipeId: Long, userId: Long) = Recipe.getById(recipeId) match {
     case Some(recipe) => {
       if (recipe.authorId == userId) {
-        flash += ("warning" -> "Oops. You can't fork your own recipes.")
+        flash += ("warning" -> "You can't fork your own recipes.")
         Application.index
       } else if (Recipe.getByAuthorIdAndSlug(userId, recipe.slug).isDefined) {
         flash += ("warning" -> "You can't fork that recipe because you already have one by the same name.")
-        Application.index
+        Recipes.show(recipeId)
       } else {
         val timestamp = new Timestamp(System.currentTimeMillis())
         Recipe.create(
@@ -223,13 +223,44 @@ object Recipes extends BaseController with Secure {
       }
     }
     case None => {
-      flash += ("error" -> "The recipe you're trying to fork doesn't exist!")
+      flash += ("error" -> "The recipe you're trying to fork doesn't exist.")
       Application.index
     }
   }
 
   /**
-   * Look up a recipe by userId and recipe slug.
+   * Recipe deletion POST handler.
+   */
+  def delete(recipeId: Long) = {
+    val user = GingrsnapUser.getByEmail(session.get("username")).get
+    Recipe.getById(recipeId) match {
+      case Some(recipe) => {
+        if (recipe.authorId != user.id()) {
+          flash += ("warning" -> "You can't delete recipes that aren't yours.")
+          Recipes.show(recipeId)
+        } else {
+          Recipe.delete(recipeId)
+          flash.success("Successfully deleted " + recipe.title + ".")
+          Application.index
+        }
+      }
+      case None => {
+        flash += ("error" -> "The recipe you're trying to delete doesn't exist.")
+        Application.index
+      }
+    }
+  }
+
+  /**
+   * Look up and show a recipe by recipeId.
+   */
+  @NonSecure def show(recipeId: Long): java.lang.Object = Recipe.getById(recipeId) match {
+    case Some(recipe) => show(recipe.authorId, recipe.slug)
+    case None => NotFound("No such recipe")
+  }
+
+  /**
+   * Look up and show a recipe by userId and recipe slug.
    */
   @NonSecure def show(userId: Long, slug: String) = {
     // Store request url so we can redirect back in case user subsequently logs in.

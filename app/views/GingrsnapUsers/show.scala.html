@@ -51,9 +51,13 @@
         <a class="btn primary" href="@action(Recipes.neue())">Create a new recipe</a>
         @if(drafts.nonEmpty) {
           <h2>Drafts</h2>
-          <ul>
+          <ul class="draft-list">
             @for(draft <- drafts) {
-              <li><a href="@action(Recipes.edit(draft.id()))">@draft.title</a></li>
+              <li>
+                <a href="@action(Recipes.edit(draft.id()))">@draft.title</a>
+                <span id="recipe-id" style="display: none;">@draft.id()</span>
+                <a class="close" href="#">x</a>
+              </li>
             }
           </ul>
         }
