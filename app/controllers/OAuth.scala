@@ -15,7 +15,7 @@ import twitter4j.auth.RequestToken
 object OAuth extends BaseController with Secure {
   import Constants._
 
-  val callbackUrl = Play.configuration.get("application.baseUrl") + "oauth/twitter"
+  val callbackUrl = play.configuration("application.baseUrl") + "oauth/twitter"
 
   /**
    * Authenticate a user against an external service. (i.e. Twitter)
