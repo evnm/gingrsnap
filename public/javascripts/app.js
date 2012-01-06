@@ -58,7 +58,7 @@ $(document).ready(function() {
  */
 $(document).ready(function() {
   $("textarea.wysiwyg").wysiwyg({
-    initialContent: "",
+    initialContent: "<p></p>",
     autoGrow: true,
     rmUnusedControls: true,
     css: "/public/stylesheets/wysiwyg-editor.css",
