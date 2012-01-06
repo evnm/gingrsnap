@@ -1,0 +1,22 @@
+/**
+ * Style for recipe body form.
+ */
+
+* {
+  font-family: "Helvetic Neue", Helvetica,Arial,sans-serif;
+  color: #777;
+}
+
+p {
+  font-size: 14px;
+  line-height: 21px;
+  margin: 0 0 1.5em 0;
+}
+
+a {
+  color: #AC5D2F;
+  text-decoration: none;
+}
+
+
+
