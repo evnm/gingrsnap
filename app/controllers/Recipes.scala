@@ -3,7 +3,6 @@ package controllers
 import collection.JavaConversions._
 import Constants.GingrsnapUserObjKey
 import java.sql.Timestamp
-import markdown.Markdown
 import models.{Ingredient, Recipe, GingrsnapUser}
 import play._
 import play.data.validation.Validation
@@ -272,7 +271,7 @@ object Recipes extends BaseController with Secure {
         recipe.title,
         userId,
         ingredients map { _.name },
-        Markdown.transformMarkdown(recipe.body),
+        recipe.body,
         GingrsnapUser.getByEmail(session.get("username")))
     } getOrElse {
       NotFound("No such recipe")

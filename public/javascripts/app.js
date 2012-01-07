@@ -57,6 +57,20 @@ $(document).ready(function() {
  * Recipe form logic.
  */
 $(document).ready(function() {
+  $("textarea.wysiwyg").wysiwyg({
+    initialContent: "<p></p>",
+    autoGrow: true,
+    rmUnusedControls: true,
+    css: "/public/stylesheets/wysiwyg-editor.css",
+    controls: {
+      bold: { visible: true },
+      italic: { visible: true },
+      createLink: { visible: true },
+      insertUnorderedList: { visible: true },
+      insertOrderedList: { visible: true }
+    }
+  });
+
   // Initially focus on title and generate slug on unfocus.
   $("input#title").focus().blur(function() {
     $("input#slug").val(
