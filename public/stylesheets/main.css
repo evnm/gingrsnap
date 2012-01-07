@@ -119,6 +119,11 @@ ol.recipe-feed li {
   border-bottom: 1px solid #ddd;
 }
 
+.recipe-image {
+  display: block;
+  margin-bottom: 1em;
+}
+
 .well {
   background-color: #f7f5f3;
   padding: 16px;
@@ -178,6 +183,11 @@ input, textarea {
 input, textarea, .input-prepend .add-on, .input-append .add-on {
   padding: 6px;
 }
+
+input.input-file {
+  background-color: #F7F5F3;
+}
+
 .form-stacked {
   padding-left: 0px;
 }

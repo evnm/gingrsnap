@@ -4,6 +4,7 @@
   authorId: Long,
   ingredients: Seq[String],
   bodyHtml: String,
+  imageBaseUrlOpt: Option[String],
   userOpt: Option[models.GingrsnapUser]
 )(
   implicit
@@ -31,6 +32,11 @@
 
     <div class="span6">
       <div class="well">
+        @imageBaseUrlOpt.map { imageBaseUrl =>
+          <a class="recipe-image" href="@(imageBaseUrl + "_original")">
+            <img src="@(imageBaseUrl + "_thumbnail")" />
+          </a>
+        }
         @userOpt.map { connectedGingrsnapUser =>
           @if(connectedGingrsnapUser.id() == authorId) {
             <a class="btn" href="@action(Recipes.edit(recipeId))">Edit this recipe</a>

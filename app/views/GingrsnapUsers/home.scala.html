@@ -27,9 +27,11 @@
           <ul>
             @usersRecipes.map { recipe =>
               <li>
-                <a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a>
                 @if(recipe.publishedAt.isEmpty) {
-                  <span class="label">Draft</span>
+                <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
+                <span class="label">Draft</span>
+                } else {
+                  <a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a>
                 }
               </li>
             }

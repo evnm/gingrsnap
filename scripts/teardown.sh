@@ -9,5 +9,10 @@ pg_ctl -D /usr/local/var/postgres stop
 echo "Unsetting app-specific env variables..."
 unset DATABASE_URL
 
+echo "Unsetting AWS-related env variables..."
+unset AWS_ACCESS_KEY
+unset AWS_SECRET_KEY
+unset S3_BUCKET
+
 echo "Teardown complete!"
 

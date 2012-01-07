@@ -2,8 +2,9 @@ package controllers
 
 import collection.JavaConversions._
 import Constants.GingrsnapUserObjKey
+import java.io.File
 import java.sql.Timestamp
-import models.{Ingredient, Recipe, GingrsnapUser}
+import models.{Image, Ingredient, Recipe, RecipeImage, GingrsnapUser}
 import play._
 import play.data.validation.Validation
 import play.db.anorm.SqlRequestError
@@ -44,6 +45,7 @@ object Recipes extends BaseController with Secure {
     slug: Option[String] = None,
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: Option[String] = None
+
   ) = {
     val user = GingrsnapUser.getByEmail(session.get("username")).get
     html.neue(
@@ -63,15 +65,18 @@ object Recipes extends BaseController with Secure {
     authorId: Long,
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: String,
+    image: File,
     isPublished: Boolean
   ) = {
+    println("recipeBody: " + recipeBody)
     validateRecipe(title, slug, ingredients, recipeBody)
     if (Validation.hasErrors) {
       neue(Some(title), Some(slug), ingredients, Some(recipeBody))
     } else {
       Recipe.create(
         Recipe(title, slug, authorId, recipeBody, isPublished),
-        ingredients
+        ingredients,
+        if (image == null) None else Some(image)
       ).toOptionLoggingError map { recipe =>
         if (isPublished) {
           flash.success("Success! Your recipe has been published.")
@@ -95,7 +100,8 @@ object Recipes extends BaseController with Secure {
     title: Option[String] = None,
     slug: Option[String] = None,
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
-    recipeBody: Option[String] = None
+    recipeBody: Option[String] = None,
+    imageBaseUrl: Option[String] = None
   ) = {
     val user = GingrsnapUser.getByEmail(session.get("username")).get
     Recipe.getById(recipeId) match {
@@ -111,7 +117,8 @@ object Recipes extends BaseController with Secure {
             slug.getOrElse(recipe.slug),
             if (ingredients.isEmpty) Ingredient.getByRecipeId(recipeId) map { _.name }
             else ingredients,
-            recipeBody.getOrElse(recipe.body)
+            recipeBody.getOrElse(recipe.body),
+            imageBaseUrl orElse Image.getBaseUrlByRecipeId(recipeId)
           )
         }
       }
@@ -131,6 +138,7 @@ object Recipes extends BaseController with Secure {
     slug: String,
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: String,
+    image: File,
     isPublished: Boolean
   ) = {
     val user = GingrsnapUser.getByEmail(session.get("username")).get
@@ -147,20 +155,17 @@ object Recipes extends BaseController with Secure {
               title = if (title.isEmpty) None else Some(title),
               slug = if (slug.isEmpty) None else Some(slug),
               ingredients,
-              recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody))
+              recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody),
+              None)
           } else {
             val timestamp = new Timestamp(System.currentTimeMillis())
-            Recipe.update(
-              recipe.copy(
-                title = title,
-                slug = slug,
-                modifiedAt = timestamp,
-                publishedAt = if (isPublished) Some(timestamp) else None,
-                body = recipeBody))
-
-            // Update recipe's ingredient list.
-            Ingredient.deleteByRecipeId(recipeId)
-            Ingredient.createAllByRecipeId(recipeId, ingredients)
+            val newRecipe = recipe.copy(
+              title = title,
+              slug = slug,
+              modifiedAt = timestamp,
+              publishedAt = if (isPublished) Some(timestamp) else None,
+              body = recipeBody)
+            Recipe.update(newRecipe, ingredients, if (image == null) None else Some(image))
 
             if (isPublished) {
               flash.success("Success! Your recipe has been published.")
@@ -272,6 +277,7 @@ object Recipes extends BaseController with Secure {
         userId,
         ingredients map { _.name },
         recipe.body,
+        Image.getBaseUrlByRecipeId(recipe.id()),
         GingrsnapUser.getByEmail(session.get("username")))
     } getOrElse {
       NotFound("No such recipe")

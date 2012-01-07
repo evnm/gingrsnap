@@ -4,7 +4,8 @@
   title: String,
   slug: String,
   ingredients: java.util.List[String],
-  recipeBody: String
+  recipeBody: String,
+  imageBaseUrlOpt: Option[String] = None
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -16,5 +17,12 @@
 @import controllers.Constants.GingrsnapUserObjKey
 
 @main(title = "Editing \"" + title + "\"") {
-  @views.Recipes.html.form(userId, Some(recipeId), title, slug, ingredients, recipeBody)
+  @views.Recipes.html.form(
+    userId,
+    Some(recipeId),
+    title,
+    slug,
+    ingredients,
+    recipeBody,
+    imageBaseUrlOpt)
 }

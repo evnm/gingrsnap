@@ -1,5 +1,6 @@
 package models
 
+import java.io.File
 import java.sql.Timestamp
 import play.db.anorm._
 import play.db.anorm._
@@ -58,15 +59,49 @@ object Recipe extends Magic[Recipe] {
   }
 
   /**
-   * Create a recipe with a set of ingredient strings.
+   * Create a recipe with a set of ingredient strings and an optional image file.
    */
   def create(
-    recipe: Recipe, ingredients: Seq[String]
+    recipe: Recipe,
+    ingredients: Seq[String],
+    imageOpt: Option[File] = None
   ): MayErr[SqlRequestError, Recipe] = {
     Recipe.create(recipe) flatMap { createdRecipe =>
+      // Store the image, if provided.
+      imageOpt map { image =>
+        Image.create(image) map { createdImage =>
+          RecipeImage.create(RecipeImage(createdRecipe.id(), createdImage.id()))
+        }
+      }
       Ingredient.createAllByRecipeId(createdRecipe.id(), ingredients)
       MayErr(Right(createdRecipe))
     }
+  }
+
+  /**
+   * Update a recipe, replacing the ingredient list and optionally its associated image.
+   */
+  def update(
+    recipe: Recipe,
+    ingredients: Seq[String],
+    imageOpt: Option[File] = None
+  ): Unit = {
+    // Replace recipe's ingredient list.
+    Ingredient.deleteByRecipeId(recipe.id())
+    Ingredient.createAllByRecipeId(recipe.id(), ingredients)
+
+    imageOpt map { imageFile =>
+      // Delete old image if one exists.
+      Image.getByRecipeId(recipe.id()) map { oldImage =>
+        Image.delete(oldImage)
+        RecipeImage.delete(recipe.id(), oldImage.id())
+      }
+      Image.create(imageFile) map { createdImage =>
+        RecipeImage.create(RecipeImage(recipe.id(), createdImage.id()))
+      }
+    }
+
+    Recipe.update(recipe)
   }
 
   /**

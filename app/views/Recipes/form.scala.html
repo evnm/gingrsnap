@@ -4,10 +4,11 @@
   title: String,
   slug: String,
   ingredients: java.util.List[String],
-  recipeBody: String
+  recipeBody: String,
+  imageBaseUrlOpt: Option[String] = None
 )
 
-<form class="form-stacked" id="recipe-form" method="POST">
+<form class="form-stacked" id="recipe-form" method="POST" enctype="multipart/form-data">
   <input name="authorId" type="hidden" value="@userId" />
   @recipeId.map { rId =>
     <input name="recipeId" type="hidden" value="@rId" />
@@ -78,6 +79,20 @@
           <button class="btn cancel">Cancel</button>
         </div>
       </fieldset>
+    </div>
+    <div class="span6">
+      <div class="well">
+        @imageBaseUrlOpt.map { imageBaseUrl =>
+          <a class="recipe-image" href="@(imageBaseUrl + "_original")">
+            <img src="@(imageBaseUrl + "_thumbnail")" />
+          </a>
+          <label>Upload a different image</label>
+        }.getOrElse {
+          <label>Upload an image</label>
+        }
+        <input class="input-file" type="file" name="image" accept="image/gif,image/jpeg,image/jpg,image/png" />
+        <span class="help-block">JPEG, GIF, or PNG. Max size 1 MB.</span>
+      </div>
     </div>
   </div>
 </form>
