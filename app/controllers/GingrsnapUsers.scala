@@ -1,7 +1,7 @@
 package controllers
 
 import java.util.Date
-import models.{Account, Recipe, GingrsnapUser}
+import models.{Account, Image, Recipe, GingrsnapUser}
 import play._
 import play.cache.Cache
 import play.mvc.Controller
@@ -86,6 +86,7 @@ object GingrsnapUsers extends BaseController {
     html.show(
       user,
       Account.getByGingrsnapUserId(user.id()).get,
+      Image.getBaseUrlByUserId(userId),
       publishedRecipes,
       drafts)
   } getOrElse {
