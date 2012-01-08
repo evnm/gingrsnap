@@ -22,7 +22,7 @@ object Image extends Magic[Image] {
   def create(file: File) = {
     val key = UUID.randomUUID().toString()
     val thumbnail = File.createTempFile("thumbnail", null)
-    Images.resize(file, thumbnail, 300, -1)
+    Images.resize(file, thumbnail, 296, -1)
     Seq(
       ("original", file),
       ("thumbnail", thumbnail)
