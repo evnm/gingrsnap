@@ -82,16 +82,7 @@
     </div>
     <div class="span6">
       <div class="well">
-        @imageBaseUrlOpt.map { imageBaseUrl =>
-          <a class="recipe-image" href="@(imageBaseUrl + "_original")">
-            <img src="@(imageBaseUrl + "_thumbnail")" />
-          </a>
-          <label>Upload a different image</label>
-        }.getOrElse {
-          <label>Upload an image</label>
-        }
-        <input class="input-file" type="file" name="image" accept="image/gif,image/jpeg,image/jpg,image/png" />
-        <span class="help-block">JPEG, GIF, or PNG. Max size 1 MB.</span>
+        @views.common.html.imageUpload(imageBaseUrlOpt)
       </div>
     </div>
   </div>

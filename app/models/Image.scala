@@ -51,6 +51,32 @@ object Image extends Magic[Image] {
   }
 
   /**
+   * Get a photo associated with a user by the id of the user.
+   */
+  def getByUserId(userId: Long): Option[Image] = {
+    SQL("""
+        select * from Image i
+        join GingrsnapUserImage ri on i.id = ri.imageId
+        join GingrsnapUser r on ri.userId = r.id
+        where r.id = {userId}
+        """)
+      .on("userId" -> userId)
+      .as(Image ?)
+  }
+
+  /**
+   * Get the base url of a user image on s3.
+   */
+  def getBaseUrlByUserId(userId: Long): Option[String] = {
+    getByUserId(userId) map { image =>
+      "https://s3.amazonaws.com/%s.%s/%s".format(
+        play.configuration("application.name"),
+        play.configuration("application.mode"),
+        image.s3Key)
+    }
+  }
+
+  /**
    * Get a photo associated with a recipe by the id of the recipe.
    */
   def getByRecipeId(recipeId: Long): Option[Image] = {

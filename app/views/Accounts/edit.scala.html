@@ -3,7 +3,8 @@
   emailAddr: String,
   hasTwitterConnection: Boolean,
   location: String = "",
-  url: String = ""
+  url: String = "",
+  profileImageBaseUrlOpt: Option[String]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -16,10 +17,10 @@
 @import controllers.Constants.GingrsnapUserObjKey
 
 @main(title = "Your account") {
-  <div class="row">
-    <div class="span10">
-      <h1>Edit your account</h1>
-      <form id="edit-account" method="POST">
+  <form id="edit-account" class="form-stacked" method="POST" enctype="multipart/form-data">
+    <div class="row">
+      <div class="span10">
+        <h1>Edit your account</h1>
         <fieldset>
           <legend>Profile Info</legend>
           <div class="clearfix">
@@ -78,20 +79,28 @@
         <div class="actions">
           <input class="btn primary" type="submit" value="Submit"/>
         </div>
-	    </form>
-    </div>
+	    </div>
 
-    <div class="span6">
-      <div class="well">
-        <h2>Connections</h2>
-        @if(hasTwitterConnection) {
-          <div class="oauth-connection-badge">
-            <span class="twitter-icon">Twitter</span><a class="close" href="#">x</a>
-          </div>
-        } else {
-          <a class="btn primary" href="@action(OAuth.authenticate("twitter"))">Connect with Twitter&raquo;</a>
-        }
+      <div class="span6">
+        <div class="well">
+          <fieldset>
+            <legend>Picture</legend>
+            <p>Represent yourself to other Gingrsnap users. Your image will appear on your profile page and any recipes you create.</p>
+            @views.common.html.imageUpload(profileImageBaseUrlOpt)
+          </fieldset>
+          <fieldset>
+            <legend>Connections</legend>
+            <p>Connect to sign into Gingrsnap with your Twitter account and easily share recipes with your followers.</p>
+            @if(hasTwitterConnection) {
+              <div class="oauth-connection-badge">
+                <span class="twitter-icon">Twitter</span><a class="close" href="#">x</a>
+              </div>
+            } else {
+              <a class="btn primary" href="@action(OAuth.authenticate("twitter"))">Connect with Twitter&raquo;</a>
+            }
+          </fieldset>
+        </div>
       </div>
     </div>
-  </div>
+  </form>
 }

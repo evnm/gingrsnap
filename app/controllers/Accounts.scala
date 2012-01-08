@@ -1,7 +1,8 @@
 package controllers
 
 import Constants.{AccountObjKey, GingrsnapUserObjKey}
-import models.{Account, GingrsnapUser}
+import java.io.File
+import models.{Account, GingrsnapUser, Image}
 import play._
 import play.cache.Cache
 import play.data.validation.Validation
@@ -27,7 +28,8 @@ object Accounts extends BaseController with Secure {
       user.emailAddr,
       user.twAccessToken.isDefined && user.twAccessTokenSecret.isDefined,
       account.location.getOrElse(""),
-      account.url.getOrElse(""))
+      account.url.getOrElse(""),
+      Image.getBaseUrlByUserId(user.id()))
   }
 
   /*
@@ -39,7 +41,8 @@ object Accounts extends BaseController with Secure {
     location: String,
     url: String,
     oldPassword: String,
-    newPassword: String
+    newPassword: String,
+    image: File
   ) = {
     val user = GingrsnapUser.getByEmail(session.get("username")).get
     val account = Cache.get[Account](AccountObjKey).getOrElse {
@@ -84,7 +87,7 @@ object Accounts extends BaseController with Secure {
       val newLocation = if (location.isEmpty) None else Some(location)
       val newUrl = if (url.isEmpty) None else Some(url)
       val newAccount = Account(Id(account.id()), userId, newLocation, newUrl)
-      Account.update(newAccount)
+      Account.update(newAccount, if (image == null) None else Some(image))
       Cache.set(userId + ":" + AccountObjKey, newAccount, "30mn")
       flash.success("Saved.")
     }

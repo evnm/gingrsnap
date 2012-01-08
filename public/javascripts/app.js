@@ -217,6 +217,9 @@ $(document).ready(function() {
       confirmnewpassword: {
         required: "#newPassword:filled",
         equalTo: "#newPassword"
+      },
+      image: {
+        accept: "png|jpe?g|gif"
       }
     },
     messages: {

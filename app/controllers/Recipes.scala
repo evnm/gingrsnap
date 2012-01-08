@@ -68,7 +68,6 @@ object Recipes extends BaseController with Secure {
     image: File,
     isPublished: Boolean
   ) = {
-    println("recipeBody: " + recipeBody)
     validateRecipe(title, slug, ingredients, recipeBody)
     if (Validation.hasErrors) {
       neue(Some(title), Some(slug), ingredients, Some(recipeBody))
