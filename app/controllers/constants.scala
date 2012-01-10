@@ -11,4 +11,8 @@ object Constants {
   val GingrsnapUserObjKey = "userObj"
   val EmailToUserIdKey = "emailToUserId"
   val AccountObjKey = "accountObj"
+
+  // Make threshold, in millisends. (i.e. enforced time difference between
+  // makes.
+  val MakeCreatedAtThreshold = 21600000
 }

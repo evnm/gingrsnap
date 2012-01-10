@@ -5,6 +5,9 @@
   ingredients: Seq[String],
   bodyHtml: String,
   imageBaseUrlOpt: Option[(String, String)],
+  totalMakeCount: Long,
+  userMakeCountOpt: Option[Long],
+  isMakable: Boolean,
   userOpt: Option[models.GingrsnapUser]
 )(
   implicit
@@ -15,6 +18,14 @@
 )
 
 @import controllers._
+@import models.Make
+@import play.templates.JavaExtensions
+
+@maybeS(count: Long) = {
+  @if(count != 1) {
+
+  }
+}
 
 @main(title) {
   <div class="row">
@@ -37,8 +48,25 @@
             <img src="@(baseUrl + "_thumbnail." + extension)" />
           </a>
         }
-        @userOpt.map { connectedGingrsnapUser =>
-          @if(connectedGingrsnapUser.id() == authorId) {
+        <p>
+          This recipe has been made <span id="total-make-count">@totalMakeCount</span> time@JavaExtensions.pluralize(totalMakeCount).
+        </p>
+
+        @userOpt.map { connectedUser =>
+          <span id="user-id" style="display: none;">@connectedUser.id()</span>
+          <div>
+            @userMakeCountOpt.map { userMakeCount =>
+              <p>
+                You've made this recipe <span id="user-make-count">@userMakeCount</span> time@JavaExtensions.pluralize(userMakeCount).
+              </p>
+            }
+            @if(isMakable) {
+              <button class="btn make-recipe" data-loading-text="Loading..." data-complete-text="You made this">I made this!</button>
+            } else {
+              <button class="btn" disabled="true" title="You've made this recipe too recently to make again!">I made this!</button>
+            }
+          </div>
+          @if(connectedUser.id() == authorId) {
             <a class="btn" href="@action(Recipes.edit(recipeId))">Edit this recipe</a>
             <a class="btn danger" id="delete-recipe">Delete this recipe</a>
           } else {

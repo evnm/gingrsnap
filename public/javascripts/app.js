@@ -151,6 +151,32 @@ $(document).ready(function() {
     }
     event.preventDefault();
   });
+
+  $("button.make-recipe")
+    .click(function(event) {
+      var that = $(this);
+      that.button('loading');
+      $.ajax({
+        type: "POST",
+        dataType: "text json",
+        url: "/makes/new",
+        data: "userId=" + $("span#user-id").text() + "&recipeId=" +
+          $("span#recipe-id").text(),
+        success: function(response) {
+          if (response.error) {
+            // TODO
+          } else {
+            that.button("complete");
+            that.attr("disabled", "true");
+            var totalMakeCount = $("span#total-make-count");
+            totalMakeCount.text(parseInt(totalMakeCount.text()) + 1);
+            var userMakeCount = $("span#user-make-count");
+            userMakeCount.text(parseInt(userMakeCount.text()) + 1);
+          }
+        }
+      });
+      event.preventDefault();
+    });
 });
 
 /**

@@ -105,6 +105,25 @@ object Recipe extends Magic[Recipe] {
   }
 
   /**
+   * Return whether or not a recipe is currently makable by a given user.
+   *
+   * e.g. If they've made too recently, they can't make it again.
+   */
+  def isMakable(userId: Long, recipeId: Long): Boolean = {
+    import controllers.Constants.MakeCreatedAtThreshold
+
+    Make.getMostRecent(userId, recipeId) match {
+      case Some(make) => {
+        val now = new Timestamp(System.currentTimeMillis())
+        // Don't allow if the user has made this recipe within the last
+        // MakeCreatedAtThreshold milliseconds.
+        now.getTime - make.createdAt.getTime > MakeCreatedAtThreshold
+      }
+      case None => true
+    }
+  }
+
+  /**
    * Get the n most-recently published recipes with associated GingrsnapUsers.
    */
   def getMostRecentWithAuthors(n: Int): Seq[(Recipe, GingrsnapUser)] = getMostRecent(n) map { recipe =>

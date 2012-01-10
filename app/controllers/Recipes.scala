@@ -4,7 +4,7 @@ import collection.JavaConversions._
 import Constants.GingrsnapUserObjKey
 import java.io.File
 import java.sql.Timestamp
-import models.{Image, Ingredient, Recipe, RecipeImage, GingrsnapUser}
+import models.{Image, Ingredient, Make, Recipe, RecipeImage, GingrsnapUser}
 import play._
 import play.data.validation.Validation
 import play.db.anorm.SqlRequestError
@@ -264,10 +264,20 @@ object Recipes extends BaseController with Secure {
    * Look up and show a recipe by userId and recipe slug.
    */
   @NonSecure def show(userId: Long, slug: String) = {
+    val connectedUser = GingrsnapUser.getByEmail(session.get("username"))
+
     // Store request url so we can redirect back in case user subsequently logs in.
     flash.put("url", request.url)
 
     Recipe.getByAuthorIdAndSlug(userId, slug) map { case (recipe, ingredients) =>
+      val totalMakeCount = Make.getCountByRecipeId(recipe.id())
+      val userMakeCountOpt = connectedUser map { u =>
+        Make.getCountByUserAndRecipe(u.id(), recipe.id())
+      }
+      val isMakable = connectedUser map { u: GingrsnapUser =>
+        Recipe.isMakable(u.id(), recipe.id())
+      } getOrElse(false)
+
       html.show(
         recipe.id(),
         recipe.title,
@@ -275,7 +285,10 @@ object Recipes extends BaseController with Secure {
         ingredients map { _.name },
         recipe.body,
         Image.getBaseUrlByRecipeId(recipe.id()),
-        GingrsnapUser.getByEmail(session.get("username")))
+        totalMakeCount,
+        userMakeCountOpt,
+        isMakable,
+        connectedUser)
     } getOrElse {
       NotFound("No such recipe")
     }
