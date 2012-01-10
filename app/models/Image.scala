@@ -3,6 +3,7 @@ package models
 import com.amazonaws.services.s3.model.{
   CannedAccessControlList, DeleteObjectRequest, PutObjectRequest}
 import java.io.File
+import java.net.URLConnection
 import java.util.UUID
 import play.db.anorm._
 import play.db.anorm._
@@ -15,12 +16,22 @@ import scala.collection.JavaConversions._
 
 case class Image(
   id: Pk[Long],
-  s3Key: String
+  s3Key: String,
+  extension: String
 )
 
 object Image extends Magic[Image] {
+  protected[this] def mimetypeToExtension(mimetype: String) = mimetype match {
+    case "image/jpeg" => "jpg"
+    case "image/gif" => "gif"
+    case "image/png" => "png"
+  }
+
   def create(file: File) = {
     val key = UUID.randomUUID().toString()
+    val mimetype = URLConnection.guessContentTypeFromName(file.getName())
+    val extension = mimetypeToExtension(mimetype)
+
     val thumbnail = File.createTempFile("thumbnail", null)
     Images.resize(file, thumbnail, 296, -1)
     Seq(
@@ -29,12 +40,12 @@ object Image extends Magic[Image] {
     ) foreach { case (size, file) =>
       // Upload the file to S3.
       S3.client.putObject(
-        new PutObjectRequest(S3.bucket, "image/" + key + "_" + size, file)
+        new PutObjectRequest(S3.bucket, "image/" + key + "_" + size + "." + extension, file)
           .withCannedAcl(CannedAccessControlList.PublicRead))
     }
 
     // Store Image object in db.
-    super.create(Image(NotAssigned, "image/" + key))
+    super.create(Image(NotAssigned, "image/" + key, extension))
   }
 
   /**
@@ -65,14 +76,14 @@ object Image extends Magic[Image] {
   }
 
   /**
-   * Get the base url of a user image on s3.
+   * Optionally returns a tuple of (user profile image base url, image mimetype).
    */
-  def getBaseUrlByUserId(userId: Long): Option[String] = {
+  def getBaseUrlByUserId(userId: Long): Option[(String, String)] = {
     getByUserId(userId) map { image =>
-      "https://s3.amazonaws.com/%s.%s/%s".format(
+      ("https://s3.amazonaws.com/%s.%s/%s".format(
         play.configuration("application.name"),
         play.configuration("application.mode"),
-        image.s3Key)
+        image.s3Key), image.extension)
     }
   }
 
@@ -91,14 +102,14 @@ object Image extends Magic[Image] {
   }
 
   /**
-   * Get the base url of a recipe image on s3.
+   * Optionally returns a tuple of (recipe image base url, image mimetype).
    */
-  def getBaseUrlByRecipeId(recipeId: Long): Option[String] = {
+  def getBaseUrlByRecipeId(recipeId: Long): Option[(String, String)] = {
     getByRecipeId(recipeId) map { image =>
-      "https://s3.amazonaws.com/%s.%s/%s".format(
+      ("https://s3.amazonaws.com/%s.%s/%s".format(
         play.configuration("application.name"),
         play.configuration("application.mode"),
-        image.s3Key)
+        image.s3Key), image.extension)
     }
   }
 }

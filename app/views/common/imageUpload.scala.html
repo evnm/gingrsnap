@@ -1,10 +1,10 @@
 @(
-  imageBaseUrlOpt: Option[String]
+  imageUrlOpt: Option[(String, String)]
 )
 
-@imageBaseUrlOpt.map { imageBaseUrl =>
-  <a class="recipe-image" href="@(imageBaseUrl + "_original")">
-    <img src="@(imageBaseUrl + "_thumbnail")" />
+@imageUrlOpt.map { case (baseUrl, extension) =>
+  <a class="recipe-image" href="@(baseUrl + "_original." + extension)">
+    <img src="@(baseUrl + "_thumbnail." + extension)" />
   </a>
   <label>Upload a different image</label>
 }.getOrElse {

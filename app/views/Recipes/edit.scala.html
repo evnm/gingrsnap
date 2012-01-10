@@ -5,7 +5,7 @@
   slug: String,
   ingredients: java.util.List[String],
   recipeBody: String,
-  imageBaseUrlOpt: Option[String] = None
+  imageBaseUrlOpt: Option[(String, String)] = None
 )(
   implicit
   params: play.mvc.Scope.Params,

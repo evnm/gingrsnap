@@ -1,7 +1,7 @@
 @(
   user: models.GingrsnapUser,
   account: models.Account,
-  profileImageBaseUrlOpt: Option[String],
+  profileImageUrlOpt: Option[(String, String)],
   publishedRecipes: Seq[models.Recipe],
   drafts: Seq[models.Recipe]
 )(
@@ -20,9 +20,9 @@
     <div class="span10">
       <div id="userinfo">
         <h1>@user.fullname</h1>
-        @profileImageBaseUrlOpt.map { imageBaseUrl =>
-          <a href="@(imageBaseUrl + "_original")">
-            <img src="@(imageBaseUrl + "_thumbnail")" />
+        @profileImageUrlOpt.map { case (baseUrl, extension) =>
+          <a href="@(baseUrl + "_original." + extension)">
+            <img src="@(baseUrl + "_thumbnail." + extension)" />
           </a>
         }
         <dl>

@@ -99,8 +99,7 @@ object Recipes extends BaseController with Secure {
     title: Option[String] = None,
     slug: Option[String] = None,
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
-    recipeBody: Option[String] = None,
-    imageBaseUrl: Option[String] = None
+    recipeBody: Option[String] = None
   ) = {
     val user = GingrsnapUser.getByEmail(session.get("username")).get
     Recipe.getById(recipeId) match {
@@ -117,7 +116,7 @@ object Recipes extends BaseController with Secure {
             if (ingredients.isEmpty) Ingredient.getByRecipeId(recipeId) map { _.name }
             else ingredients,
             recipeBody.getOrElse(recipe.body),
-            imageBaseUrl orElse Image.getBaseUrlByRecipeId(recipeId)
+            Image.getBaseUrlByRecipeId(recipeId)
           )
         }
       }
@@ -154,8 +153,7 @@ object Recipes extends BaseController with Secure {
               title = if (title.isEmpty) None else Some(title),
               slug = if (slug.isEmpty) None else Some(slug),
               ingredients,
-              recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody),
-              None)
+              recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody))
           } else {
             val timestamp = new Timestamp(System.currentTimeMillis())
             val newRecipe = recipe.copy(

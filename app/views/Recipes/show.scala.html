@@ -4,7 +4,7 @@
   authorId: Long,
   ingredients: Seq[String],
   bodyHtml: String,
-  imageBaseUrlOpt: Option[String],
+  imageBaseUrlOpt: Option[(String, String)],
   userOpt: Option[models.GingrsnapUser]
 )(
   implicit
@@ -32,9 +32,9 @@
 
     <div class="span6">
       <div class="well">
-        @imageBaseUrlOpt.map { imageBaseUrl =>
-          <a class="recipe-image" href="@(imageBaseUrl + "_original")">
-            <img src="@(imageBaseUrl + "_thumbnail")" />
+        @imageBaseUrlOpt.map { case (baseUrl, extension) =>
+          <a class="recipe-image" href="@(baseUrl + "_original." + extension)">
+            <img src="@(baseUrl + "_thumbnail." + extension)" />
           </a>
         }
         @userOpt.map { connectedGingrsnapUser =>

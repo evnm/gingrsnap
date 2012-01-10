@@ -4,7 +4,7 @@
   hasTwitterConnection: Boolean,
   location: String = "",
   url: String = "",
-  profileImageBaseUrlOpt: Option[String]
+  profileImageUrlOpt: Option[(String, String)]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -86,7 +86,7 @@
           <fieldset>
             <legend>Picture</legend>
             <p>Represent yourself to other Gingrsnap users. Your image will appear on your profile page and any recipes you create.</p>
-            @views.common.html.imageUpload(profileImageBaseUrlOpt)
+            @views.common.html.imageUpload(profileImageUrlOpt)
           </fieldset>
           <fieldset>
             <legend>Connections</legend>
