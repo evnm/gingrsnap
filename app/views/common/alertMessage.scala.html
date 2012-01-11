@@ -1,6 +1,5 @@
 @(
-  errorPrelude: String = "Oops! Something's not right here.",
-  successPrelude: String = ""
+  errorPrelude: String = "Oops! Something's not right here."
 )(
   implicit
   flash: play.mvc.Scope.Flash = null,
@@ -27,7 +26,5 @@
 }
 
 @if(flash != null && flash.get("success") != null) {
-  <div class="alert-message success">
-    @successPrelude @flash.get("success")
-  </div>
+  <div class="alert-message success">@flash.get("success")</div>
 }
