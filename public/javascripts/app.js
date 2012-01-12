@@ -146,7 +146,7 @@ $(document).ready(function() {
       form.style.display = "none";
       this.parentNode.appendChild(form);
       form.method = "POST";
-      form.action = "/recipe/delete/" + $("span#recipe-id").text();
+      form.action = "/recipes/delete/" + $("span#recipe-id").text();
       form.submit();
     }
     event.preventDefault();
@@ -191,7 +191,7 @@ $(document).ready(function() {
       this.parentNode.appendChild(form);
       form.method = "POST";
       // Get recipeId from prev span element.
-      form.action = "/recipe/delete/" + $(this).prev().text();
+      form.action = "/recipes/delete/" + $(this).prev().text();
       form.submit();
     }
     event.preventDefault();
