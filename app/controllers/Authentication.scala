@@ -20,7 +20,7 @@ import play.mvc._
 import play.mvc.results.Redirect
 import play.libs._
 
-import models._
+import models.GingrsnapUser
 import secure._
 
 /**
@@ -29,6 +29,22 @@ import secure._
  * @author Aishwarya Singhal
  */
 object Authentication extends Controller {
+
+  /**
+   * Optionally returns the currently-logged-in GingrsnapUser.
+   */
+  def getLoggedInUser: Option[GingrsnapUser] = {
+    session.get("username") match {
+      case encryptedEmail: String => {
+        try {
+          GingrsnapUser.getByEmail(Crypto.decryptAES(encryptedEmail))
+        } catch {
+          case e => None
+        }
+      }
+      case _ => None
+    }
+  }
 
   /**
    * Displays the login page. If a past request for "remember me" has
@@ -44,7 +60,7 @@ object Authentication extends Controller {
       if (Crypto.sign(username).equals(sign)) {
         flash.put("remember", true);
         flash.put("username", username);
-        session.put("username", username);
+        session.put("username", Crypto.encryptAES(username));
         flash.keep("url");
         redirectToOriginalURL()
       }
@@ -73,7 +89,7 @@ object Authentication extends Controller {
       // process the remember me request
       rememberMe(params.get("remember"), username)
 
-      session.put("username", username);
+      session.put("username", Crypto.encryptAES(username));
       flash.keep
       redirectToOriginalURL()
     } catch {

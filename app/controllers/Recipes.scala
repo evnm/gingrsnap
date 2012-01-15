@@ -46,14 +46,20 @@ object Recipes extends BaseController with Secure {
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: Option[String] = None
 
-  ) = {
-    val user = GingrsnapUser.getByEmail(session.get("username")).get
-    html.neue(
-      user.id(),
-      title.getOrElse(""),
-      slug.getOrElse(""),
-      ingredients,
-      recipeBody.getOrElse(""))
+  ) = Authentication.getLoggedInUser match {
+    case Some(user) => {
+      html.neue(
+        user.id(),
+        title.getOrElse(""),
+        slug.getOrElse(""),
+        ingredients,
+        recipeBody.getOrElse(""))
+    }
+    case None => {
+      // Should never get here, but redirect just in case.
+      // TODO: Add logging.
+      Action(Application.index)
+    }
   }
 
   /**
@@ -100,30 +106,36 @@ object Recipes extends BaseController with Secure {
     slug: Option[String] = None,
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: Option[String] = None
-  ) = {
-    val user = GingrsnapUser.getByEmail(session.get("username")).get
-    Recipe.getById(recipeId) match {
-      case Some(recipe) => {
-        if (recipe.authorId != user.id()) {
-          flash += ("error" -> "Looks like you tried to edit someone else's recipe. Try forking it instead.")
+  ) = Authentication.getLoggedInUser match {
+    case Some(user) => {
+      Recipe.getById(recipeId) match {
+        case Some(recipe) => {
+          if (recipe.authorId != user.id()) {
+            flash += ("error" -> "Looks like you tried to edit someone else's recipe. Try forking it instead.")
+            Application.index
+          } else {
+            html.edit(
+              user.id(),
+              recipeId,
+              title.getOrElse(recipe.title),
+              slug.getOrElse(recipe.slug),
+              if (ingredients.isEmpty) Ingredient.getByRecipeId(recipeId) map { _.name }
+              else ingredients,
+              recipeBody.getOrElse(recipe.body),
+              Image.getBaseUrlByRecipeId(recipeId)
+            )
+          }
+        }
+        case None => {
+          flash += ("error" -> "The recipe you're trying to edit doesn't exist.")
           Application.index
-        } else {
-          html.edit(
-            user.id(),
-            recipeId,
-            title.getOrElse(recipe.title),
-            slug.getOrElse(recipe.slug),
-            if (ingredients.isEmpty) Ingredient.getByRecipeId(recipeId) map { _.name }
-            else ingredients,
-            recipeBody.getOrElse(recipe.body),
-            Image.getBaseUrlByRecipeId(recipeId)
-          )
         }
       }
-      case None => {
-        flash += ("error" -> "The recipe you're trying to edit doesn't exist.")
-        Application.index
-      }
+    }
+    case None => {
+      // Should never get here, but redirect just in case.
+      // TODO: Add logging.
+      Action(Application.index)
     }
   }
 
@@ -138,55 +150,65 @@ object Recipes extends BaseController with Secure {
     recipeBody: String,
     image: File,
     isPublished: Boolean
-  ) = {
-    val user = GingrsnapUser.getByEmail(session.get("username")).get
-    Recipe.getById(recipeId) match {
-      case Some(recipe) => {
-        if (recipe.authorId != user.id()) {
-          flash.error("Looks like you tried to edit someone else's recipe. Try forking it instead.")
-          Application.index
-        } else {
-          validateRecipe(title, slug, ingredients, recipeBody)
-          if (Validation.hasErrors) {
-            edit(
-              recipeId,
-              title = if (title.isEmpty) None else Some(title),
-              slug = if (slug.isEmpty) None else Some(slug),
-              ingredients,
-              recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody))
+  ) = Authentication.getLoggedInUser match {
+    case Some(user) => {
+      Recipe.getById(recipeId) match {
+        case Some(recipe) => {
+          if (recipe.authorId != user.id()) {
+            flash.error("Looks like you tried to edit someone else's recipe. Try forking it instead.")
+            Application.index
           } else {
-            val timestamp = new Timestamp(System.currentTimeMillis())
-            val newRecipe = recipe.copy(
-              title = title,
-              slug = slug,
-              modifiedAt = timestamp,
-              publishedAt = if (isPublished) Some(timestamp) else None,
-              body = recipeBody)
-            Recipe.update(newRecipe, ingredients, if (image == null) None else Some(image))
-
-            if (isPublished) {
-              flash.success("Success! Your recipe has been published.")
-              Action(Recipes.show(recipe.authorId, recipe.slug))
+            validateRecipe(title, slug, ingredients, recipeBody)
+            if (Validation.hasErrors) {
+              edit(
+                recipeId,
+                title = if (title.isEmpty) None else Some(title),
+                slug = if (slug.isEmpty) None else Some(slug),
+                ingredients,
+                recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody))
             } else {
-              flash.success("Success! Your recipe has been saved.")
-              Action(Recipes.edit(recipe.id()))
+              val timestamp = new Timestamp(System.currentTimeMillis())
+              val newRecipe = recipe.copy(
+                title = title,
+                slug = slug,
+                modifiedAt = timestamp,
+                publishedAt = if (isPublished) Some(timestamp) else None,
+                body = recipeBody)
+              Recipe.update(newRecipe, ingredients, if (image == null) None else Some(image))
+
+              if (isPublished) {
+                flash.success("Success! Your recipe has been published.")
+                Action(Recipes.show(recipe.authorId, recipe.slug))
+              } else {
+                flash.success("Success! Your recipe has been saved.")
+                Action(Recipes.edit(recipe.id()))
+              }
             }
           }
         }
+        case None => {
+          flash.error("The recipe you're trying to edit doesn't exist!")
+          Application.index
+        }
       }
-      case None => {
-        flash.error("The recipe you're trying to edit doesn't exist!")
-        Application.index
-      }
+    }
+    case None => {
+      // Should never get here, but redirect just in case.
+      // TODO: Add logging.
+      Action(Application.index)
     }
   }
 
   /**
    * Fork a recipe (i.e. copy it to another user's account).
    */
-  def fork(recipeId: Long): Any = {
-    val user = GingrsnapUser.getByEmail(session.get("username")).get
-    _fork(recipeId, user.id())
+  def fork(recipeId: Long): Any = Authentication.getLoggedInUser match {
+    case Some(user) => _fork(recipeId, user.id())
+    case None => {
+      // Should never get here, but redirect just in case.
+      // TODO: Add logging.
+      Action(Application.index)
+    }
   }
 
   /**
@@ -232,23 +254,29 @@ object Recipes extends BaseController with Secure {
   /**
    * Recipe deletion POST handler.
    */
-  def delete(recipeId: Long) = {
-    val user = GingrsnapUser.getByEmail(session.get("username")).get
-    Recipe.getById(recipeId) match {
-      case Some(recipe) => {
-        if (recipe.authorId != user.id()) {
-          flash += ("warning" -> "You can't delete recipes that aren't yours.")
-          _show(recipeId)
-        } else {
-          Recipe.delete(recipeId)
-          flash.success("Successfully deleted " + recipe.title + ".")
+  def delete(recipeId: Long) = Authentication.getLoggedInUser match {
+    case Some(user) => {
+      Recipe.getById(recipeId) match {
+        case Some(recipe) => {
+          if (recipe.authorId != user.id()) {
+            flash += ("warning" -> "You can't delete recipes that aren't yours.")
+            _show(recipeId)
+          } else {
+            Recipe.delete(recipeId)
+            flash.success("Successfully deleted " + recipe.title + ".")
+            Application.index
+          }
+        }
+        case None => {
+          flash += ("error" -> "The recipe you're trying to delete doesn't exist.")
           Application.index
         }
       }
-      case None => {
-        flash += ("error" -> "The recipe you're trying to delete doesn't exist.")
-        Application.index
-      }
+    }
+    case None => {
+      // Should never get here, but redirect just in case.
+      // TODO: Add logging.
+      Action(Application.index)
     }
   }
 
