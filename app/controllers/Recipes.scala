@@ -19,18 +19,22 @@ object Recipes extends BaseController with Secure {
    * Validates fields from recipe inputs.
    */
   protected[this] def validateRecipe(
+    authorId: Long,
     title: String,
     slug: String,
     ingredients: java.util.List[String] = new java.util.ArrayList[String],
     recipeBody: String
   ) = {
+    Validation.isTrue(
+      "authorId",
+      GingrsnapUser.count("id = {id}").on("id" -> authorId).single() > 0
+    ).message("The user attempting to create this recipe doesn't exist")
     Validation.required("title", title)
       .message("Title is required")
     Validation.required("slug", slug)
       .message("You must provide a URL for your recipe")
-    // TODO: Validate slug format.
-    Validation.isTrue("slug", true)
-      .message("URL can only contain letters, numbers, and hyphens.")
+    Validation.isTrue("slug", slug.matches("[a-z0-9]+([+][a-z0-9]+)*"))
+      .message("URL can only contain lowercase letters and numbers.")
     Validation.isTrue("ingredients", !ingredients.isEmpty)
       .message("You must provide at least one ingredient")
     Validation.required("recipeBody", recipeBody)
@@ -73,28 +77,31 @@ object Recipes extends BaseController with Secure {
     recipeBody: String,
     image: File,
     isPublished: Boolean
-  ) = {
-    validateRecipe(title, slug, ingredients, recipeBody)
-    if (Validation.hasErrors) {
-      neue(Some(title), Some(slug), ingredients, Some(recipeBody))
-    } else {
-      Recipe.create(
-        Recipe(title, slug, authorId, recipeBody, isPublished),
-        ingredients,
-        if (image == null) None else Some(image)
-      ).toOptionLoggingError map { createdRecipe =>
-        if (isPublished) {
-          flash.success("Success! Your recipe has been published.")
-          Action(Recipes.show(createdRecipe.authorId, createdRecipe.slug))
-        } else {
-          flash.success("Success! Your recipe has been saved.")
-          Action(Recipes.edit(createdRecipe.id()))
+  ) = GingrsnapUser.getById(authorId) match {
+    case Some(user) => {
+      validateRecipe(authorId, title, slug, ingredients, recipeBody)
+      if (Validation.hasErrors) {
+        neue(Some(title), Some(slug), ingredients, Some(recipeBody))
+      } else {
+        Recipe.create(
+          Recipe(title, slug, authorId, recipeBody, isPublished),
+          ingredients,
+          if (image == null) None else Some(image)
+        ).toOptionLoggingError map { createdRecipe =>
+          if (isPublished) {
+            flash.success("Success! Your recipe has been published.")
+            Action(Recipes.show(user.slug, createdRecipe.slug))
+          } else {
+            flash.success("Success! Your recipe has been saved.")
+            Action(Recipes.edit(createdRecipe.id()))
+          }
+        } getOrElse {
+          // TODO: Better error handling here.
+          NotFound("There was a problem creating your recipe. Please try again.")
         }
-      } getOrElse {
-        // TODO: Better error handling here.
-        NotFound("There was a problem creating your recipe. Please try again.")
       }
     }
+    case None => NotFound("The user trying to create this recipe doesn't exist")
   }
 
   /**
@@ -116,22 +123,25 @@ object Recipes extends BaseController with Secure {
    * userId:   Id of user doing the forking.
    */
   protected[this] def _fork(recipeId: Long, userId: Long) = Recipe.getById(recipeId) match {
-    case Some(recipe) => {
-      if (recipe.authorId == userId) {
-        flash += ("warning" -> "You can't fork your own recipes.")
-        Action(Application.index)
-      } else if (Recipe.getByAuthorIdAndSlug(userId, recipe.slug).isDefined) {
-        flash += ("warning" -> "You can't fork that recipe because you already have one by the same name.")
+    case Some(recipe) => GingrsnapUser.getById(userId) match {
+      case Some(user) => {
+        if (recipe.authorId == userId) {
+          flash += ("warning" -> "You can't fork your own recipes.")
+          Action(Application.index)
+        } else if (Recipe.getBySlugs(user.slug, recipe.slug).isDefined) {
+          flash += ("warning" -> "You can't fork that recipe because you already have one by the same name.")
         _show(recipeId)
       } else {
         Recipe.fork(recipe, userId).toOptionLoggingError map { createdRecipe =>
           flash.success("Successfully forked " + createdRecipe.title + "!")
-          Action(Recipes.show(createdRecipe.authorId, createdRecipe.slug))
-        } getOrElse {
-          // TODO: Better error handling here.
-          NotFound("There was a problem while forking this recipe. Please try again.")
+            Action(Recipes.show(user.slug, createdRecipe.slug))
+          } getOrElse {
+            // TODO: Better error handling here.
+            NotFound("There was a problem while forking this recipe. Please try again.")
+          }
         }
       }
+      case None => NotFound("The User trying to fork this recipe doesn't exist")
     }
     case None => {
       flash += ("error" -> "The recipe you're trying to fork doesn't exist.")
@@ -200,7 +210,7 @@ object Recipes extends BaseController with Secure {
             flash.error("Looks like you tried to edit someone else's recipe. Try forking it instead.")
             Action(Application.index)
           } else {
-            validateRecipe(title, slug, ingredients, recipeBody)
+            validateRecipe(user.id(), title, slug, ingredients, recipeBody)
             if (Validation.hasErrors) {
               edit(
                 recipeId,
@@ -224,10 +234,10 @@ object Recipes extends BaseController with Secure {
 
               if (isPublished && recipe.publishedAt.isDefined) {
                 flash.success("Success! Your recipe has been updated.")
-                Action(Recipes.show(recipe.authorId, recipe.slug))
+                Action(Recipes.show(user.slug, recipe.slug))
               } else if (isPublished && recipe.publishedAt.isEmpty) {
                 flash.success("Success! Your recipe has been published.")
-                Action(Recipes.show(recipe.authorId, recipe.slug))
+                Action(Recipes.show(user.slug, recipe.slug))
               } else {
                 flash.success("Success! Your recipe has been saved.")
                 Action(Recipes.edit(recipe.id()))
@@ -281,20 +291,25 @@ object Recipes extends BaseController with Secure {
    * Look up and show a recipe by recipeId.
    */
   protected[this] def _show(recipeId: Long): java.lang.Object = Recipe.getById(recipeId) match {
-    case Some(recipe) => show(recipe.authorId, recipe.slug)
+    case Some(recipe) => {
+      GingrsnapUser.getById(recipe.authorId) match {
+        case Some(user) => show(user.slug, recipe.slug)
+        case None => NotFound("No such user")
+      }
+    }
     case None => NotFound("No such recipe")
   }
 
   /**
    * Look up and show a recipe by userId and recipe slug.
    */
-  @NonSecure def show(userId: Long, slug: String) = {
+  @NonSecure def show(userSlug: String, recipeSlug: String) = {
     val connectedUser = Authentication.getLoggedInUser
 
     // Store request url so we can redirect back in case user subsequently logs in.
     flash.put("url", request.url)
 
-    Recipe.getByAuthorIdAndSlug(userId, slug) map { case (recipe, ingredients) =>
+    Recipe.getBySlugs(userSlug, recipeSlug) map { case (recipe, ingredients) =>
       // Only show recipe if it's published.
       recipe.publishedAt match {
         case Some(_) => {
@@ -309,7 +324,7 @@ object Recipes extends BaseController with Secure {
           html.show(
             recipe.id(),
             recipe.title,
-            userId,
+            recipe.authorId,
             ingredients map { _.name },
             recipe.body,
             Image.getBaseUrlByRecipeId(recipe.id()),

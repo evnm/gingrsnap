@@ -31,7 +31,7 @@
                 <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
                 <span class="label">Draft</span>
                 } else {
-                  <a href="@action(Recipes.show(recipe.authorId, recipe.slug))">@recipe.title</a>
+                  <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
                 }
               </li>
             }

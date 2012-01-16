@@ -46,7 +46,7 @@
       } else {
         <ul>
           @for(recipe <- publishedRecipes) {
-            <li><a href="@action(Recipes.show(user.id(), recipe.slug))">@recipe.title</a></li>
+            <li><a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a></li>
           }
         </ul>
       }

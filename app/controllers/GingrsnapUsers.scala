@@ -41,6 +41,10 @@ object GingrsnapUsers extends BaseController {
     password: String
   ) = {
     Validation.required("fullname", fullname).message("Name is required")
+    Validation.isTrue(
+      "fullname",
+      fullname.matches("[a-zA-Z]+( [a-zA-z]+)*")
+    ).message("Full name must contain only letters and spaces")
     Validation.required("emailAddr", emailAddr).message("Email address is required")
     Validation.email("emailAddr", emailAddr).message("Must provide a valid email address")
     Validation.isTrue(
@@ -62,31 +66,30 @@ object GingrsnapUsers extends BaseController {
 
       GingrsnapUser.create(GingrsnapUser(emailAddr, password, fullname, twToken, twSecret)).e match {
         case Right(user) => {
-          Account.create(Account(user.id()))
           Authentication.authenticate(emailAddr, PasswordCredential(password))
           flash.success("Successfully created your account! Welcome to Gingrsnap, " + fullname + ".")
-          Action(Application.index)
         }
         case Left(error) => {
-          println("Error during creation of user, emailAddr(%s),password(%s),fullname(%s): %s",
-                  emailAddr, password, fullname, error)
+          Logger.error("Error during creation of user, emailAddr(%s),password(%s),fullname(%s): %s",
+                       emailAddr, password, fullname, error)
           flash.error("Unfortunately, there was an error while creating your account. Please try again.")
         }
       }
+      Action(Application.index)
     }
   }
 
   /**
    * Show a user's profile
    */
-  def show(userId: Long) = GingrsnapUser.getById(userId) map { user =>
+  def show(userSlug: String) = GingrsnapUser.getBySlug(userSlug) map { user =>
     val (publishedRecipes, drafts) = Recipe.getByUserId(user.id()).partition { recipe =>
       recipe.publishedAt.isDefined
     }
     html.show(
       user,
       Account.getByGingrsnapUserId(user.id()).get,
-      Image.getBaseUrlByUserId(userId),
+      Image.getBaseUrlByUserId(user.id()),
       publishedRecipes,
       drafts)
   } getOrElse {

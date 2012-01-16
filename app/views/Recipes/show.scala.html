@@ -8,7 +8,7 @@
   totalMakeCount: Long,
   userMakeCountOpt: Option[Long],
   isMakable: Boolean,
-  userOpt: Option[models.GingrsnapUser]
+  connectedUserOpt: Option[models.GingrsnapUser]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -46,7 +46,7 @@
           This recipe has been made <span id="total-make-count">@totalMakeCount</span> time@JavaExtensions.pluralize(totalMakeCount).
         </p>
 
-        @userOpt.map { connectedUser =>
+        @connectedUserOpt.map { connectedUser =>
           <span id="user-id" style="display: none;">@connectedUser.id()</span>
           <div>
             @userMakeCountOpt.map { userMakeCount =>

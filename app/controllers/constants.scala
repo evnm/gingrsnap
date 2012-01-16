@@ -10,6 +10,7 @@ object Constants {
 
   val GingrsnapUserObjKey = "userObj"
   val EncryptedEmailToUserIdKey = "encryptedEmailToUserId"
+  val SlugToUserIdKey = "slugToUserId"
   val AccountObjKey = "accountObj"
 
   // Make threshold, in millisends. (i.e. enforced time difference between

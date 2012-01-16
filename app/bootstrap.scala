@@ -51,5 +51,24 @@ import play.test._
         }
       }
     }
+
+    // Update user slugs to not use user ids.
+    Logger.info("Bootstrap task: Updating deprecated slugs")
+    GingrsnapUser.find().list() foreach { user =>
+      SQL("""
+          update GingrsnapUser set slug = {slug}
+          where id = {id}
+          """)
+        .on("slug" -> user.fullname.toLowerCase().replace(" ", "+"), "id" -> user.id())
+        .execute()
+    }
+    Recipe.find().list() foreach { recipe =>
+      SQL("""
+          update Recipe set slug = {slug}
+          where id = {id}
+          """)
+        .on("slug" -> recipe.slug.replace("-", "+"), "id" -> recipe.id())
+        .execute()
+    }
   }
 }

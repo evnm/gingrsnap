@@ -76,8 +76,8 @@ $(document).ready(function() {
     $("input#slug").val(
       $(this).val()
         .toLowerCase()
-        .replace(/ /g,'-')
-        .replace(/[^\w-]+/g,'')
+        .replace(/ /g,'+')
+        .replace(/[^\w+]+/g,'')
     )
   });
 

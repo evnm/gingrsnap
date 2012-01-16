@@ -1,6 +1,6 @@
 package models
 
-import controllers.Constants.{EncryptedEmailToUserIdKey, GingrsnapUserObjKey}
+import controllers.Constants.{EncryptedEmailToUserIdKey, GingrsnapUserObjKey, SlugToUserIdKey}
 import java.sql.Timestamp
 import play.cache.Cache
 import play.db.anorm._
@@ -17,12 +17,11 @@ case class GingrsnapUser(
   password: String,
   salt: String,
   fullname: String,
+  slug: String,
   createdAt: Timestamp,
   twAccessToken: Option[String] = None,
   twAccessTokenSecret: Option[String] = None
 )
-
-object EmptyGingrsnapUser extends GingrsnapUser(NotAssigned, "", "", "", "", null, None, None)
 
 /**
  * NOTE: email -> user is bijective.
@@ -59,9 +58,19 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
       Crypto.passwordHash(salt + password),
       salt,
       fullname,
+      fullname.toLowerCase().replace(" ", "+"),
       new Timestamp(System.currentTimeMillis()),
       twToken,
       twSecret)
+  }
+
+  override def create(user: GingrsnapUser) = {
+    val result = super.create(user)
+    result map { user =>
+      Account.create(Account(NotAssigned, user.id()))
+      Cache.set(userIdCacheKey(user.id()), user, "1h")
+      user
+    }
   }
 
   /**
@@ -87,6 +96,28 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
     Cache.get[GingrsnapUser](userIdCacheKey(userId)) orElse {
       GingrsnapUser.find("id = {userId}").on("userId" -> userId).first() map { user =>
         Cache.add(userIdCacheKey(userId), user, "1h")
+        user
+      }
+    }
+  }
+
+  protected[this] def slugToUserIdCacheKey(userSlug: String) = SlugToUserIdKey + ":" + userSlug
+
+  /**
+   * Looks up a user by URL slug. Caches and returns the looked-up user, if it exists.
+   */
+  def getBySlug(userSlug: String): Option[GingrsnapUser] = {
+    lazy val fromDb = GingrsnapUser.find("slug = {slug}").on("slug" -> userSlug).first()
+
+    Cache.get[java.lang.Long](slugToUserIdCacheKey(userSlug)) match {
+      case Some(userId) => getById(userId.longValue)
+      case None => fromDb map { user =>
+        // Set encrypted email addr -> user id secondary index.
+        Cache.add(
+          slugToUserIdCacheKey(userSlug),
+          java.lang.Long.valueOf(user.id()),
+          "1h")
+        Cache.add(userIdCacheKey(user.id()), user, "1h")
         user
       }
     }

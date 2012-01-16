@@ -92,7 +92,9 @@ object Accounts extends BaseController with Secure {
 
         val newLocation = if (location.isEmpty) None else Some(location)
         val newUrl = if (url.isEmpty) None else Some(url)
-        val newAccount = Account(Id(account.id()), userId, newLocation, newUrl)
+        val newAccount = account.copy(
+          location = newLocation,
+          url = newUrl)
         Account.update(newAccount, if (image == null) None else Some(image))
         Cache.set(userId + ":" + AccountObjKey, newAccount, "30mn")
         flash.success("Saved.")

@@ -43,7 +43,7 @@
         <a class="brand" href="@action(Application.index)">Gingrsnap</a>
         <ul class="nav secondary-nav">
           @accountLinks(user: models.GingrsnapUser) = {
-            <li><a href="@action(GingrsnapUsers.show(user.id()))">@user.fullname</a></li>
+            <li><a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a></li>
             <li><a href="@action(Accounts.edit)">Account settings</a></li>
             <li><a href="@action(Authentication.logout)">Logout</a></li>
           }

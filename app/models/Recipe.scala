@@ -77,8 +77,7 @@ object Recipe extends Magic[Recipe] {
 
       if (recipe.publishedAt.isDefined) {
         // Create a RecipeCreation event.
-        Event.create(
-          Event(EventType.RecipeCreation.id, createdRecipe.authorId, createdRecipe.id()))
+        println(Event.create(Event(EventType.RecipeCreation.id, createdRecipe.authorId, createdRecipe.id())))
       }
 
       MayErr(Right(createdRecipe))
@@ -201,15 +200,16 @@ object Recipe extends Magic[Recipe] {
   /**
    * Looks up a recipe by userId and url slug. Optionally returns the looked-up recipe.
    */
-  def getByAuthorIdAndSlug(
-    authorId: Long, slug: String
+  def getBySlugs(
+    userSlug: String, recipeSlug: String
   ): Option[(Recipe, Seq[Ingredient])] = {
     SQL("""
         select * from Recipe r
         join Ingredient i on i.recipeId = r.id
-        where r.authorId = {authorId} and r.slug = {slug}
+        join GingrsnapUser u on u.id = r.authorId
+        where u.slug = {userSlug} and r.slug = {recipeSlug}
         """)
-      .on("authorId" -> authorId, "slug" -> slug)
+      .on("userSlug" -> userSlug, "recipeSlug" -> recipeSlug)
       .as(Recipe ~< Recipe.spanM(Ingredient) ^^ flatten ?)
   }
 
