@@ -1,5 +1,6 @@
 import java.sql.Timestamp
 import models._
+import play.db.anorm._
 import play.jobs.{OnApplicationStart, Job}
 import play.Logger
 import play.test._
@@ -31,9 +32,21 @@ import play.test._
       Recipe.find().list() foreach { recipe =>
         if (recipe.publishedAt.isDefined) {
           if (recipe.parentRecipe.isDefined) {
-            Event.create(Event(EventType.RecipeFork.id, recipe.authorId, recipe.id()))
+            Event.create(
+              Event(
+                NotAssigned,
+                EventType.RecipeFork.id,
+                subjectId = recipe.authorId,
+                objectId = recipe.id(),
+                createdAt = recipe.publishedAt.get))
           } else {
-            Event.create(Event(EventType.RecipeCreation.id, recipe.authorId, recipe.id()))
+            Event.create(
+              Event(
+                NotAssigned,
+                EventType.RecipeCreation.id,
+                subjectId = recipe.authorId,
+                objectId = recipe.id(),
+                createdAt = recipe.createdAt))
           }
         }
       }
