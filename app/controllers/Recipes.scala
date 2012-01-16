@@ -338,7 +338,7 @@ object Recipes extends BaseController with Secure {
    * Look up and show a recipe by userId and recipe slug.
    */
   @NonSecure def show(userId: Long, slug: String) = {
-    val connectedUser = GingrsnapUser.getByEmail(session.get("username"))
+    val connectedUser = Authentication.getLoggedInUser
 
     // Store request url so we can redirect back in case user subsequently logs in.
     flash.put("url", request.url)
