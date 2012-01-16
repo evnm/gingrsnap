@@ -97,7 +97,7 @@ $(document).ready(function() {
       $("ul#ingredients")
         .append('<li><div class="input"><div class="input-append">' +
                 '<input class="span4" type="text" value="' +
-                ingrInput.val() + '" /><label class="add-on">' +
+                ingrInput.val().replace(/\"/g, "&#34;") + '" /><label class="add-on">' +
                 '<a class="close" href="#">x</a></label></div></div>' +
                 '</li><li class="clearfix"></li>');
       ingrInput.val("").focus();
