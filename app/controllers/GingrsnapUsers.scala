@@ -80,7 +80,7 @@ object GingrsnapUsers extends BaseController {
    * Show a user's profile
    */
   def show(userId: Long) = GingrsnapUser.getById(userId) map { user =>
-    val (publishedRecipes, drafts) = Recipe.getByGingrsnapUserId(user.id()).partition { recipe =>
+    val (publishedRecipes, drafts) = Recipe.getByUserId(user.id()).partition { recipe =>
       recipe.publishedAt.isDefined
     }
     html.show(

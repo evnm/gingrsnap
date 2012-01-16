@@ -114,12 +114,12 @@ div#wrapper {
   padding: 24px 0 65px 0;
 }
 
-ol.recipe-feed {
+ol.event-feed {
   list-style-type: none;
   margin: 0;
 }
 
-ol.recipe-feed li {
+ol.event-feed li {
   margin-bottom: 1em;
   padding: 8px 0;
   border-bottom: 1px solid #ddd;

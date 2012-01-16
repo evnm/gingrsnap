@@ -1,19 +1,22 @@
 package controllers
 
-import models.{Recipe, GingrsnapUser}
+import models.{Event, Recipe, GingrsnapUser}
 import play._
 import play.cache.Cache
 import play.mvc.Controller
 
 object Application extends BaseController {
   def index = {
-    val mostRecentRecipes = Recipe.getMostRecentWithAuthors(10)
-    GingrsnapUser.getByEmail(session.get("username")) match {
-      case Some(user: GingrsnapUser) => views.GingrsnapUsers.html.home(
+    val mostRecentEvents = Event.getMostRecent(10) map { e =>
+      Event.hydrate(e)
+    }
+
+    Authentication.getLoggedInUser match {
+      case Some(user) => views.GingrsnapUsers.html.home(
         user,
-        usersRecipes = Recipe.getByGingrsnapUserId(user.id()),
-        recipeFeed = mostRecentRecipes)
-      case None => views.Application.html.index(mostRecentRecipes)
+        usersRecipes = Recipe.getByUserId(user.id()),
+        eventFeed = mostRecentEvents)
+      case None => views.Application.html.index(mostRecentEvents)
     }
   }
 

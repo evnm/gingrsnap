@@ -5,6 +5,7 @@ import play.db.anorm._
 import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm.SqlParser._
+import play.utils.Scala.MayErr
 import scala.reflect.Manifest
 
 case class Make(
@@ -34,6 +35,16 @@ object Make extends Magic[Make] {
 
   def apply(userId: Long, recipeId: Long) = {
     new Make(NotAssigned, userId, recipeId, new Timestamp(System.currentTimeMillis()))
+  }
+
+  override def create(make: Make) = {
+    super.create(make) map { createdMake =>
+      // Create a RecipeCreation event.
+      Event.create(
+        Event(EventType.RecipeMake.id, createdMake.userId, createdMake.recipeId)
+      )
+      createdMake
+    }
   }
 
   /**

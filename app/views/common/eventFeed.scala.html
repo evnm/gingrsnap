@@ -1,0 +1,26 @@
+@(
+  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)]
+)
+
+@import models._
+
+<ol class="event-feed">
+  @eventFeed.map { eventTuple =>
+    <li>
+      @eventTuple match {
+        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeCreation, RecipeObject(obj)) => {
+          @views.common.eventItems.html.recipeCreation(createdAt, subject, obj)
+        }
+        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeFork, RecipeObject(obj)) => {
+          @views.common.eventItems.html.recipeFork(createdAt, subject, obj)
+        }
+        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeUpdate, RecipeObject(obj)) => {
+          @views.common.eventItems.html.recipeUpdate(createdAt, subject, obj)
+        }
+        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeMake, RecipeObject(obj)) => {
+          @views.common.eventItems.html.recipeMake(createdAt, subject, obj)
+        }
+      }
+    </li>
+  }
+</ol>

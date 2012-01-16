@@ -1,6 +1,6 @@
 package models
 
-import controllers.Constants.{EmailToUserIdKey, GingrsnapUserObjKey}
+import controllers.Constants.{EncryptedEmailToUserIdKey, GingrsnapUserObjKey}
 import java.sql.Timestamp
 import play.cache.Cache
 import play.db.anorm._
@@ -68,7 +68,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
    * Overridden update method to update cache as well as underlying store.
    */
   override def update(user: GingrsnapUser) = {
-    Cache.set(userIdCacheKey(user.id()), user, "30mn")
+    Cache.set(userIdCacheKey(user.id()), user, "1h")
     super.update(user)
   }
 
@@ -86,13 +86,33 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
   def getById(userId: Long): Option[GingrsnapUser] = {
     Cache.get[GingrsnapUser](userIdCacheKey(userId)) orElse {
       GingrsnapUser.find("id = {userId}").on("userId" -> userId).first() map { user =>
-        Cache.set(userIdCacheKey(userId), user, "30mn")
+        Cache.add(userIdCacheKey(userId), user, "1h")
         user
       }
     }
   }
 
-  protected[this] def emailToUserIdCacheKey(emailAddr: String) = EmailToUserIdKey + ":" + emailAddr
+  protected[this] def encryptedEmailToUserIdCacheKey(encryptedEmail: String) =
+    EncryptedEmailToUserIdKey + ":" + encryptedEmail
+
+  /**
+   * Looks up a user by encrypted password. Caches secondary index and returns
+   * the looked-up user, if it exists.
+   */
+  def getByEncryptedEmail(encryptedEmail: String) = {
+    Cache.get[java.lang.Long](encryptedEmailToUserIdCacheKey(encryptedEmail)) match {
+      case Some(userId) => getById(userId.longValue)
+      case None => getByEmail(Crypto.decryptAES(encryptedEmail)) map { user =>
+        // Set encrypted email addr -> user id secondary index.
+        Cache.add(
+          encryptedEmailToUserIdCacheKey(encryptedEmail),
+          java.lang.Long.valueOf(user.id()),
+          "1h")
+        Cache.add(userIdCacheKey(user.id()), user, "1h")
+        user
+      }
+    }
+  }
 
   /**
    * Looks up a user by email. Optionally returns the looked-up user.
@@ -100,16 +120,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
    * NOTE: Does not verify password.
    */
   def getByEmail(emailAddr: String): Option[GingrsnapUser] = {
-    Cache.get[java.lang.Long](emailToUserIdCacheKey(emailAddr)) match {
-      case Some(userId) => getById(userId.longValue)
-      case None => {
-        GingrsnapUser.find("emailAddr = {e}").on("e" -> emailAddr).first() map { user =>
-          Cache.set(emailToUserIdCacheKey(emailAddr), java.lang.Long.valueOf(user.id()), "30mn")
-          Cache.set(userIdCacheKey(user.id()), user, "30mn")
-          user
-        }
-      }
-    }
+    GingrsnapUser.find("emailAddr = {e}").on("e" -> emailAddr).first()
   }
 
   /**

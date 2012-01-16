@@ -74,6 +74,41 @@ object Recipe extends Magic[Recipe] {
         }
       }
       Ingredient.createAllByRecipeId(createdRecipe.id(), ingredients)
+
+      if (recipe.publishedAt.isDefined) {
+        // Create a RecipeCreation event.
+        Event.create(
+          Event(EventType.RecipeCreation.id, createdRecipe.authorId, createdRecipe.id()))
+      }
+
+      MayErr(Right(createdRecipe))
+    }
+  }
+
+  /**
+   * Fork a recipe (i.e. make a copy with a different authorId).
+   */
+  def fork(recipe: Recipe, userId: Long): MayErr[SqlRequestError, Recipe] = {
+    val timestamp = new Timestamp(System.currentTimeMillis())
+    Recipe.create(
+      recipe.copy(
+        id = play.db.anorm.NotAssigned,
+        authorId = userId,
+        createdAt = timestamp,
+        modifiedAt = timestamp,
+        publishedAt = Some(timestamp),
+        parentRecipe = Some(recipe.id())
+      )
+    ) flatMap { createdRecipe =>
+      Ingredient.createAllByRecipeId(
+        createdRecipe.id(),
+        Ingredient.getByRecipeId(recipe.id()) map { _.name }
+      )
+
+      // Create a RecipeFork event.
+      Event.create(
+        Event(EventType.RecipeFork.id, userId, createdRecipe.id()))
+
       MayErr(Right(createdRecipe))
     }
   }
@@ -102,6 +137,12 @@ object Recipe extends Magic[Recipe] {
     }
 
     Recipe.update(recipe)
+
+    // Create a RecipeUpdate event if the recipe is published.
+    if (recipe.publishedAt.isDefined) {
+      Event.create(
+        Event(EventType.RecipeUpdate.id, recipe.authorId, recipe.id()))
+    }
   }
 
   /**
@@ -150,7 +191,7 @@ object Recipe extends Magic[Recipe] {
   /**
    * Get all of a user's recipes.
    */
-  def getByGingrsnapUserId(userId: Long): Seq[Recipe] =
+  def getByUserId(userId: Long): Seq[Recipe] =
     Recipe.find("authorId = {userId}").on("userId" -> userId).list()
 
   /**

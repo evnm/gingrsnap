@@ -72,31 +72,31 @@ object OAuth extends BaseController with Secure {
         Cache.delete(mkCacheKey(TwIfaceCacheKey))
         Action(Application.index)
       } else {
-        val emailAddr = session.get("username")
-        if (emailAddr != null) {
-          // User is connected, so add the Twitter connection.
-          val user = GingrsnapUser.getByEmail(emailAddr).get
-          GingrsnapUser.update(
-            user.copy(
-              twAccessToken = Some(accessToken.getToken()),
-              twAccessTokenSecret = Some(accessToken.getTokenSecret())
+        Authentication.getLoggedInUser match {
+          case Some(user) => {
+            GingrsnapUser.update(
+              user.copy(
+                twAccessToken = Some(accessToken.getToken()),
+                twAccessTokenSecret = Some(accessToken.getTokenSecret())
+              )
             )
-          )
-          Cache.delete(mkCacheKey(TwAccessTokenCacheKey))
-          Cache.delete(mkCacheKey(TwIfaceCacheKey))
-          Action(Accounts.edit)
-        } else {
-          // Snag access token pair and redirect to signup page.
-          Cache.set(
-            mkCacheKey(TwAccessTokenCacheKey),
-            accessToken,
-            "15mn")
-          Cache.set(
-            mkCacheKey(TwUserObjCacheKey),
-            twitterIface.verifyCredentials(),
-            "15mn")
-          Cache.delete(mkCacheKey(TwIfaceCacheKey))
-          Action(GingrsnapUsers.neue)
+            Cache.delete(mkCacheKey(TwAccessTokenCacheKey))
+            Cache.delete(mkCacheKey(TwIfaceCacheKey))
+            Action(Accounts.edit)
+          }
+          case None => {
+            // Snag access token pair and redirect to signup page.
+            Cache.set(
+              mkCacheKey(TwAccessTokenCacheKey),
+              accessToken,
+              "15mn")
+            Cache.set(
+              mkCacheKey(TwUserObjCacheKey),
+              twitterIface.verifyCredentials(),
+              "15mn")
+            Cache.delete(mkCacheKey(TwIfaceCacheKey))
+            Action(GingrsnapUsers.neue)
+          }
         }
       }
     }
@@ -118,10 +118,12 @@ object OAuth extends BaseController with Secure {
     Action(Accounts.edit)
   }
 
-  protected[this] def revokeTwitter() = {
-    val user = GingrsnapUser.getByEmail(session.get("username")).get
-    val newUser = user.copy(twAccessToken = None, twAccessTokenSecret = None)
-    GingrsnapUser.update(newUser)
-    Action(Accounts.edit)
+  protected[this] def revokeTwitter() = Authentication.getLoggedInUser match {
+    case Some(user) => {
+      val newUser = user.copy(twAccessToken = None, twAccessTokenSecret = None)
+      GingrsnapUser.update(newUser)
+      Action(Accounts.edit)
+    }
+    case None => Action(Application.index)
   }
 }

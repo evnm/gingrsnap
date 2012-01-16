@@ -1,5 +1,6 @@
 package secure
 
+import controllers.Authentication
 import controllers.Constants.GingrsnapUserObjKey
 import models.GingrsnapUser
 import play.cache.Cache
@@ -21,9 +22,9 @@ class GingrsnapUserSecurity extends Security[GingrsnapUser] {
 
   override def authorize(token: GingrsnapUser, role: String) = false
 
-  override def onSuccessfulLogin(emailAddr: String) = {
-    // TODO: Verify that this .get can't blow up.
-    Cache.add(GingrsnapUserObjKey, GingrsnapUser.getByEmail(emailAddr).get, "30mn")
+  override def onSuccessfulLogin(emailAddr: String) = Authentication.getLoggedInUser match {
+    case Some(user) => Cache.add(GingrsnapUserObjKey, user, "30mn")
+    case None => // TODO: Add logging.
   }
 
   override def onSuccessfulLogout(emailAddr: String) = {
