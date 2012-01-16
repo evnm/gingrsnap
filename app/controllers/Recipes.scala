@@ -222,7 +222,10 @@ object Recipes extends BaseController with Secure {
                 if (image == null) None else Some(image),
                 recipe.publishedAt.isDefined)
 
-              if (isPublished) {
+              if (isPublished && recipe.publishedAt.isDefined) {
+                flash.success("Success! Your recipe has been updated.")
+                Action(Recipes.show(recipe.authorId, recipe.slug))
+              } else if (isPublished && recipe.publishedAt.isEmpty) {
                 flash.success("Success! Your recipe has been published.")
                 Action(Recipes.show(recipe.authorId, recipe.slug))
               } else {
