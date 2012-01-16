@@ -44,6 +44,25 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
     })
   }
 
+  def findUniqueSlug(slug: String) = {
+    def isUnique(slug: String) = {
+      GingrsnapUser.find("slug = {slug}")
+        .on("slug" -> slug)
+        .first()
+        .isEmpty
+    }
+
+    if (isUnique(slug))
+      slug
+    else {
+      var suffix = 0
+      while (!isUnique(slug + suffix)) {
+        suffix += 1
+      }
+      slug + suffix
+    }
+  }
+
   def apply(
     emailAddr: String,
     password: String,
@@ -52,13 +71,15 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
     twSecret: Option[String]
   ) = {
     val salt = scala.util.Random.nextInt.abs.toString
+    val slug = findUniqueSlug(fullname.toLowerCase().replace(" ", "+"))
+
     new GingrsnapUser(
       NotAssigned,
       emailAddr,
       Crypto.passwordHash(salt + password),
       salt,
       fullname,
-      fullname.toLowerCase().replace(" ", "+"),
+      slug,
       new Timestamp(System.currentTimeMillis()),
       twToken,
       twSecret)
