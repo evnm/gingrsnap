@@ -219,6 +219,10 @@ object Recipe extends Magic[Recipe] {
    * TODO: Delete from cache, once recipes are cached.
    */
   def delete(recipeId: Long): Boolean = {
+    SQL("delete from Event where objectId = {recipeId}")
+      .on("recipeId" -> recipeId)
+      .execute()
+
     SQL("delete from Recipe where id = {recipeId}")
       .on("recipeId" -> recipeId)
       .execute()
