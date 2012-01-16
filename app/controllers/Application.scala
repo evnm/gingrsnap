@@ -7,7 +7,7 @@ import play.mvc.Controller
 
 object Application extends BaseController {
   def index = {
-    val mostRecentEvents = Event.getMostRecent(10) map { e =>
+    val mostRecentEvents = Event.getMostRecent(20) map { e =>
       Event.hydrate(e)
     }
     Authentication.getLoggedInUser match {
