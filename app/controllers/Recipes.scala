@@ -241,6 +241,60 @@ object Recipes extends BaseController with Secure {
     }
   }
 
+  /**
+   * Fork a recipe (i.e. copy it to another user's account).
+   */
+  def fork(recipeId: Long): Any = Authentication.getLoggedInUser match {
+    case Some(user) => _fork(recipeId, user.id())
+    case None => {
+      // Should never get here, but redirect just in case.
+      // TODO: Add logging.
+      Action(Application.index)
+    }
+  }
+
+  /**
+   * Fork a recipe (i.e. copy it to another user's account).
+   *
+   * recipeId: Id of recipe to fork.
+   * userId:   Id of user doing the forking.
+   */
+  protected[this] def _fork(recipeId: Long, userId: Long) = Recipe.getById(recipeId) match {
+    case Some(recipe) => {
+      if (recipe.authorId == userId) {
+        flash += ("warning" -> "You can't fork your own recipes.")
+        Application.index
+      } else if (Recipe.getByAuthorIdAndSlug(userId, recipe.slug).isDefined) {
+        flash += ("warning" -> "You can't fork that recipe because you already have one by the same name.")
+        _show(recipeId)
+      } else {
+        val timestamp = new Timestamp(System.currentTimeMillis())
+        Recipe.create(
+          recipe.copy(
+            id = play.db.anorm.NotAssigned,
+            authorId = userId,
+            createdAt = timestamp,
+            modifiedAt = timestamp,
+            parentRecipe = Some(recipeId)
+          ),
+          Ingredient.getByRecipeId(recipeId) map { _.name }
+        ).toOptionLoggingError map { newRecipe =>
+          flash.success("Successfully forked " + recipe.title + "!")
+          Action(Recipes.show(newRecipe.authorId, newRecipe.slug))
+        } getOrElse {
+          // TODO: Better error handling here.
+          NotFound("There was a problem while forking this recipe. Please try again.")
+>>>>>>> master
+        }
+      }
+    }
+    case None => {
+      // Should never get here, but redirect just in case.
+      // TODO: Add logging.
+      Action(Application.index)
+    }
+  }
+
 
 
   /**

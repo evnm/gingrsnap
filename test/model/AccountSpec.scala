@@ -9,7 +9,10 @@ class AccountSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfterEa
 
   it should "create and retrieve a Account" in {
     // TODO: Uncouple this with GingrsnapUser creation.
-    GingrsnapUser.create(GingrsnapUser(Id(0), "bob@gmail.com", "secret", "1", "Bob", new java.util.Date, None, None))
+    GingrsnapUser.create(
+      GingrsnapUser(
+        Id(0), "bob@gmail.com", "secret", "1", "Bob",
+        new java.sql.Timestamp(System.currentTimeMillis()), None, None))
     Account.create(Account(NotAssigned, 0, Some("Mountain Ranch, CA")))
     val acct = Account.find("userId={userId}").on("userId" -> 0).first()
 
@@ -17,5 +20,25 @@ class AccountSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfterEa
     acct should not be (None)
     acct.get.userId should be (0)
     acct.get.location should be (Some("Mountain Ranch, CA"))
+  }
+
+  it should "update an account" in {
+    GingrsnapUser.create(
+      GingrsnapUser(
+        Id(0), "bob@gmail.com", "secret", "1", "Bob",
+        new java.sql.Timestamp(System.currentTimeMillis()), None, None))
+    Account.create(Account(NotAssigned, 0, Some("Mountain Ranch, CA"))) map { acct =>
+      Account.update(acct.copy(
+        location = Some("Stockholm, Sweden"),
+        url = Some("http://foobar.com")))
+    }
+
+    val acct = Account.find("userId=0").first()
+
+    Account.count().single() should be (1)
+    acct should not be (None)
+    acct.get.userId should be (0)
+    acct.get.location should be (Some("Stockholm, Sweden"))
+    acct.get.url should be (Some("http://foobar.com"))
   }
 }

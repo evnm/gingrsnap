@@ -10,7 +10,6 @@ object Application extends BaseController {
     val mostRecentEvents = Event.getMostRecent(10) map { e =>
       Event.hydrate(e)
     }
-
     Authentication.getLoggedInUser match {
       case Some(user) => views.GingrsnapUsers.html.home(
         user,
