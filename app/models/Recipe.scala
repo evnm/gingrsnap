@@ -115,11 +115,14 @@ object Recipe extends Magic[Recipe] {
 
   /**
    * Update a recipe, replacing the ingredient list and optionally its associated image.
+   *
+   * prevIsPublished is the isPublished state of the recipe prior to this update.
    */
   def update(
     recipe: Recipe,
     ingredients: Seq[String],
-    imageOpt: Option[File] = None
+    imageOpt: Option[File] = None,
+    prevIsPublished: Boolean
   ): Unit = {
     // Replace recipe's ingredient list.
     Ingredient.deleteByRecipeId(recipe.id())
@@ -140,8 +143,9 @@ object Recipe extends Magic[Recipe] {
 
     // Create a RecipeUpdate event if the recipe is published.
     if (recipe.publishedAt.isDefined) {
+      val eventType = if (prevIsPublished) EventType.RecipeUpdate else EventType.RecipeCreation
       Event.create(
-        Event(EventType.RecipeUpdate.id, recipe.authorId, recipe.id()))
+        Event(eventType.id, recipe.authorId, recipe.id()))
     }
   }
 

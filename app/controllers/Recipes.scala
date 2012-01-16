@@ -4,7 +4,7 @@ import collection.JavaConversions._
 import Constants.GingrsnapUserObjKey
 import java.io.File
 import java.sql.Timestamp
-import models.{Image, Ingredient, Make, Recipe, RecipeImage, GingrsnapUser}
+import models.{EventType, Image, Ingredient, Make, Recipe, RecipeImage, GingrsnapUser}
 import play._
 import play.data.validation.Validation
 import play.db.anorm.SqlRequestError
@@ -216,7 +216,11 @@ object Recipes extends BaseController with Secure {
                 modifiedAt = timestamp,
                 publishedAt = if (isPublished) Some(timestamp) else None,
                 body = recipeBody)
-              Recipe.update(newRecipe, ingredients, if (image == null) None else Some(image))
+              Recipe.update(
+                newRecipe,
+                ingredients,
+                if (image == null) None else Some(image),
+                recipe.publishedAt.isDefined)
 
               if (isPublished) {
                 flash.success("Success! Your recipe has been published.")
