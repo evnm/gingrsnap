@@ -38,18 +38,9 @@
 
         <div class="clearfix">
           <label for="ingredients">Ingredients</label>
-          <div class="input">
-            <div class="input-append">
-              <input class="span4" id="ingredient" type="text" />
-              <label class="add-on">
-                <button id="add-ingredient" class="small success btn" type="button">Add</button>
-              </label>
-            </div>
-          </div>
-          <div class="clearfix">
-            <ul id="ingredients">
-              <li class="clearfix"></li>
-              @ingredients.map { ingr =>
+          <ul id="ingredients">
+            <li class="clearfix"></li>
+            @ingredients.map { ingr =>
               <li>
                 <div class="input">
                   <div class="input-append">
@@ -61,8 +52,15 @@
                 </div>
               </li>
               <li class="clearfix"></li>
-              }
-            </ul>
+            }
+          </ul>
+          <div class="input">
+            <div class="input-append">
+              <input class="span4" id="ingredient" type="text" />
+              <label class="add-on">
+                <button id="add-ingredient" class="small success btn" type="button">Add</button>
+              </label>
+            </div>
           </div>
         </div>
 
