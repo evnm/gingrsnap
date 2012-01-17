@@ -81,6 +81,7 @@ object Recipes extends BaseController with Secure {
   ) = GingrsnapUser.getById(authorId) match {
     case Some(user) => {
       validateRecipe(authorId, title, slug, ingredients, recipeBody)
+
       if (Validation.hasErrors) {
         neue(Some(title), Some(slug), ingredients, Some(recipeBody))
       } else {

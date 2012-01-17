@@ -1,6 +1,8 @@
 package models
 
+import controllers.Constants.AccountObjKey
 import java.io.File
+import play.cache.Cache
 import play.db.anorm._
 import play.db.anorm._
 import play.db.anorm.defaults.Magic
@@ -14,11 +16,12 @@ case class Account(
 )
 
 object Account extends Magic[Account] {
-  /**
-   * Get an account object by the associated user's id.
-   */
-  def getByGingrsnapUserId(userId: Long) =
-    Account.find("userId = {userId}").on("userId" -> userId).first()
+  protected[this] def accountCacheKey(userId: Long) = AccountObjKey + ":" + userId
+
+  override def create(account: Account) = {
+    Cache.set(accountCacheKey(account.userId), account, "1h")
+    super.create(account)
+  }
 
   /**
    * Update an account, optionally replacing its associated image.
@@ -27,6 +30,8 @@ object Account extends Magic[Account] {
     account: Account,
     imageOpt: Option[File] = None
   ): Unit = {
+    Cache.set(accountCacheKey(account.userId), account, "1h")
+
     imageOpt map { imageFile =>
       // Delete old image if one exists.
       Image.getByUserId(account.userId) map { oldImage =>
@@ -39,5 +44,17 @@ object Account extends Magic[Account] {
     }
 
     Account.update(account)
+  }
+
+  /**
+   * Get an account object by the associated user's id.
+   */
+  def getByGingrsnapUserId(userId: Long) = {
+    Cache.get[Account](accountCacheKey(userId)) orElse {
+      Account.find("userId = {userId}").on("userId" -> userId).first() map { account =>
+        Cache.add(accountCacheKey(userId), account, "1h")
+        account
+      }
+    }
   }
 }

@@ -1,7 +1,7 @@
 package controllers
 
 import java.util.Date
-import models.{Account, Image, Recipe, GingrsnapUser}
+import models.{Account, Image, Make, Recipe, GingrsnapUser}
 import play._
 import play.cache.Cache
 import play.mvc.Controller
@@ -93,7 +93,8 @@ object GingrsnapUsers extends BaseController {
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
       publishedRecipes,
-      drafts)
+      drafts,
+      Make.getCountByUserId(user.id()))
   } getOrElse {
     NotFound("No such user")
   }

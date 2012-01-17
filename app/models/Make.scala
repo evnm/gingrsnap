@@ -71,6 +71,15 @@ object Make extends Magic[Make] {
   }
 
   /**
+   * Get a user's total make count.
+   */
+  def getCountByUserId(userId: Long): Long = {
+    Make.count("userId = {userId}")
+      .on("userId" -> userId)
+      .single()
+  }
+
+  /**
    * Get a user's made count for a given recipe.
    */
   def getCountByUserAndRecipe(userId: Long, recipeId: Long): Long = {

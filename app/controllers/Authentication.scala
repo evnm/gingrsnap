@@ -37,7 +37,7 @@ object Authentication extends Controller {
     session.get("username") match {
       case encryptedEmail: String => {
         try {
-          GingrsnapUser.getByEmail(Crypto.decryptAES(encryptedEmail))
+          GingrsnapUser.getByEncryptedEmail(encryptedEmail)
         } catch {
           case e => None
         }

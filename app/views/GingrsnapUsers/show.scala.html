@@ -3,7 +3,8 @@
   account: models.Account,
   profileImageUrlOpt: Option[(String, String)],
   publishedRecipes: Seq[models.Recipe],
-  drafts: Seq[models.Recipe]
+  drafts: Seq[models.Recipe],
+  totalMakeCount: Long
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -36,6 +37,8 @@
         }
         <dt>Member since</dt>
         <dd>@DateFormat.getDateInstance.format(user.createdAt)</dd>
+        <dt>Total recipes made</dt>
+        <dd>@totalMakeCount</dd>
       </div>
 
       <h2>Recipes</h2>
