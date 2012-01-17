@@ -1,8 +1,9 @@
 @(
   userId: Long,
+  userSlug: String,
   recipeId: Option[Long],
   title: String,
-  slug: String,
+  recipeSlug: String,
   ingredients: java.util.List[String],
   recipeBody: String,
   imageBaseUrlOpt: Option[(String, String)] = None
@@ -30,8 +31,8 @@
           <label for="slug">URL</label>
           <div class="input">
             <div class="input-prepend">
-              <span class="add-on">http://gingrsnap.com/@userId/</span>
-              <input class="slug span6" id="slug" name="slug" type="text" value="@slug" />
+              <span class="add-on">http://gingrsnap.com/@userSlug/</span>
+              <input class="slug span6" id="slug" name="slug" type="text" value="@recipeSlug" />
             </div>
           </div>
         </div>

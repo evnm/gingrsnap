@@ -44,19 +44,26 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
     })
   }
 
-  def findUniqueSlug(slug: String) = {
-    def isUnique(slug: String) = {
-      GingrsnapUser.find("slug = {slug}")
-        .on("slug" -> slug)
-        .first()
-        .isEmpty
-    }
+  /**
+   * Returns whether or not a slug is unique across all extant user slugs.
+   */
+  def slugIsUnique(slug: String): Boolean = {
+    GingrsnapUser.find("slug = {slug}")
+      .on("slug" -> slug)
+      .first()
+      .isEmpty
+  }
 
-    if (isUnique(slug))
+  /**
+   * Returns a unique user slug, which is either the argument slug or
+   * the argument slug with a numerical suffix.
+   */
+  def findUniqueSlug(slug: String) = {
+    if (slugIsUnique(slug))
       slug
     else {
       var suffix = 0
-      while (!isUnique(slug + suffix)) {
+      while (!slugIsUnique(slug + suffix)) {
         suffix += 1
       }
       slug + suffix

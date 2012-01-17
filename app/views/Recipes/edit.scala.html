@@ -1,5 +1,6 @@
 @(
   userId: Long,
+  userSlug: String,
   recipeId: Long,
   title: String,
   slug: String,
@@ -19,6 +20,7 @@
 @main(title = "Editing \"" + title + "\"") {
   @views.Recipes.html.form(
     userId,
+    userSlug,
     Some(recipeId),
     title,
     slug,

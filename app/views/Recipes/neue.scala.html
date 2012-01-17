@@ -1,7 +1,8 @@
 @(
   userId: Long,
+  userSlug: String,
   title: String,
-  slug: String,
+  recipeSlug: String,
   ingredients: java.util.List[String],
   recipeBody: String
 )(
@@ -13,5 +14,12 @@
 )
 
 @main("Create a new recipe") {
-  @views.Recipes.html.form(userId, None, title, slug, ingredients, recipeBody)
+  @views.Recipes.html.form(
+    userId,
+    userSlug,
+    None,
+    title,
+    recipeSlug,
+    ingredients,
+    recipeBody)
 }

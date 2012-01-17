@@ -54,6 +54,7 @@ object Recipes extends BaseController with Secure {
     case Some(user) => {
       html.neue(
         user.id(),
+        user.slug,
         title.getOrElse(""),
         slug.getOrElse(""),
         ingredients,
@@ -168,6 +169,7 @@ object Recipes extends BaseController with Secure {
           } else {
             html.edit(
               user.id(),
+              user.slug,
               recipeId,
               title.getOrElse(recipe.title),
               slug.getOrElse(recipe.slug),

@@ -26,6 +26,8 @@ object Accounts extends BaseController with Secure {
       html.edit(
         user.fullname,
         user.emailAddr,
+        play.configuration("application.baseUrl"),
+        user.slug,
         user.twAccessToken.isDefined && user.twAccessTokenSecret.isDefined,
         account.location.getOrElse(""),
         account.url.getOrElse(""),
@@ -38,13 +40,14 @@ object Accounts extends BaseController with Secure {
     }
   }
 
-  /*
+  /**
    * POST request to /account. Handles account save action.
    */
   def update(
     fullname: String,
     emailAddr: String,
     location: String,
+    slug: String,
     url: String,
     oldPassword: String,
     newPassword: String,
@@ -64,6 +67,13 @@ object Accounts extends BaseController with Secure {
         ).message("Email address has already been registered")
       }
 
+      if (slug.nonEmpty && slug != user.slug) {
+        Validation.isTrue(
+          "slug",
+          GingrsnapUser.slugIsUnique(slug)
+        ).message("Gingrsnap URL is taken by someone else. Please choose another.")
+      }
+
       if (url.nonEmpty) {
         // TODO: Ugh. Validation.url enforces protocol.
         Validation.url("url", url).message("Must provide a valid URL of your website")
@@ -71,7 +81,7 @@ object Accounts extends BaseController with Secure {
 
       if (newPassword.nonEmpty) {
         Validation.required("oldPassword", oldPassword)
-        .message("Old password is required when updating to new one")
+          .message("Old password is required when updating to new one")
         Validation.isTrue(
           "oldPassword",
           GingrsnapUser.validatePassword(user, oldPassword)
@@ -81,6 +91,7 @@ object Accounts extends BaseController with Secure {
       if (!Validation.hasErrors) {
         val newGingrsnapUser = user.copy(
           emailAddr = if (emailAddr.isEmpty) user.emailAddr else emailAddr,
+          slug = if (slug.isEmpty) user.slug else slug,
           password =
             if (newPassword.isEmpty)
               user.password

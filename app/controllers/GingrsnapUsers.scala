@@ -64,7 +64,9 @@ object GingrsnapUsers extends BaseController {
       Cache.delete(OAuth.mkCacheKey(TwAccessTokenCacheKey))
       Cache.delete(OAuth.mkCacheKey(TwUserObjCacheKey))
 
-      GingrsnapUser.create(GingrsnapUser(emailAddr, password, fullname, twToken, twSecret)).e match {
+      GingrsnapUser.create(
+        GingrsnapUser(emailAddr, password, fullname, twToken, twSecret)
+      ).e match {
         case Right(user) => {
           Authentication.authenticate(emailAddr, PasswordCredential(password))
           flash.success("Successfully created your account! Welcome to Gingrsnap, " + fullname + ".")

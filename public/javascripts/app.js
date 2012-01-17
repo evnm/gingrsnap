@@ -229,7 +229,7 @@ $(document).ready(function() {
         .addClass("success");
 
       // Delete the span.
-      inputDiv.children("span").remove();
+      inputDiv.children("span.help-inline").remove();
     },
     errorPlacement: function(error, element) {
       if ($(element).parent("div").children("span").length == 0) {
