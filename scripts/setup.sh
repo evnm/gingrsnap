@@ -6,7 +6,7 @@
 echo "Setting DATABASE_URL..."
 read -p "db username? " db_username
 read -s -p "db password? " db_pwd
-export DATABASE_URL=postgres://$db_username:$db_pwd@localhost/gingrsnapdb
+export DATABASE_URL=postgres://$db_username:$db_pwd@localhost/postgres
 echo
 
 echo "Setting AWS credentials..."
@@ -17,8 +17,5 @@ read -s -p "AWS secret key? " aws_secret_key
 export AWS_SECRET_KEY=$aws_secret_key
 echo
 export S3_BUCKET="gingrsnap.dev"
-
-echo "Starting postgres instance..."
-pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
 
 echo "Setup complete!"
