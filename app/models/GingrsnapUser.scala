@@ -94,10 +94,10 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
 
   override def create(user: GingrsnapUser) = {
     val result = super.create(user)
-    result map { user =>
-      Account.create(Account(NotAssigned, user.id()))
-      Cache.set(userIdCacheKey(user.id()), user, "1h")
-      user
+    result map { createdUser =>
+      Account.create(Account(NotAssigned, createdUser.id()))
+      Cache.set(userIdCacheKey(createdUser.id()), createdUser, "1h")
+      createdUser
     }
   }
 
@@ -158,7 +158,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] {
    * Looks up a user by encrypted password. Caches secondary index and returns
    * the looked-up user, if it exists.
    */
-  def getByEncryptedEmail(encryptedEmail: String) = {
+  def getByEncryptedEmail(encryptedEmail: String): Option[GingrsnapUser] = {
     Cache.get[java.lang.Long](encryptedEmailToUserIdCacheKey(encryptedEmail)) match {
       case Some(userId) => getById(userId.longValue)
       case None => getByEmail(Crypto.decryptAES(encryptedEmail)) map { user =>
