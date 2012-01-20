@@ -19,8 +19,10 @@ object Account extends Magic[Account] {
   protected[this] def accountCacheKey(userId: Long) = AccountObjKey + ":" + userId
 
   override def create(account: Account) = {
-    Cache.set(accountCacheKey(account.userId), account, "1h")
-    super.create(account)
+    super.create(account) map { createdAccount =>
+      Cache.set(accountCacheKey(createdAccount.userId), createdAccount, "1h")
+      createdAccount
+    }
   }
 
   /**
