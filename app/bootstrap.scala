@@ -2,12 +2,12 @@ import java.sql.Timestamp
 import models._
 import play.db.anorm._
 import play.jobs.{OnApplicationStart, Job}
-import play.Logger
+import play.{Logger, Play}
 import play.test._
 
 @OnApplicationStart class Bootstrap extends Job {
   override def doJob {
-    if (play.configuration("application.mode") == "dev") {
+    if (Play.mode.isDev) {
       // Import initialization data if the database is empty.
       if (GingrsnapUser.count().single() == 0) {
         Logger.info("Bootstrap task: Importing initialization data into database")
