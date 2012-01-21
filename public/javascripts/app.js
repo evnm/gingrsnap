@@ -23,6 +23,9 @@ var errorPlacement = function(error, element) {
  * Signup form validation.
  */
 $(document).ready(function() {
+  // Initially focus on name field.
+  $("input#fullname").focus()
+
   $("#signup-form").validate({
     highlight: highlight,
     unhighlight: unhighlight,
