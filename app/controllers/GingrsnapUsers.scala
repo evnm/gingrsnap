@@ -2,6 +2,7 @@ package controllers
 
 import java.util.Date
 import models.{Account, Image, Make, Recipe, GingrsnapUser}
+import notifiers.Mails
 import play._
 import play.cache.Cache
 import play.mvc.Controller
@@ -66,18 +67,16 @@ object GingrsnapUsers extends BaseController {
 
       GingrsnapUser.create(
         GingrsnapUser(emailAddr, password, fullname, twToken, twSecret)
-      ).e match {
-        case Right(user) => {
-          Authentication.authenticate(emailAddr, PasswordCredential(password))
-          flash.success("Successfully created your account! Welcome to Gingrsnap, " + fullname + ".")
-        }
-        case Left(error) => {
-          Logger.error("Error during creation of user, emailAddr(%s),password(%s),fullname(%s): %s",
-                       emailAddr, password, fullname, error)
-          flash.error("Unfortunately, there was an error while creating your account. Please try again.")
-        }
+      ).toOptionLoggingError map { createdUser =>
+        Authentication.authenticate(emailAddr, PasswordCredential(password))
+        flash.success("Successfully created your account! Welcome to Gingrsnap, " + fullname + ".")
+        Mails.welcome(createdUser)
+        Action(Application.index)
+      } getOrElse {
+        flash.error(
+          "Unfortunately, there was an error while creating your account. Please try again.")
+        Action(Application.index)
       }
-      Action(Application.index)
     }
   }
 

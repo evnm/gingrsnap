@@ -116,6 +116,7 @@ object Accounts extends BaseController with Secure {
           val newAccount = account.copy(
             location = newLocation,
             url = newUrl)
+
           Account.update(
             newAccount,
             if (image == null) None else Some(image))
