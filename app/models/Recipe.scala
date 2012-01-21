@@ -138,10 +138,13 @@ object Recipe extends Magic[Recipe] {
       }
     }
 
-    Recipe.update(recipe)
+    val now = System.currentTimeMillis
+    Recipe.update(recipe.copy(modifiedAt = new Timestamp(now)))
 
-    // Create a RecipeUpdate event if the recipe is published.
-    if (recipe.publishedAt.isDefined) {
+    // Create a RecipeUpdate event if the recipe is published and there hasn't
+    // been an identical event recently.
+    val lastUpdated = recipe.modifiedAt.getTime
+    if (recipe.publishedAt.isDefined && (now - lastUpdated > 21600000)) {
       val eventType = if (prevIsPublished) EventType.RecipeUpdate else EventType.RecipeCreation
       Event.create(
         Event(eventType.id, recipe.authorId, recipe.id()))
