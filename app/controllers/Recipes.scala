@@ -208,8 +208,8 @@ object Recipes extends BaseController with Secure {
   ) = Authentication.getLoggedInUser match {
     case Some(user) => {
       Recipe.getById(recipeId) match {
-        case Some(recipe) => {
-          if (recipe.authorId != user.id()) {
+        case Some(oldRecipe) => {
+          if (oldRecipe.authorId != user.id()) {
             flash.error("Looks like you tried to edit someone else's recipe. Try forking it instead.")
             Action(Application.index)
           } else {
@@ -223,27 +223,26 @@ object Recipes extends BaseController with Secure {
                 recipeBody = if (recipeBody.isEmpty) None else Some(recipeBody))
             } else {
               val timestamp = new Timestamp(System.currentTimeMillis())
-              val newRecipe = recipe.copy(
+              val newRecipe = oldRecipe.copy(
                 title = title,
                 slug = slug,
-                modifiedAt = timestamp,
                 publishedAt = if (isPublished) Some(timestamp) else None,
                 body = recipeBody)
               Recipe.update(
                 newRecipe,
                 ingredients,
                 if (image == null) None else Some(image),
-                recipe.publishedAt.isDefined)
+                oldRecipe.publishedAt.isDefined)
 
-              if (isPublished && recipe.publishedAt.isDefined) {
+              if (isPublished && oldRecipe.publishedAt.isDefined) {
                 flash.success("Success! Your recipe has been updated.")
-                Action(Recipes.show(user.slug, recipe.slug))
-              } else if (isPublished && recipe.publishedAt.isEmpty) {
+                Action(Recipes.show(user.slug, newRecipe.slug))
+              } else if (isPublished && oldRecipe.publishedAt.isEmpty) {
                 flash.success("Success! Your recipe has been published.")
-                Action(Recipes.show(user.slug, recipe.slug))
+                Action(Recipes.show(user.slug, newRecipe.slug))
               } else {
                 flash.success("Success! Your recipe has been saved.")
-                Action(Recipes.edit(recipe.id()))
+                Action(Recipes.edit(newRecipe.id()))
               }
             }
           }
