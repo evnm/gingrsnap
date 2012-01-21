@@ -23,9 +23,6 @@ var errorPlacement = function(error, element) {
  * Signup form validation.
  */
 $(document).ready(function() {
-  // Initially focus on name field.
-  $("input#fullname").focus()
-
   $("#signup-form").validate({
     highlight: highlight,
     unhighlight: unhighlight,
@@ -256,5 +253,28 @@ $(document).ready(function() {
         minlength: jQuery.format("Password must be At least {0} characters long.")
       }
     }
+  });
+});
+
+/**
+ * Contact modal form ajax.
+ */
+$(document).ready(function() {
+  $("form#feedback-form").submit(function(event) {
+    var that = $(this).find("button");
+    that.button('loading');
+    event.preventDefault();
+    $.post(
+      "/feedback",
+      { feedbackBody: $(this).find("textarea").val() },
+      function(response) {
+        if (response.error) {
+          // TODO
+        } else {
+          that.button("complete");
+          that.attr("disabled", "true");
+        }
+      }
+    );
   });
 });

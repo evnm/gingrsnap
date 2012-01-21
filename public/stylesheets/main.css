@@ -181,6 +181,10 @@ footer p {
   clear: both;
 }
 
+footer a {
+  cursor: pointer;
+}
+
 /**
  * Forms
  */
@@ -238,6 +242,12 @@ form#recipe-form textarea {
 div.actions button.cancel {
   float: right;
   color: #A60101;
+}
+
+div#contact-modal textarea {
+  resize: none;
+  height: 200px;
+  width: 518px;
 }
 
 /**

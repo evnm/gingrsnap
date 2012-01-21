@@ -20,6 +20,4 @@ object Application extends BaseController {
   }
 
   def about = views.Application.html.about()
-
-  def contact = views.Application.html.contact()
 }

@@ -34,6 +34,7 @@
     <script type="text/javascript" src="@asset("public/javascripts/wysiwyg.link.js")"></script>
     <script type="text/javascript" src="@asset("public/javascripts/bootstrap-buttons.js")"></script>
     <script type="text/javascript" src="@asset("public/javascripts/bootstrap-twipsy.js")"></script>
+    <script type="text/javascript" src="@asset("public/javascripts/bootstrap-modal.js")"></script>
     <link rel="stylesheet" media="screen" href="@asset("public/stylesheets/jquery.wysiwyg.css")">
     <script type="text/javascript" src="@asset("public/javascripts/app.js")"></script>
   </head>
@@ -73,7 +74,7 @@
       <div class="container">
         <ul class="nav">
           <li><a href="@action(Application.about)">About</a></li>
-          <li><a href="@action(Application.contact)">Contact</a></li>
+          <li><a data-controls-modal="contact-modal" data-backdrop="true" data-keyboard="true">Contact</a></li>
           <li><a href="https://twitter.com/gingrsnap">@@gingrsnap</a></li>
         </ul>
         <div class="clearfix"></div>
@@ -84,5 +85,6 @@
       </div>
     </footer>
     @views.common.html.gauges()
+    @views.common.html.contactModal()
   </body>
 </html>

@@ -10,4 +10,18 @@ public class Mails extends Mailer {
     setFrom("Gingrsnap <team@gingrsnap.com>");
     send(user);
   }
+
+  public static void feedback(String feedbackBody, GingrsnapUser user) {
+    setSubject("Feedback from " + user.fullname());
+    addRecipient("evan@gingrsnap.com");
+    setFrom("'" + user.fullname() + "' <" + user.emailAddr() + ">");
+    send(feedbackBody);
+  }
+
+  public static void feedback(String feedbackBody) {
+    setSubject("Anonymous Feedback");
+    addRecipient("evan@gingrsnap.com");
+    setFrom("Feedback <feedback@gingrsnap.com>");
+    send(feedbackBody);
+  }
 }

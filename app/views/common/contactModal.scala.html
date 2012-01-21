@@ -1,0 +1,14 @@
+<div id="contact-modal" class="modal hide fade" style="display: none;">
+  <form id="feedback-form" method="POST" action="@action(controllers.Feedback.send())">
+    <div class="modal-header">
+      <a href="#" class="close">&times;</a>
+      <h3>Contact Gingrsnap</h3>
+    </div>
+    <div class="modal-body">
+      <textarea name="feedbackBody"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn primary" data-loading-text="Sending..." data-complete-text="Your message has been sent" type="submit">Send</button>
+    </div>
+</form>
+</div>
