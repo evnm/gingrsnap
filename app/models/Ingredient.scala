@@ -40,7 +40,10 @@ object Ingredient extends Magic[Ingredient] {
    */
   def createAllByRecipeId(recipeId: Long, ingredients: Seq[String]) = {
     for (ingr <- ingredients) {
-      create(Ingredient(ingr, recipeId))
+      // Because of a bug in Play's form data parsing, some of these ingredients
+      // may be null.
+      if (ingr != null)
+        create(Ingredient(ingr, recipeId))
     }
   }
 
