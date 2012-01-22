@@ -162,13 +162,17 @@ footer {
   color: #e0c5b6;
 }
 
+footer a {
+  color: #e0c5b6;
+}
+
 footer .nav .brand {
   font-size: 24px;
   color: #b8825f;
   text-shadow: 0 -2px 0 rgba(160, 113, 82, 1);
 }
 
-footer a, footer .nav a {
+footer .nav a {
   color: #f7f6f5;
   font-weight: bold;
 }
