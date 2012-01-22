@@ -76,8 +76,8 @@ object Recipe extends Magic[Recipe] {
       Ingredient.createAllByRecipeId(createdRecipe.id(), ingredients)
 
       if (recipe.publishedAt.isDefined) {
-        // Create a RecipeCreation event.
-        println(Event.create(Event(EventType.RecipeCreation.id, createdRecipe.authorId, createdRecipe.id())))
+        // Create a RecipePublish event.
+        Event.create(Event(EventType.RecipePublish.id, createdRecipe.authorId, createdRecipe.id()))
       }
 
       MayErr(Right(createdRecipe))
@@ -145,7 +145,7 @@ object Recipe extends Magic[Recipe] {
     // been an identical event recently.
     val lastUpdated = recipe.modifiedAt.getTime
     if (recipe.publishedAt.isDefined && (now - lastUpdated > 21600000)) {
-      val eventType = if (prevIsPublished) EventType.RecipeUpdate else EventType.RecipeCreation
+      val eventType = if (prevIsPublished) EventType.RecipeUpdate else EventType.RecipePublish
       Event.create(
         Event(eventType.id, recipe.authorId, recipe.id()))
     }

@@ -44,7 +44,7 @@ import play.test._
               Event.create(
                 Event(
                   NotAssigned,
-                  EventType.RecipeCreation.id,
+                  EventType.RecipePublish.id,
                   subjectId = recipe.authorId,
                   objectId = recipe.id(),
                   createdAt = recipe.createdAt))

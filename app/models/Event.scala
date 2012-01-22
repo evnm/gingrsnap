@@ -10,7 +10,7 @@ import scala.reflect.Manifest
  * Event ~= "subject verbed object"
  *
  * EventTypes:
- *   * Created a recipe
+ *   * Published a recipe
  *   * Forked a recipe
  *   * Followed a recipe (i.e. made the dish)
  */
@@ -32,7 +32,7 @@ case class RecipeObject(obj: Recipe) extends EventObject
 
 object EventType extends Enumeration {
   type EventType = Value
-  val RecipeCreation = Value(0)
+  val RecipePublish = Value(0)
   val RecipeFork = Value(1)
   val RecipeUpdate = Value(2)
   val RecipeMake = Value(3)
@@ -84,7 +84,7 @@ object Event extends Magic[Event] {
     // Eventually, do something like this:
     /*
     EventType(event.eventType) match {
-      case eventType @ RecipeCreation => (
+      case eventType @ RecipePublish => (
         GingrsnapUserSubject(GingrsnapUser.getById(event.subjectId)),
         eventType,
         RecipeObject(Recipe.getById(event.objectId))

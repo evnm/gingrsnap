@@ -8,8 +8,8 @@
   @eventFeed.map { eventTuple =>
     <li>
       @eventTuple match {
-        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeCreation, RecipeObject(obj)) => {
-          @views.common.eventItems.html.recipeCreation(createdAt, subject, obj)
+        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipePublish, RecipeObject(obj)) => {
+          @views.common.eventItems.html.recipePublish(createdAt, subject, obj)
         }
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeFork, RecipeObject(obj)) => {
           @views.common.eventItems.html.recipeFork(createdAt, subject, obj)

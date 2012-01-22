@@ -39,7 +39,6 @@ object Make extends Magic[Make] {
 
   override def create(make: Make) = {
     super.create(make) map { createdMake =>
-      // Create a RecipeCreation event.
       Event.create(
         Event(EventType.RecipeMake.id, createdMake.userId, createdMake.recipeId)
       )
