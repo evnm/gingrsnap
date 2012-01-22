@@ -66,7 +66,7 @@ object Authentication extends Controller {
       }
     }
     flash.keep("url");
-    views.Login.html.login("Login")
+    views.Login.html.login()
   }
 
 

@@ -1,4 +1,9 @@
-@()(
+@(
+  twUsername: String,
+  twAccessToken: String,
+  twAccessTokenSecret: String,
+  imgUrl: String
+)(
   implicit
   flash: play.mvc.Scope.Flash
 )
@@ -9,7 +14,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Gingrsnap - Log in</title>
+    <title>Gingrsnap - Connect with Twitter</title>
     <meta name="description" content="">
     <meta name="Evan Meagher" content="">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -23,7 +28,7 @@
     <div class="container">
       <div class="login">
         <a class="brand" href="@action(Application.index)">Gingrsnap</a>
-	      <h1>Log in</h1>
+	      <h1>Connect with Twitter</h1>
 
         @if(flash.get("error") != null) {
           <p class="alert-message error">
@@ -36,26 +41,32 @@
           </p>
         }
 
-        <form id="LoginForm" class="form-stacked" name="LoginForm" method="POST" action="@action(controllers.Authentication.authenticate)">
+        <form id="connect-twitter-form" class="connect-twitter-form form-stacked" method="POST">
+          <input name="twUsername" type="hidden" value="@twUsername" />
+          <input name="imgUrl" type="hidden" value="@imgUrl" />
+          <input name="twAccessToken" type="hidden" value="@twAccessToken" />
+          <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
 		      <div class="clearfix">
 			      <label for="username">Email address</label>
             <div class="input">
-			        <input type="text" name="username" id="username" value="@flash.get("username")" tabindex="1" />
+			        <input type="text" name="emailAddr" id="emailAddr" tabindex="1" />
             </div>
 		      </div>
 		      <div class="clearfix">
 			      <label for="password">Password <a href="#">Forgot?</a></label>
             <div class="input">
-			        <input type="password" name="password" id="password" value="" tabindex="2" />
+			        <input type="password" name="password" id="password" tabindex="2" />
             </div>
 		      </div>
 			    <input type="hidden" name="remember" value="true" />
-			    <input type="submit" class="btn primary" id="signin" value="Sign in" tabindex="3" />
+			    <input type="submit" class="btn primary" id="signin" value="Connect" tabindex="3" />
 	      </form>
 
-        <div id="external-auth">
-          <a class="btn large primary" href="/oauth/twitter">Sign in with Twitter&raquo;</a>
-          <p>Sign into Gingrsnap with one click if your account is connected to Twitter. We'll walk you through connecting it if it isn't.</p>
+        <div>
+          @if(!imgUrl.isEmpty) {
+            <img src="@imgUrl" />
+          }
+          <p>The Twitter account <a href="https://twitter.com/@twUsername">@@@twUsername</a> isn't connected to Gingrsnap. Enter your Gingrsnap credentials to complete the process.</p>
         </div>
 
         <p id="notamember">Not a member yet? <a href="@action(GingrsnapUsers.neue())">Sign up here.</a></p>
@@ -64,7 +75,7 @@
 
     <script type="text/javascript">
       $(document).ready(function() {
-        $("form#LoginForm input#username").focus()
+        $("input#emailAddr").focus()
       });
     </script>
     @views.common.html.gauges()

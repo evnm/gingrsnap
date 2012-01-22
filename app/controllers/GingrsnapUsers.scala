@@ -9,28 +9,28 @@ import play.mvc.Controller
 import play.data.validation.Validation
 import scala.collection.JavaConversions._
 import secure.{PasswordCredential, Security}
-import twitter4j.{User => TwUser}
-import twitter4j.auth.{AccessToken => TwAccessToken}
+import twitter4j.TwitterFactory
+import twitter4j.auth.AccessToken
 
 object GingrsnapUsers extends BaseController {
-  import Constants.{TwAccessTokenCacheKey, TwUserObjCacheKey}
+  import Constants.TwIfaceCacheKey
   import views.GingrsnapUsers.html
 
   /**
    * Handles GET to signup page.
    */
-  def neue() = Cache.get[TwAccessToken](OAuth.mkCacheKey(TwAccessTokenCacheKey)) match {
-    case Some(twAccessToken) => {
-      val (fullname, location, imgUrl) = Cache.get[TwUser](
-        OAuth.mkCacheKey(TwUserObjCacheKey)
-      ) map { twGingrsnapUser =>
-        (twGingrsnapUser.getName(), twGingrsnapUser.getLocation(), twGingrsnapUser.getProfileImageURL().toString)
-      } getOrElse(("", "", ""))
+  def neue(twAccessToken: String = "", twAccessTokenSecret: String = "") = {
+    if (twAccessToken.nonEmpty && twAccessTokenSecret.nonEmpty) {
+      val twitterIface = new TwitterFactory().getInstance()
+      twitterIface.setOAuthAccessToken(new AccessToken(twAccessToken, twAccessTokenSecret))
+      val twUser = twitterIface.verifyCredentials()
+      val (fullname, location, imgUrl) =
+        (twUser.getName(), twUser.getLocation(), twUser.getProfileImageURL().toString)
 
-      html.neue(fullname, location, imgUrl,
-                twAccessToken.getToken(), twAccessToken.getTokenSecret())
+      html.neue(fullname, location, imgUrl, twAccessToken, twAccessTokenSecret)
+    } else {
+      html.neue()
     }
-    case None => html.neue()
   }
 
   /**
@@ -39,7 +39,9 @@ object GingrsnapUsers extends BaseController {
   def create(
     fullname: String,
     emailAddr: String,
-    password: String
+    password: String,
+    twAccessToken: String = "",
+    twAccessTokenSecret: String = ""
   ) = {
     Validation.required("fullname", fullname).message("Name is required")
     Validation.isTrue(
@@ -57,13 +59,8 @@ object GingrsnapUsers extends BaseController {
     if (Validation.hasErrors) {
       neue()
     } else {
-      val (twToken, twSecret) = Cache.get[TwAccessToken](
-        OAuth.mkCacheKey(TwAccessTokenCacheKey)
-      ) map { at =>
-        (Some(at.getToken()), Some(at.getTokenSecret()))
-      } getOrElse((None, None))
-      Cache.delete(OAuth.mkCacheKey(TwAccessTokenCacheKey))
-      Cache.delete(OAuth.mkCacheKey(TwUserObjCacheKey))
+      val twToken = if (twAccessToken.nonEmpty) Some(twAccessToken) else None
+      val twSecret = if (twAccessTokenSecret.nonEmpty) Some(twAccessTokenSecret) else None
 
       GingrsnapUser.create(
         GingrsnapUser(emailAddr, password, fullname, twToken, twSecret)

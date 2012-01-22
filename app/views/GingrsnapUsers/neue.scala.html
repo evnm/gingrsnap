@@ -18,6 +18,9 @@
     <div class="span10">
       <h1>Create an identity on Gingrsnap!</h1>
       <form id="signup-form" class="form-stacked" method="POST">
+        <input name="twAccessToken" type="hidden" value="@twAccessToken" />
+        <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
+
         @if(!imgUrl.isEmpty) {
           <img src="@imgUrl" />
         }
@@ -58,9 +61,9 @@
     <div class="span6">
       <div class="well">
         @if(twAccessToken.isEmpty && twAccessTokenSecret.isEmpty) {
-          <p><a class="btn primary" href="@action(OAuth.authenticate("twitter"))">Sign up with Twitter&raquo;</a></p>
+          <p><a class="btn primary" href="@action(OAuth.connect("twitter"))">Sign up with Twitter&raquo;</a></p>
         } else {
-          <p><a class="btn" href="@action(GingrsnapUsers.neue)">Don't connect with Twitter</a></p>
+          <p><a class="btn" href="@action(GingrsnapUsers.neue())">Don't connect with Twitter</a></p>
         }
       </div>
     </div>
