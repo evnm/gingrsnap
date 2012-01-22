@@ -69,6 +69,14 @@ a.brand:hover {
 }
 
 /**
+ * Flash/alert message bar.
+ */
+div.alert-message {
+  margin: 0;
+  text-align: center;
+}
+
+/**
  * Navigation lists.
  */
 ul.nav li {
