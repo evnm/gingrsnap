@@ -119,7 +119,6 @@ object Event extends Magic[Event] {
         """)
     .on("userId" -> userId, "n" -> n)
     .as(Event *)
-    println("result: " + result)
     result
   }
 }
