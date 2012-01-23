@@ -43,7 +43,7 @@
           </a>
         }
         <p>
-          This recipe has been made <span id="total-make-count">@totalMakeCount</span> time@JavaExtensions.pluralize(totalMakeCount).
+          This recipe has been made <span id="total-make-count">@totalMakeCount</span> <span id="total-make-times">time@JavaExtensions.pluralize(totalMakeCount)</span>.
         </p>
 
         @connectedUserOpt.map { connectedUser =>
@@ -51,7 +51,7 @@
           <div>
             @userMakeCountOpt.map { userMakeCount =>
               <p>
-                You've made this recipe <span id="user-make-count">@userMakeCount</span> time@JavaExtensions.pluralize(userMakeCount).
+                You've made this recipe <span id="user-make-count">@userMakeCount</span> <span id="user-make-times">time@JavaExtensions.pluralize(userMakeCount)</span>.
               </p>
             }
             @if(isMakable) {

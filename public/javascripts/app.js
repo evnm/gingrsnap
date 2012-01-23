@@ -169,8 +169,20 @@ $(document).ready(function() {
             that.button("complete");
             that.attr("disabled", "true");
             var totalMakeCount = $("span#total-make-count");
+            // Add or remove 's' from "time[s]" label, if necessary.
+            if (totalMakeCount.text() == "0") {
+              $("span#total-make-times").text("time");
+            } else if (totalMakeCount.text() == "1") {
+              $("span#total-make-times").text("times");
+            }
             totalMakeCount.text(parseInt(totalMakeCount.text()) + 1);
+
             var userMakeCount = $("span#user-make-count");
+            if (userMakeCount.text() == "0") {
+              $("span#user-make-times").text("time");
+            } else if (userMakeCount.text() == "1") {
+              $("span#user-make-times").text("times");
+            }
             userMakeCount.text(parseInt(userMakeCount.text()) + 1);
           }
         }
