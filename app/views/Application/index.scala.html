@@ -7,11 +7,13 @@
   errors: Map[String, play.data.validation.Error]
 )
 
+@import com.ocpsoft.pretty.time.PrettyTime
+
 @main("") {
   <div class="row">
     <div class="span10">
       <h1>Most recent recipes</h1>
-      @views.common.html.eventFeed(eventFeed)
+      @views.common.html.eventFeed(new PrettyTime(), eventFeed)
     </div>
     <div class="span6">
       <div class="well">

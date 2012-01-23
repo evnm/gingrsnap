@@ -1,6 +1,8 @@
 @(
+  prettyTime: com.ocpsoft.pretty.time.PrettyTime,
   eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)]
 )
+
 
 @import models._
 
@@ -9,16 +11,16 @@
     <li>
       @eventTuple match {
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipePublish, RecipeObject(obj)) => {
-          @views.common.eventItems.html.recipePublish(createdAt, subject, obj)
+          @views.common.eventItems.html.recipePublish(prettyTime, createdAt, subject, obj)
         }
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeFork, RecipeObject(obj)) => {
-          @views.common.eventItems.html.recipeFork(createdAt, subject, obj)
+          @views.common.eventItems.html.recipeFork(prettyTime, createdAt, subject, obj)
         }
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeUpdate, RecipeObject(obj)) => {
-          @views.common.eventItems.html.recipeUpdate(createdAt, subject, obj)
+          @views.common.eventItems.html.recipeUpdate(prettyTime, createdAt, subject, obj)
         }
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeMake, RecipeObject(obj)) => {
-          @views.common.eventItems.html.recipeMake(createdAt, subject, obj)
+          @views.common.eventItems.html.recipeMake(prettyTime, createdAt, subject, obj)
         }
       }
     </li>

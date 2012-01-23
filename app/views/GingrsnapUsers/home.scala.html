@@ -10,13 +10,14 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
+@import com.ocpsoft.pretty.time.PrettyTime
 @import controllers.Recipes
 
 @main(title = "Your dashboard") {
   <div class="row">
     <div class="span10">
       <h1>Most recent recipes</h1>
-      @views.common.html.eventFeed(eventFeed)
+      @views.common.html.eventFeed(new PrettyTime(), eventFeed)
     </div>
 
     <div class="span6">
