@@ -1,7 +1,7 @@
 package controllers
 
 import java.util.Date
-import models.{Account, Image, Make, Recipe, GingrsnapUser}
+import models.{Account, Event, Image, Make, Recipe, GingrsnapUser}
 import notifiers.Mails
 import play._
 import play.cache.Cache
@@ -81,16 +81,16 @@ object GingrsnapUsers extends BaseController {
    * Show a user's profile
    */
   def show(userSlug: String) = GingrsnapUser.getBySlug(userSlug) map { user =>
-    val (publishedRecipes, drafts) = Recipe.getByUserId(user.id()).partition { recipe =>
-      recipe.publishedAt.isDefined
+    val eventFeed = Event.getMostRecentByUserId(user.id(), 20) map { e =>
+      Event.hydrate(e)
     }
     html.show(
       user,
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
-      publishedRecipes,
-      drafts,
-      Make.getCountByUserId(user.id()))
+      Recipe.getByUserId(user.id()),
+      Make.getCountByUserId(user.id()),
+      eventFeed)
   } getOrElse {
     NotFound("No such user")
   }

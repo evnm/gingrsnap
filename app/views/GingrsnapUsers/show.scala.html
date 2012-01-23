@@ -2,9 +2,9 @@
   user: models.GingrsnapUser,
   account: models.Account,
   profileImageUrlOpt: Option[(String, String)],
-  publishedRecipes: Seq[models.Recipe],
-  drafts: Seq[models.Recipe],
-  totalMakeCount: Long
+  usersRecipes: Seq[models.Recipe],
+  totalMakeCount: Long,
+  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -13,6 +13,7 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
+@import com.ocpsoft.pretty.time.PrettyTime
 @import controllers._
 @import java.text.DateFormat
 
@@ -41,34 +42,28 @@
         <dd>@totalMakeCount</dd>
       </div>
 
-      <h2>Recipes</h2>
-      @if(publishedRecipes.isEmpty) {
-        <p>
-          You haven't written any recipes yet. <a href="@action(Recipes.neue())" title="Create a new recipe">Go start one now!</a>
-        </p>
-      } else {
-        <ul>
-          @for(recipe <- publishedRecipes) {
-            <li><a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a></li>
-          }
-        </ul>
-      }
+      @views.common.html.eventFeed(new PrettyTime(), eventFeed)
     </div>
 
     <div class="span6">
       <div class="well">
-        <a class="btn primary" href="@action(Recipes.neue())">Create a new recipe</a>
-        @if(drafts.nonEmpty) {
-          <h2>Drafts</h2>
-          <ul class="draft-list">
-            @for(draft <- drafts) {
+        <h2>Your recipes</h2>
+        <a class="btn primary new-recipe" href="@action(Recipes.neue())">Create a new recipe</a>
+        @if(usersRecipes.nonEmpty) {
+          <ul>
+            @usersRecipes.map { recipe =>
               <li>
-                <a href="@action(Recipes.edit(draft.id()))">@draft.title</a>
-                <span id="recipe-id" style="display: none;">@draft.id()</span>
-                <a class="close" href="#">x</a>
+                @if(recipe.publishedAt.isEmpty) {
+                <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
+                <span class="label">Draft</span>
+                } else {
+                  <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
+                }
               </li>
             }
           </ul>
+        } else {
+          <p>You don't have any recipes yet.</p>
         }
       </div>
     </div>
