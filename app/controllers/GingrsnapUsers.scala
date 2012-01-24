@@ -86,6 +86,7 @@ object GingrsnapUsers extends BaseController {
     }
     html.show(
       user,
+      Authentication.getLoggedInUser,
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
       Recipe.getByUserId(user.id()),

@@ -1,5 +1,6 @@
 @(
   user: models.GingrsnapUser,
+  connectedUserOpt: Option[models.GingrsnapUser],
   account: models.Account,
   profileImageUrlOpt: Option[(String, String)],
   usersRecipes: Seq[models.Recipe],
@@ -47,8 +48,15 @@
 
     <div class="span6">
       <div class="well">
-        <h2>Your recipes</h2>
-        <a class="btn primary new-recipe" href="@action(Recipes.neue())">Create a new recipe</a>
+        @connectedUserOpt match {
+          case Some(connectedUser) if user.id() == connectedUser.id() => {
+            <h2>Your recipes</h2>
+            <a class="btn primary new-recipe" href="@action(Recipes.neue())">Create a new recipe</a>
+          }
+          case _ => {
+            <h2>@user.fullname's recipes</h2>
+          }
+        }
         @if(usersRecipes.nonEmpty) {
           <ul>
             @usersRecipes.map { recipe =>
