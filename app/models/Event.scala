@@ -113,7 +113,7 @@ object Event extends Magic[Event] {
   def getMostRecentByUserId(userId: Long, n: Int): Seq[Event] = {
     val result = SQL("""
         select * from Event
-        where subjectId = {userId} or objectId = {userId}
+        where subjectId = {userId}
         order by createdAt desc
         limit {n}
         """)
