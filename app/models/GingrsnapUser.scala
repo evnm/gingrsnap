@@ -93,6 +93,14 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
   }
 
   /**
+   * Updates a user's passwords.
+   */
+  def updatePassword(user: GingrsnapUser, newPassword: String) = {
+    GingrsnapUser.update(
+      user.copy(password = Crypto.passwordHash(user.salt + newPassword)))
+  }
+
+  /**
    * Validates a user against a password string.
    */
   def validatePassword(user: GingrsnapUser, password: String): Boolean =

@@ -24,4 +24,11 @@ public class Mails extends Mailer {
     setFrom("Feedback <feedback@gingrsnap.com>");
     send(feedbackBody);
   }
+
+  public static void resetPassword(String emailAddr, String fullname, String confirmationUrl) {
+    setSubject("Reset your Gingrsnap password");
+    addRecipient(emailAddr);
+    setFrom("Gingrsnap <noreply@gingrsnap.com>");
+    send(fullname, confirmationUrl);
+  }
 }

@@ -1,13 +1,13 @@
 package controllers
 
 import java.io.File
-import models.{Account, GingrsnapUser, Image}
+import models.{Account, GingrsnapUser, Image, PasswordResetRequest}
 import play._
 import play.data.validation.Validation
-import play.db.anorm.Id
+import play.db.anorm.{Id, NotAssigned}
 import play.libs.Crypto
 import play.mvc._
-import secure._
+import secure.{NonSecure, PasswordCredential}
 
 object Accounts extends BaseController with Secure {
   import views.Accounts.html
@@ -133,6 +133,94 @@ object Accounts extends BaseController with Secure {
     }
     case None => {
       Logger.error("Accounts.update: No user logged in")
+      Action(Application.index)
+    }
+  }
+
+  /**
+   * Displays password reset prompt page.
+   */
+  @NonSecure def passwordResetPrompt() = {
+    html.passwordResetRequestForm()
+  }
+
+  /**
+   * Handles password-reset POST request.
+   */
+  @NonSecure def sendPasswordResetRequest(emailAddr: String) = GingrsnapUser.getByEmail(emailAddr) match {
+    case Some(user) => {
+      // One reset per 24-hour period.
+      val prevReset = PasswordResetRequest.getByUserId(user.id())
+      if (prevReset.isEmpty || PasswordResetRequest.isCompletable(prevReset.get)) {
+        (Account.passwordReset(user) map { _: PasswordResetRequest =>
+          html.passwordResetEmailSent(user.emailAddr)
+        }).toOptionLoggingError.getOrElse {
+          flash.error("A problem arose during the password reset process")
+          Action(Application.index)
+        }
+      } else {
+        flash.error("You can only send one password reset request every 24 hours")
+        Action(Application.index)
+      }
+    }
+    case None => {
+      flash.error("There's no user registered to that email address")
+      html.passwordResetRequestForm()
+    }
+  }
+
+  /**
+   * Displays password-reset form.
+   */
+  @NonSecure def passwordResetForm(uuid: String) = PasswordResetRequest.getById(uuid) match {
+    case Some(pwdResetRequest) if !pwdResetRequest.resetCompleted =>  {
+      if (PasswordResetRequest.isCompletable(pwdResetRequest)) {
+        GingrsnapUser.getById(pwdResetRequest.userId) map { user =>
+          html.passwordResetForm(user.id(), user.fullname, pwdResetRequest.id())
+        } getOrElse(Action(Application.index))
+      } else {
+        flash.error("Your most recent password reset request has expired. Please try again.")
+        Action(Application.index)
+      }
+    }
+    case _ => {
+      flash.error("Invalid password reset request")
+      Action(Application.index)
+    }
+  }
+
+  /**
+   * Reset a user's password to a given value.
+   */
+  @NonSecure def resetPassword(
+    userId: Long,
+    pwdResetRequestId: String,
+    newPassword: String,
+    newPasswordConfirm: String
+  ) = PasswordResetRequest.getById(pwdResetRequestId) match {
+    case Some(pwdResetRequest) => {
+      GingrsnapUser.getById(pwdResetRequest.userId) map { user =>
+        Validation.isTrue("newPassword", newPassword == newPasswordConfirm)
+          .message("Password and confirmation must be equal")
+        Validation.isTrue("newPassword", newPassword.size >= 6)
+          .message("Password must be at least 6 characters long")
+
+        if (!Validation.hasErrors) {
+          GingrsnapUser.updatePassword(user, newPassword)
+          Authentication.authenticate(user.emailAddr, PasswordCredential(newPassword))
+          PasswordResetRequest.update(pwdResetRequest.copy(resetCompleted = true))
+          flash.success("Password successfully updated")
+          Action(Accounts.edit)
+        } else {
+          html.passwordResetForm(user.id(), user.fullname, pwdResetRequestId)
+        }
+      } getOrElse {
+        flash.error("Invalid password reset request")
+        Action(Application.index)
+      }
+    }
+    case None => {
+      flash.error("Invalid password reset request")
       Action(Application.index)
     }
   }

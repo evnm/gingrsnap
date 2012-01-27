@@ -26,7 +26,7 @@
   </head>
   <body>
     <div class="container">
-      <div class="login">
+      <div class="overlay">
         <a class="brand" href="@action(Application.index)">Gingrsnap</a>
 	      <h1>Connect with Twitter</h1>
 
@@ -41,7 +41,7 @@
           </p>
         }
 
-        <form id="connect-twitter-form" class="connect-twitter-form form-stacked" method="POST">
+        <form id="connect-twitter-form" class="form-stacked" method="POST">
           <input name="twUsername" type="hidden" value="@twUsername" />
           <input name="imgUrl" type="hidden" value="@imgUrl" />
           <input name="twAccessToken" type="hidden" value="@twAccessToken" />
@@ -53,7 +53,7 @@
             </div>
 		      </div>
 		      <div class="clearfix">
-			      <label for="password">Password <a href="#">Forgot?</a></label>
+			      <label for="password">Password <a href="@action(Accounts.passwordResetPrompt())">Forgot?</a></label>
             <div class="input">
 			        <input type="password" name="password" id="password" tabindex="2" />
             </div>

@@ -263,9 +263,9 @@ div#contact-modal textarea {
 }
 
 /**
- * Login page.
+ * Overlay pages (login, password reset).
  */
-div.login {
+div.overlay {
   margin: 22px auto;
   padding: 24px 48px;
   width: 600px;
@@ -275,33 +275,33 @@ div.login {
   box-shadow: 1px 1px 2px #666;
 }
 
-div.login a.brand {
+div.overlay a.brand {
   display: block;
   font-size: 48px;
   margin-bottom: 16px;
 }
 
-div.login > form, div.login > div#external-auth {
+div.overlay > form, div.overlay > div#external-auth {
   width: 280px;
   text-align: left;
 }
 
-div.login > form {
+div.overlay > form {
   float: left;
 }
 
-div.login > div#external-auth {
+div.overlay > div#external-auth {
   float: right;
   margin-top: 18px;
 }
 
-div.login > div#external-auth > p {
+div.overlay > div#external-auth > p {
   margin-top: 16px;
   font-size: .9em;
   line-height: 1.6em;
 }
 
-div.login > p#notamember {
+div.overlay > p#notamember {
   clear: both;
   padding-top: 18px;
   font-size: 1.2em;

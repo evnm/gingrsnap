@@ -1,2 +1,2 @@
 #!/bin/sh
-psql -d postgres --command "drop table play_evolutions, ingredient, recipe, account, gingrsnapuser, image, recipeimage, gingrsnapuserimage, make, event cascade;"
+psql -d postgres --command "drop table play_evolutions, ingredient, recipe, account, gingrsnapuser, image, recipeimage, gingrsnapuserimage, make, event, passwordresetrequest cascade;"

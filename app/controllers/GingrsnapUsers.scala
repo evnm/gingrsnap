@@ -8,7 +8,7 @@ import play.cache.Cache
 import play.mvc.Controller
 import play.data.validation.Validation
 import scala.collection.JavaConversions._
-import secure.{PasswordCredential, Security}
+import secure.PasswordCredential
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 

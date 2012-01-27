@@ -2,11 +2,14 @@ package models
 
 import controllers.Constants.AccountObjKey
 import java.io.File
+import java.sql.Timestamp
+import java.util.UUID
+import notifiers.Mails
 import play.cache.Cache
-import play.db.anorm._
 import play.db.anorm._
 import play.db.anorm.defaults.Magic
 import play.db.anorm.SqlParser._
+import play.utils.Scala.MayErr
 
 case class Account(
   id: Pk[Long],
@@ -46,6 +49,24 @@ object Account extends Magic[Account] {
     }
 
     Account.update(account)
+  }
+
+  /**
+   * Creates a PasswordResetRequest and emails the user.
+   */
+  def passwordReset(user: GingrsnapUser): MayErr[SqlRequestError, PasswordResetRequest] = {
+    val pwdResetRequest = PasswordResetRequest(
+      Id(UUID.randomUUID().toString),
+      user.id(),
+      new Timestamp(System.currentTimeMillis()),
+      false)
+    PasswordResetRequest.insert(pwdResetRequest) map { _ =>
+      val confirmationUrl = "%saccount/password_reset/%s".format(
+        play.configuration("application.baseUrl"),
+        pwdResetRequest.id())
+      Mails.resetPassword(user.emailAddr, user.fullname, confirmationUrl)
+      pwdResetRequest
+    }
   }
 
   /**
