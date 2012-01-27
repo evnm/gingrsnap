@@ -14,24 +14,7 @@ case class Ingredient(
   createdAt: Timestamp
 )
 
-object Ingredient extends Magic[Ingredient] {
-  override def extendExtractor[C](f:(Manifest[C] =>
-    Option[ColumnTo[C]]), ma:Manifest[C]):Option[ColumnTo[C]] = (ma match {
-    case m if m == Manifest.classType(classOf[Timestamp]) =>
-      Some(rowToTimestamp)
-    case _ => None
-  }).asInstanceOf[Option[ColumnTo[C]]]
-
-  def rowToTimestamp: Column[Timestamp] = {
-    Column[Timestamp](transformer = { (value, meta) =>
-      val MetaDataItem(qualified, nullable, clazz) = meta
-      value match {
-        case time:java.sql.Timestamp => Right(time)
-        case _ => Left(TypeDoesNotMatch("Cannot convert " + value + " to Timestamp for column " + qualified))
-      }
-    })
-  }
-
+object Ingredient extends Magic[Ingredient] with Timestamped[Ingredient] {
   def apply(name: String, recipeId: Long) =
     new Ingredient(NotAssigned, name, recipeId, new Timestamp(System.currentTimeMillis()))
 

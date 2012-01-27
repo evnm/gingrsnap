@@ -3,7 +3,6 @@ package models
 import java.io.File
 import java.sql.Timestamp
 import play.db.anorm._
-import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm.SqlParser._
 import play.utils.Scala.MayErr
@@ -21,24 +20,7 @@ case class Recipe(
   parentRecipe: Option[Long] = None
 )
 
-object Recipe extends Magic[Recipe] {
-  override def extendExtractor[C](f:(Manifest[C] =>
-    Option[ColumnTo[C]]), ma:Manifest[C]):Option[ColumnTo[C]] = (ma match {
-    case m if m == Manifest.classType(classOf[Timestamp]) =>
-      Some(rowToTimestamp)
-    case _ => None
-  }).asInstanceOf[Option[ColumnTo[C]]]
-
-  def rowToTimestamp: Column[Timestamp] = {
-    Column[Timestamp](transformer = { (value, meta) =>
-      val MetaDataItem(qualified, nullable, clazz) = meta
-      value match {
-        case time:java.sql.Timestamp => Right(time)
-        case _ => Left(TypeDoesNotMatch("Cannot convert " + value + " to Timestamp for column " + qualified))
-      }
-    })
-  }
-
+object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   def apply(
     title: String,
     slug: String,
