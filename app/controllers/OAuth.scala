@@ -52,6 +52,7 @@ object OAuth extends BaseController with Secure {
 
     if (oauth_token.isEmpty && oauth_verifier.isEmpty) {
       // Set Twitter OAuth flow in motion.
+      flash.keep
       Redirect(requestToken.getAuthenticationURL())
     } else {
       val accessToken = twitterIface.getOAuthAccessToken(requestToken, oauth_verifier)
@@ -62,7 +63,13 @@ object OAuth extends BaseController with Secure {
           // User with oauth creds is in db, log them in.
           Authentication.authenticate(user.emailAddr, TwAuthCredential(accessToken))
           Cache.delete(mkCacheKey(TwIfaceCacheKey))
-          Action(Application.index)
+
+          val url = flash.get("url")
+          if (url != null) {
+            Redirect(url)
+          } else {
+            Action(Application.index)
+          }
         }
         case None => {
           // Redirect to "connect twitter user with gingrsnap user page".
