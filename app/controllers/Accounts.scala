@@ -150,8 +150,8 @@ object Accounts extends BaseController with Secure {
   @NonSecure def sendPasswordResetRequest(emailAddr: String) = GingrsnapUser.getByEmail(emailAddr) match {
     case Some(user) => {
       // One reset per 24-hour period.
-      val prevReset = PasswordResetRequest.getByUserId(user.id())
-      if (prevReset.isEmpty || PasswordResetRequest.isCompletable(prevReset.get)) {
+      val prevReset = PasswordResetRequest.getMostRecentByUserId(user.id())
+      if (prevReset.isEmpty || !PasswordResetRequest.isCompletable(prevReset.get)) {
         (Account.passwordReset(user) map { _: PasswordResetRequest =>
           html.passwordResetEmailSent(user.emailAddr)
         }).toOptionLoggingError.getOrElse {

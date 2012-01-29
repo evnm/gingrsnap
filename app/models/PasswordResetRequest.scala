@@ -22,10 +22,10 @@ object PasswordResetRequest
   def isCompletable(pwdResetRequest: PasswordResetRequest): Boolean = {
     val now = System.currentTimeMillis()
     // 86400000 ms == 24 hours
-    now - pwdResetRequest.createdAt.getTime < 86400000
+    !pwdResetRequest.resetCompleted && (now - pwdResetRequest.createdAt.getTime < 86400000)
   }
 
-  def getByUserId(userId: Long): Option[PasswordResetRequest] = {
+  def getMostRecentByUserId(userId: Long): Option[PasswordResetRequest] = {
     SQL("""
         select * from PasswordResetRequest
         where userId = {userId}
