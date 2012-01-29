@@ -5,7 +5,6 @@ import play.db.anorm._
 import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm.SqlParser._
-import scala.reflect.Manifest
 
 case class Ingredient(
   id: Pk[Long],

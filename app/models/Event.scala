@@ -4,7 +4,6 @@ import java.sql.Timestamp
 import play.db.anorm._
 import play.db.anorm.defaults.Magic
 import play.db.anorm.SqlParser._
-import scala.reflect.Manifest
 
 /**
  * Event ~= "subject verbed object"

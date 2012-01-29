@@ -8,7 +8,6 @@ import play.db.anorm._
 import play.db.anorm.defaults.Magic
 import play.db.anorm.SqlParser._
 import play.libs.Crypto
-import scala.reflect.Manifest
 import twitter4j.auth.AccessToken
 
 case class GingrsnapUser(

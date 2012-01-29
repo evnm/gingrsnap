@@ -6,7 +6,6 @@ import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm.SqlParser._
 import play.utils.Scala.MayErr
-import scala.reflect.Manifest
 
 case class Recipe(
   id: Pk[Long],
