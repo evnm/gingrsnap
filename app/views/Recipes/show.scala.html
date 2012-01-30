@@ -18,7 +18,7 @@
 )
 
 @import controllers._
-@import models.Make
+@import models.{Feature, Make}
 @import play.templates.JavaExtensions
 
 @main(title) {
@@ -64,7 +64,9 @@
             <a class="btn" href="@action(Recipes.edit(recipeId))">Edit this recipe</a>
             <a class="btn danger" id="delete-recipe">Delete this recipe</a>
           } else {
-            <a class="btn" href="@action(Recipes.fork(recipeId))">Fork this recipe</a>
+            @if(Feature(Constants.Forking)) {
+              <a class="btn" href="@action(Recipes.fork(recipeId))">Fork this recipe</a>
+            }
           }
         }
       </div>

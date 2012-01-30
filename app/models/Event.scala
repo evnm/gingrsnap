@@ -1,5 +1,6 @@
 package models
 
+import controllers.Constants
 import java.sql.Timestamp
 import play.db.anorm._
 import play.db.anorm.defaults.Magic
@@ -80,27 +81,48 @@ object Event extends Magic[Event] with Timestamped[Event] {
    * Gets the n most recent events across the whole site.
    */
   def getMostRecent(n: Int): Seq[Event] = {
-    SQL("""
-        select * from Event
-        order by createdAt desc
-        limit {n}
-        """)
-    .on("n" -> n)
-    .as(Event *)
+    if (Feature(Constants.Forking)) {
+      SQL("""
+          select * from Event
+          order by createdAt desc
+          limit {n}
+          """)
+      .on("n" -> n)
+      .as(Event *)
+    } else {
+      SQL("""
+          select * from Event
+          where eventType != {eventType}
+          order by createdAt desc
+          limit {n}
+          """)
+      .on("eventType" -> EventType.RecipeFork.id, "n" -> n)
+      .as(Event *)
+    }
   }
 
   /**
    * Gets the n most recent events related to a given user.
    */
   def getMostRecentByUserId(userId: Long, n: Int): Seq[Event] = {
-    val result = SQL("""
-        select * from Event
-        where subjectId = {userId}
-        order by createdAt desc
-        limit {n}
-        """)
-    .on("userId" -> userId, "n" -> n)
-    .as(Event *)
-    result
+    if (Feature(Constants.Forking)) {
+      SQL("""
+          select * from Event
+          where subjectId = {userId}
+          order by createdAt desc
+          limit {n}
+          """)
+      .on("userId" -> userId, "n" -> n)
+      .as(Event *)
+    } else {
+      SQL("""
+          select * from Event
+          where subjectId = {userId} and eventType != {eventType}
+          order by createdAt desc
+          limit {n}
+          """)
+      .on("userId" -> userId, "eventType" -> EventType.RecipeFork.id, "n" -> n)
+      .as(Event *)
+    }
   }
 }

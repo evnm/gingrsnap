@@ -14,4 +14,7 @@ object Constants {
   // Make threshold, in millisends. (i.e. enforced time difference between
   // makes.
   val MakeCreatedAtThreshold = 21600000
+
+  // Feature keys
+  val Forking = "forking"
 }
