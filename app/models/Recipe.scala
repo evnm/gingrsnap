@@ -1,5 +1,6 @@
 package models
 
+import controllers.Constants
 import java.io.File
 import java.sql.Timestamp
 import play.db.anorm._
@@ -143,14 +144,12 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
    * e.g. If they've made too recently, they can't make it again.
    */
   def isMakable(userId: Long, recipeId: Long): Boolean = {
-    import controllers.Constants.MakeCreatedAtThreshold
-
     Make.getMostRecent(userId, recipeId) match {
       case Some(make) => {
         val now = new Timestamp(System.currentTimeMillis())
         // Don't allow if the user has made this recipe within the last
         // MakeCreatedAtThreshold milliseconds.
-        now.getTime - make.createdAt.getTime > MakeCreatedAtThreshold
+        now.getTime - make.createdAt.getTime > Constants.MakeCreatedAtThreshold
       }
       case None => true
     }
@@ -174,7 +173,9 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
         limit {n}
         """)
       .on("n" -> n)
-      .as(Recipe *)
+      .as(Recipe *) filter { recipe =>
+        recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
+      }
   }
 
   /**
@@ -194,8 +195,11 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   /**
    * Get all of a user's recipes.
    */
-  def getByUserId(userId: Long): Seq[Recipe] =
-    Recipe.find("authorId = {userId}").on("userId" -> userId).list()
+  def getByUserId(userId: Long): Seq[Recipe] = {
+    Recipe.find("authorId = {userId}").on("userId" -> userId).list() filter { recipe =>
+      recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
+    }
+  }
 
   /**
    * Looks up a recipe by userId and url slug. Optionally returns the looked-up recipe.
