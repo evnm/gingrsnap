@@ -22,75 +22,77 @@
   <form id="edit-account" class="form-stacked" method="POST" enctype="multipart/form-data">
     <div class="row">
       <div class="span10">
-        <h1>Edit your account</h1>
-        <fieldset>
-          <legend>Profile Info</legend>
-          <div class="clearfix">
-            <label for="fullname">Name</label>
-            <div class="input">
-              <input class="span5" id="fullname" name="fullname" type="text" value="@fullname" />
-            </div>
-          </div>
-
-          <div class="clearfix">
-            <label for="emailAddr">Email Address</label>
-            <div class="input">
-              <input class="span5" id="emailAddr" name="emailAddr" type="text" value="@emailAddr"/>
-            </div>
-          </div>
-
-          <div class="clearfix">
-            <label for="slug">Gingrsnap URL</label>
-            <p>This is the URL of your Gingrsnap profile. Your recipes will be end up at <code>@(appBaseUrl)@slug/title+of+your+recipe</code>.</p>
-            <div class="input">
-              <div class="input-prepend">
-                <span class="add-on">@appBaseUrl</span>
-                <input id="slug" name="slug" type="text" value="@slug" />
+        <div class="well">
+          <h1>Edit your account</h1>
+          <fieldset>
+            <legend>Profile Info</legend>
+            <div class="clearfix">
+              <label for="fullname">Name</label>
+              <div class="input">
+                <input class="span5" id="fullname" name="fullname" type="text" value="@fullname" />
               </div>
             </div>
-          </div>
 
-          <div class="clearfix">
-            <label for="location">Location</label>
-            <div class="input">
-              <input class="span5" id="location" name="location" type="text" value="@location" />
+            <div class="clearfix">
+              <label for="emailAddr">Email Address</label>
+              <div class="input">
+                <input class="span5" id="emailAddr" name="emailAddr" type="text" value="@emailAddr"/>
+              </div>
             </div>
-          </div>
 
-          <div class="clearfix">
-            <label for="url">Website</label>
-            <div class="input">
-              <input class="span5" id="url" name="url" type="text" value="@url" />
+            <div class="clearfix">
+              <label for="slug">Gingrsnap URL</label>
+              <p>This is the URL of your Gingrsnap profile. Your recipes will be end up at <code>@(appBaseUrl)@slug/title+of+your+recipe</code>.</p>
+              <div class="input">
+                <div class="input-prepend">
+                  <span class="add-on">@appBaseUrl</span>
+                  <input id="slug" name="slug" type="text" value="@slug" />
+                </div>
+              </div>
             </div>
-          </div>
-        </fieldset>
 
-        <fieldset>
-          <legend>Password</legend>
-          <div class="clearfix">
-            <label for="oldPassword">Old Password</label>
-            <div class="input">
-              <input class="span5" id="oldPassword" name="oldPassword" type="password" />
+            <div class="clearfix">
+              <label for="location">Location</label>
+              <div class="input">
+                <input class="span5" id="location" name="location" type="text" value="@location" />
+              </div>
             </div>
-          </div>
 
-          <div class="clearfix">
-            <label for="newPassword">New Password</label>
-            <div class="input">
-              <input class="span5" id="newPassword" name="newPassword" type="password" />
+            <div class="clearfix">
+              <label for="url">Website</label>
+              <div class="input">
+                <input class="span5" id="url" name="url" type="text" value="@url" />
+              </div>
             </div>
-          </div>
+          </fieldset>
 
-          <div class="clearfix">
-            <label for="confirmnewpassword">Confirm New Password</label>
-            <div class="input">
-              <input class="span5" id="confirmnewpassword" name="confirmnewpassword" type="password" />
+          <fieldset>
+            <legend>Password</legend>
+            <div class="clearfix">
+              <label for="oldPassword">Old Password</label>
+              <div class="input">
+                <input class="span5" id="oldPassword" name="oldPassword" type="password" />
+              </div>
             </div>
-          </div>
-        </fieldset>
 
-        <div class="actions">
-          <input class="btn primary" type="submit" value="Submit"/>
+            <div class="clearfix">
+              <label for="newPassword">New Password</label>
+              <div class="input">
+                <input class="span5" id="newPassword" name="newPassword" type="password" />
+              </div>
+            </div>
+
+            <div class="clearfix">
+              <label for="confirmnewpassword">Confirm New Password</label>
+              <div class="input">
+                <input class="span5" id="confirmnewpassword" name="confirmnewpassword" type="password" />
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <input class="btn primary" type="submit" value="Submit"/>
+          </div>
         </div>
 	    </div>
 

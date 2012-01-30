@@ -1,7 +1,6 @@
 /**
  * Style for recipe body form.
  */
-
 * {
   font-family: "Helvetic Neue", Helvetica,Arial,sans-serif;
   color: #777;
@@ -18,5 +17,12 @@ a {
   text-decoration: none;
 }
 
+div.wysiwyg {
+  border: none;
+  background: inherit;
+}
 
-
+div.wysiwyg ul.toolbar {
+  border: none;
+  margin-bottom: 4px;
+}

@@ -58,6 +58,7 @@ $(document).ready(function() {
  */
 $(document).ready(function() {
   $("textarea.wysiwyg").wysiwyg({
+    iFrameClass: "iframe",
     initialContent: "<p></p>",
     autoGrow: true,
     rmUnusedControls: true,
