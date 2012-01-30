@@ -11,10 +11,12 @@ object Constants {
   val SlugToUserIdKey = "slugToUserId"
   val AccountObjKey = "accountObj"
 
-  // Make threshold, in millisends. (i.e. enforced time difference between
-  // makes.
+  // Thresholds, in millisends. (i.e. enforced time differences between
+  // makes, tips)
   val MakeCreatedAtThreshold = 21600000
+  val TipCreatedAtThreshold = 21600000
 
   // Feature keys
   val Forking = "forking"
+  val RecipeTips = "recipe-tips"
 }

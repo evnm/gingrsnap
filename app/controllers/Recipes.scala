@@ -1,10 +1,10 @@
 package controllers
 
 import collection.JavaConversions._
-import Constants.GingrsnapUserObjKey
+import Constants.{GingrsnapUserObjKey, RecipeTips}
 import java.io.File
 import java.sql.Timestamp
-import models.{EventType, Image, Ingredient, Make, Recipe, RecipeImage, GingrsnapUser}
+import models._
 import play._
 import play.data.validation.Validation
 import play.db.anorm.SqlRequestError
@@ -315,6 +315,11 @@ object Recipes extends BaseController with Secure {
       // Only show recipe if it's published.
       recipe.publishedAt match {
         case Some(_) => {
+          val tips = if (Feature(RecipeTips)) {
+            Some(Tip.getByRecipeId(recipe.id()) map { Tip.hydrate(_) })
+          } else {
+            None
+          }
           val totalMakeCount = Make.getCountByRecipeId(recipe.id())
           val userMakeCountOpt = connectedUser map { u =>
             Make.getCountByUserAndRecipe(u.id(), recipe.id())
@@ -329,6 +334,7 @@ object Recipes extends BaseController with Secure {
             recipe.authorId,
             ingredients map { _.name },
             recipe.body,
+            tips,
             Image.getBaseUrlByRecipeId(recipe.id()),
             totalMakeCount,
             userMakeCountOpt,

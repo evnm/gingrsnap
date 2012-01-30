@@ -2,10 +2,9 @@
   prettyTime: com.ocpsoft.pretty.time.PrettyTime,
   createdAt: java.sql.Timestamp,
   user: models.GingrsnapUser,
-  recipe: models.Recipe
+  recipe: (models.Recipe, models.GingrsnapUser)
 )
 
 @import controllers.{GingrsnapUsers, Recipes}
-@import java.text.DateFormat
 
-<a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a> updated recipe <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a> @prettyTime.format(createdAt)
+<a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a> updated recipe <a href="@action(Recipes.show(recipe._2.slug, recipe._1.slug))">@recipe._1.title</a> @prettyTime.format(createdAt)

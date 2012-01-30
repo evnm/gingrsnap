@@ -4,6 +4,7 @@
   authorId: Long,
   ingredients: Seq[String],
   bodyHtml: String,
+  tips: Option[Seq[(models.Tip, models.GingrsnapUser)]],
   imageBaseUrlOpt: Option[(String, String)],
   totalMakeCount: Long,
   userMakeCountOpt: Option[Long],
@@ -32,7 +33,32 @@
           <li>@ingr</li>
         }
       </ul>
-      @Html(bodyHtml)
+
+      <div id="recipe-body">
+        @Html(bodyHtml)
+      </div>
+
+      @if(Feature(Constants.RecipeTips)) {
+        @tips.map { tipSeq =>
+          <ol>
+            @tipSeq.map { case (tip, user) =>
+              <li>
+                <a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a>
+                <span class="timestamp"></span>
+                <p>@tip.body</p>
+              </li>
+            }
+          </ol>
+        }
+        @connectedUserOpt.map { connectedUser =>
+          <form id="tips" method="POST" action="/tips/new">
+            <input name="userId" type="hidden" value="@connectedUser.id()" />
+            <input name="recipeId" type="hidden" value="@recipeId" />
+            <textarea name="tipBody" class="span10"></textarea>
+            <button class="btn primary" type="submit">Submit</button>
+          </form>
+        }
+      }
     </div>
 
     <div class="span6">

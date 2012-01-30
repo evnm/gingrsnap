@@ -66,6 +66,11 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   }
 
   /**
+   * Hydrates a recipe into a tuple of (recipe, author).
+   */
+  def hydrate(recipe: Recipe) = (recipe, GingrsnapUser.getById(recipe.authorId))
+
+  /**
    * Fork a recipe (i.e. make a copy with a different authorId).
    */
   def fork(recipe: Recipe, userId: Long): MayErr[SqlRequestError, Recipe] = {
@@ -170,6 +175,17 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
         """)
       .on("n" -> n)
       .as(Recipe *)
+  }
+
+  /**
+   * For a given recipe id, returns an optional hydrated tuple of (recipe, author).
+   */
+  def getHydratedById(recipeId: Long): Option[(Recipe, GingrsnapUser)] = {
+    Recipe.getById(recipeId) flatMap { recipe =>
+      GingrsnapUser.getById(recipe.authorId) map { user =>
+        (recipe, user)
+      }
+    }
   }
 
   def getById(recipeId: Long): Option[Recipe] =

@@ -28,7 +28,7 @@ case class GingrsnapUserSubject(subject: GingrsnapUser) extends EventSubject
 
 sealed trait EventObject
 case class GingrsnapUserObject(obj: GingrsnapUser) extends EventObject
-case class RecipeObject(obj: Recipe) extends EventObject
+case class RecipeObject(obj: (Recipe, GingrsnapUser)) extends EventObject
 
 object EventType extends Enumeration {
   type EventType = Value
@@ -36,6 +36,7 @@ object EventType extends Enumeration {
   val RecipeFork = Value(1)
   val RecipeUpdate = Value(2)
   val RecipeMake = Value(3)
+  val TipLeave = Value(4)
 }
 
 object Event extends Magic[Event] with Timestamped[Event] {
@@ -57,11 +58,15 @@ object Event extends Magic[Event] with Timestamped[Event] {
    */
   def hydrate(event: Event): (Timestamp, EventSubject, EventType.Value, EventObject) = {
     // Currently, all events are "user verbed recipe", so...
+    val user = GingrsnapUser.getById(event.subjectId).get
+    val recipe = Recipe.getById(event.objectId).get
+    val author = GingrsnapUser.getById(recipe.authorId).get
+
     (
       event.createdAt,
-      GingrsnapUserSubject(GingrsnapUser.getById(event.subjectId).get),
+      GingrsnapUserSubject(user),
       EventType(event.eventType),
-      RecipeObject(Recipe.getById(event.objectId).get)
+      RecipeObject(recipe, author)
     )
 
     // Eventually, do something like this:
@@ -81,48 +86,36 @@ object Event extends Magic[Event] with Timestamped[Event] {
    * Gets the n most recent events across the whole site.
    */
   def getMostRecent(n: Int): Seq[Event] = {
-    if (Feature(Constants.Forking)) {
-      SQL("""
-          select * from Event
-          order by createdAt desc
-          limit {n}
-          """)
+    SQL("""
+        select * from Event e
+        order by createdAt desc
+        limit {n}
+        """)
       .on("n" -> n)
-      .as(Event *)
-    } else {
-      SQL("""
-          select * from Event
-          where eventType != {eventType}
-          order by createdAt desc
-          limit {n}
-          """)
-      .on("eventType" -> EventType.RecipeFork.id, "n" -> n)
-      .as(Event *)
-    }
+      .as(Event *) filter { event =>
+        !(
+          !Feature(Constants.Forking) && event.eventType == EventType.RecipeFork.id ||
+          !Feature(Constants.RecipeTips) && event.eventType == EventType.TipLeave.id
+        )
+      }
   }
 
   /**
    * Gets the n most recent events related to a given user.
    */
   def getMostRecentByUserId(userId: Long, n: Int): Seq[Event] = {
-    if (Feature(Constants.Forking)) {
-      SQL("""
-          select * from Event
-          where subjectId = {userId}
-          order by createdAt desc
-          limit {n}
-          """)
+    SQL("""
+        select * from Event
+        where subjectId = {userId}
+        order by createdAt desc
+        limit {n}
+        """)
       .on("userId" -> userId, "n" -> n)
-      .as(Event *)
-    } else {
-      SQL("""
-          select * from Event
-          where subjectId = {userId} and eventType != {eventType}
-          order by createdAt desc
-          limit {n}
-          """)
-      .on("userId" -> userId, "eventType" -> EventType.RecipeFork.id, "n" -> n)
-      .as(Event *)
-    }
+      .as(Event *) filter { event =>
+        !(
+          !Feature(Constants.Forking) && event.eventType == EventType.RecipeFork.id ||
+          !Feature(Constants.RecipeTips) && event.eventType == EventType.TipLeave.id
+        )
+      }
   }
 }

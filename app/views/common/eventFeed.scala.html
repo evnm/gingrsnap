@@ -22,6 +22,9 @@
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeMake, RecipeObject(obj)) => {
           @views.common.eventItems.html.recipeMake(prettyTime, createdAt, subject, obj)
         }
+        case (createdAt, GingrsnapUserSubject(subject), EventType.TipLeave, RecipeObject(obj)) => {
+          @views.common.eventItems.html.tipLeave(prettyTime, createdAt, subject, obj)
+        }
       }
     </li>
   }
