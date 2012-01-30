@@ -13,8 +13,8 @@ object Application extends BaseController {
     Authentication.getLoggedInUser match {
       case Some(user) => views.GingrsnapUsers.html.home(
         user,
-        usersRecipes = Recipe.getByUserId(user.id()),
-        eventFeed = mostRecentEvents)
+        Recipe.getByUserId(user.id()),
+        mostRecentEvents)
       case None => views.Application.html.index(mostRecentEvents)
     }
   }

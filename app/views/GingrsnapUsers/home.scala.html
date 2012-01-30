@@ -1,6 +1,6 @@
 @(
   user: models.GingrsnapUser,
-  usersRecipes: Seq[models.Recipe],
+  recipes: Seq[models.Recipe],
   eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)]
 )(
   implicit
@@ -11,7 +11,6 @@
 )
 
 @import com.ocpsoft.pretty.time.PrettyTime
-@import controllers.Recipes
 
 @main(title = "Your dashboard") {
   <div class="row">
@@ -22,24 +21,7 @@
 
     <div class="span6">
       <div class="well">
-        <h2>Your recipes</h2>
-        <a class="btn primary new-recipe" href="@action(Recipes.neue())">Create a new recipe</a>
-        @if(usersRecipes.nonEmpty) {
-          <ul>
-            @usersRecipes.map { recipe =>
-              <li>
-                @if(recipe.publishedAt.isEmpty) {
-                <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
-                <span class="label">Draft</span>
-                } else {
-                  <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
-                }
-              </li>
-            }
-          </ul>
-        } else {
-          <p>You don't have any recipes yet.</p>
-        }
+        @views.common.html.recipeList(Some(user), user, recipes)
       </div>
     </div>
   </div>

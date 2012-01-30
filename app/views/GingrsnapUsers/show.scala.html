@@ -3,7 +3,7 @@
   connectedUserOpt: Option[models.GingrsnapUser],
   account: models.Account,
   profileImageUrlOpt: Option[(String, String)],
-  usersRecipes: Seq[models.Recipe],
+  recipes: Seq[models.Recipe],
   totalMakeCount: Long,
   eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)]
 )(
@@ -15,7 +15,6 @@
 )
 
 @import com.ocpsoft.pretty.time.PrettyTime
-@import controllers._
 @import java.text.DateFormat
 
 @main(title = user.fullname) {
@@ -48,31 +47,7 @@
 
     <div class="span6">
       <div class="well">
-        @connectedUserOpt match {
-          case Some(connectedUser) if user.id() == connectedUser.id() => {
-            <h2>Your recipes</h2>
-            <a class="btn primary new-recipe" href="@action(Recipes.neue())">Create a new recipe</a>
-          }
-          case _ => {
-            <h2>@user.fullname's recipes</h2>
-          }
-        }
-        @if(usersRecipes.nonEmpty) {
-          <ul>
-            @usersRecipes.map { recipe =>
-              <li>
-                @if(recipe.publishedAt.isEmpty) {
-                <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
-                <span class="label">Draft</span>
-                } else {
-                  <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
-                }
-              </li>
-            }
-          </ul>
-        } else {
-          <p>You don't have any recipes yet.</p>
-        }
+        @views.common.html.recipeList(connectedUserOpt, user, recipes)
       </div>
     </div>
   </div>
