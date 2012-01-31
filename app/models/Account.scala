@@ -23,7 +23,7 @@ object Account extends Magic[Account] {
 
   override def create(account: Account) = {
     super.create(account) map { createdAccount =>
-      Cache.set(accountCacheKey(createdAccount.userId), createdAccount, "1h")
+      Cache.set(accountCacheKey(createdAccount.userId), createdAccount, "6h")
       createdAccount
     }
   }
@@ -35,7 +35,7 @@ object Account extends Magic[Account] {
     account: Account,
     imageOpt: Option[File] = None
   ): Unit = {
-    Cache.set(accountCacheKey(account.userId), account, "1h")
+    Cache.set(accountCacheKey(account.userId), account, "6h")
 
     imageOpt map { imageFile =>
       // Delete old image if one exists.
@@ -75,7 +75,7 @@ object Account extends Magic[Account] {
   def getByGingrsnapUserId(userId: Long) = {
     Cache.get[Account](accountCacheKey(userId)) orElse {
       Account.find("userId = {userId}").on("userId" -> userId).first() map { account =>
-        Cache.add(accountCacheKey(userId), account, "1h")
+        Cache.add(accountCacheKey(userId), account, "6h")
         account
       }
     }

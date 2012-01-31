@@ -3,6 +3,7 @@ package models
 import controllers.Constants
 import java.io.File
 import java.sql.Timestamp
+import play.cache.Cache
 import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm.SqlParser._
@@ -21,6 +22,9 @@ case class Recipe(
 )
 
 object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
+  protected[this] def recipeIdCacheKey(recipeId: Long) =
+    Constants.RecipeObjKey + ":" + recipeId
+
   def apply(
     title: String,
     slug: String,
@@ -62,6 +66,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
         Event.create(Event(EventType.RecipePublish.id, createdRecipe.authorId, createdRecipe.id()))
       }
 
+      Cache.set(recipeIdCacheKey(createdRecipe.id()), createdRecipe, "6h")
       MayErr(Right(createdRecipe))
     }
   }
@@ -126,7 +131,9 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     }
 
     val now = System.currentTimeMillis
-    Recipe.update(recipe.copy(modifiedAt = new Timestamp(now)))
+    val newRecipe = recipe.copy(modifiedAt = new Timestamp(now))
+    Recipe.update(newRecipe)
+    Cache.set(recipeIdCacheKey(newRecipe.id()), newRecipe, "6h")
 
     // Create a RecipeUpdate event if the recipe is published and there hasn't
     // been an identical event recently.
@@ -189,8 +196,15 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     }
   }
 
-  def getById(recipeId: Long): Option[Recipe] =
-    Recipe.find("id = {recipeId}").on("recipeId" -> recipeId).first()
+  def getById(recipeId: Long): Option[Recipe] = {
+    Cache.get[Recipe](recipeIdCacheKey(recipeId)) orElse {
+      Recipe.find("id = {recipeId}").on("recipeId" -> recipeId).first() map { recipe =>
+        Cache.add(recipeIdCacheKey(recipeId), recipe, "6h")
+        recipe
+      }
+    }
+
+  }
 
   /**
    * Get all of a user's recipes.
@@ -223,10 +237,10 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
    * TODO: Delete from cache, once recipes are cached.
    */
   def delete(recipeId: Long): Boolean = {
+    Cache.delete(recipeIdCacheKey(recipeId))
     SQL("delete from Event where objectId = {recipeId}")
       .on("recipeId" -> recipeId)
       .execute()
-
     SQL("delete from Recipe where id = {recipeId}")
       .on("recipeId" -> recipeId)
       .execute()

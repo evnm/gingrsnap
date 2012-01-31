@@ -78,7 +78,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
     val result = super.create(user)
     result map { createdUser =>
       Account.create(Account(NotAssigned, createdUser.id()))
-      Cache.set(userIdCacheKey(createdUser.id()), createdUser, "1h")
+      Cache.set(userIdCacheKey(createdUser.id()), createdUser, "6h")
       createdUser
     }
   }
@@ -87,7 +87,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    * Overridden update method to update cache as well as underlying store.
    */
   override def update(user: GingrsnapUser) = {
-    Cache.set(userIdCacheKey(user.id()), user, "1h")
+    Cache.set(userIdCacheKey(user.id()), user, "6h")
     super.update(user)
   }
 
@@ -113,7 +113,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
   def getById(userId: Long): Option[GingrsnapUser] = {
     Cache.get[GingrsnapUser](userIdCacheKey(userId)) orElse {
       GingrsnapUser.find("id = {userId}").on("userId" -> userId).first() map { user =>
-        Cache.add(userIdCacheKey(userId), user, "1h")
+        Cache.add(userIdCacheKey(userId), user, "6h")
         user
       }
     }
@@ -134,8 +134,8 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         Cache.add(
           slugToUserIdCacheKey(userSlug),
           java.lang.Long.valueOf(user.id()),
-          "1h")
-        Cache.add(userIdCacheKey(user.id()), user, "1h")
+          "6h")
+        Cache.add(userIdCacheKey(user.id()), user, "6h")
         user
       }
     }
@@ -156,8 +156,8 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         Cache.add(
           encryptedEmailToUserIdCacheKey(encryptedEmail),
           java.lang.Long.valueOf(user.id()),
-          "1h")
-        Cache.add(userIdCacheKey(user.id()), user, "1h")
+          "6h")
+        Cache.add(userIdCacheKey(user.id()), user, "6h")
         user
       }
     }
