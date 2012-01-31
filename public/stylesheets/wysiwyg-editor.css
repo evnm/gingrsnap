@@ -1,18 +1,18 @@
 /**
  * Style for recipe body form.
  */
-* {
+div.wysiwyg * {
   font-family: "Helvetic Neue", Helvetica,Arial,sans-serif;
   color: #777;
 }
 
-p {
+div.wysiwyg p {
   font-size: 14px;
   line-height: 21px;
   margin: 0 0 1.5em 0;
 }
 
-a {
+div.wysiwyg a {
   color: #AC5D2F;
   text-decoration: none;
 }

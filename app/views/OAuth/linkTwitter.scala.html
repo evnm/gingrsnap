@@ -8,76 +8,40 @@
   flash: play.mvc.Scope.Flash
 )
 
-@import controllers._
+@import controllers.{Accounts, GingrsnapUsers}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Gingrsnap - Connect with Twitter</title>
-    <meta name="description" content="">
-    <meta name="Evan Meagher" content="">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" media="all" href="@asset("public/stylesheets/bootstrap.min.css")">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js" type="text/javascript"></script>
-    <link href='http://fonts.googleapis.com/css?family=Lobster+Two:700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" media="screen" href="@asset("public/stylesheets/main.css")">
-    <link rel="shortcut icon" type="image/png" href="@asset("public/images/favicon.png")">
-  </head>
-  <body>
-    <div class="container">
-      <div class="overlay">
-        <a class="brand" href="@action(Application.index)">Gingrsnap</a>
-	      <h1>Connect with Twitter</h1>
-
-        @if(flash.get("error") != null) {
-          <p class="alert-message error">
-            @flash.get("error")
-          </p>
-        }
-        @if(flash.get("success") != null) {
-          <p class="alert-message success">
-            @flash.get("success")
-          </p>
-        }
-
-        <form id="connect-twitter-form" class="form-stacked" method="POST">
-          <input name="twUsername" type="hidden" value="@twUsername" />
-          <input name="imgUrl" type="hidden" value="@imgUrl" />
-          <input name="twAccessToken" type="hidden" value="@twAccessToken" />
-          <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
-		      <div class="clearfix">
-			      <label for="username">Email address</label>
-            <div class="input">
-			        <input type="text" name="emailAddr" id="emailAddr" tabindex="1" />
-            </div>
-		      </div>
-		      <div class="clearfix">
-			      <label for="password">Password <a href="@action(Accounts.passwordResetPrompt())">Forgot?</a></label>
-            <div class="input">
-			        <input type="password" name="password" id="password" tabindex="2" />
-            </div>
-		      </div>
-			    <input type="hidden" name="remember" value="true" />
-			    <input type="submit" class="btn primary" id="signin" value="Connect" tabindex="3" />
-	      </form>
-
-        <div>
-          @if(!imgUrl.isEmpty) {
-            <img src="@imgUrl" />
-          }
-          <p>The Twitter account <a href="https://twitter.com/@twUsername">@@@twUsername</a> isn't connected to Gingrsnap. Enter your Gingrsnap credentials to complete the process.</p>
-        </div>
-
-        <p id="notamember">Not a member yet? <a href="@action(GingrsnapUsers.neue())">Sign up here.</a></p>
+@overlay(
+  title = "Connect with Twitter",
+  h1Text = "Connect with Twitter",
+  focusElement = Some("input#emailAddr")
+) {
+  <form id="connect-twitter-form" class="form-stacked" method="POST">
+    <input name="twUsername" type="hidden" value="@twUsername" />
+    <input name="imgUrl" type="hidden" value="@imgUrl" />
+    <input name="twAccessToken" type="hidden" value="@twAccessToken" />
+    <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
+		<div class="clearfix">
+			<label for="username">Email address</label>
+      <div class="input">
+			  <input type="text" name="emailAddr" id="emailAddr" tabindex="1" />
       </div>
-    </div>
+		</div>
+		<div class="clearfix">
+			<label for="password">Password <a href="@action(Accounts.passwordResetPrompt())">Forgot?</a></label>
+      <div class="input">
+			  <input type="password" name="password" id="password" tabindex="2" />
+      </div>
+		</div>
+		<input type="hidden" name="remember" value="true" />
+		<input type="submit" class="btn primary" id="signin" value="Connect" tabindex="3" />
+	</form>
 
-    <script type="text/javascript">
-      $(document).ready(function() {
-        $("input#emailAddr").focus()
-      });
-    </script>
-    @views.common.html.gauges()
-  </body>
-</html>
+  <div>
+    @if(!imgUrl.isEmpty) {
+    <img src="@imgUrl" />
+    }
+    <p>The Twitter account <a href="https://twitter.com/@twUsername">@@@twUsername</a> isn't connected to Gingrsnap. Enter your Gingrsnap credentials to complete the process.</p>
+  </div>
+
+  <p id="notamember">Not a member yet? <a href="@action(GingrsnapUsers.neue())">Sign up here.</a></p>
+}
