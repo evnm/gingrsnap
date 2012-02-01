@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Not found - Gingrsnap</title>
+    <meta name="description" content="">
+    <meta name="Evan Meagher" content="">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" media="all" href="/public/stylesheets/bootstrap.min.css">
+    <link href="http://fonts.googleapis.com/css?family=Lobster+Two:700" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Bitter:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" media="screen" href="/public/stylesheets/main.css">
+    <link rel="shortcut icon" type="image/png" href="/public/images/favicon.png">
+  </head>
+  <body>
+    <div class="container">
+      <div class="overlay">
+        <a class="brand" href="/">Gingrsnap</a>
+	      <h1>Not found</h1>
+      </div>
+    </div>
+    #{if play.mode.name() == 'PROD'}
+      <script type="text/javascript">
+        var _gauges = _gauges || [];
+        (function() {
+          var t   = document.createElement('script');
+          t.type  = 'text/javascript';
+          t.async = true;
+          t.id    = 'gauges-tracker';
+          t.setAttribute('data-site-id', '4f18cdda844d52260f000006');
+          t.src = '//secure.gaug.es/track.js';
+          var s = document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(t, s);
+        })();
+      </script>
+    #{/if}
+  </body>
+</html>
+
