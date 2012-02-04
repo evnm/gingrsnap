@@ -403,12 +403,10 @@ div.overlay div.row .right {
 
 div.overlay div.row .action {
   width: 240px;
-
 }
 
 div.overlay div.row .copy {
   width: 340px;
-  margin-top: 16px;
 }
 
 div.overlay input {
