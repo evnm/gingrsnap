@@ -1,21 +1,14 @@
-var highlight = function(element, errorClass) {
-  var inputDiv = $(element).parent("div");
-  inputDiv.parent("div")
-    .removeClass("success")
-    .addClass("error");
-}
 var unhighlight = function(element, errorClass, validClass) {
-  var inputDiv = $(element).parent("div");
-  inputDiv.parent("div")
-    .removeClass("error")
-    .addClass("success");
-
   // Delete the span.
-  inputDiv.children("span").remove();
+  var next = $(element).next();
+  if (next.is("span")) {
+    next.remove();
+  }
 }
+
 var errorPlacement = function(error, element) {
-  if ($(element).parent("div").children("span").length == 0) {
-    element.after("<span class=\"help-inline\">" + error.text() + "</span>");
+  if (!$(element).next().is("span")) {
+    element.after("<span class=\"help-inline alert-error\">" + error.text() + "</span>");
   }
 }
 
@@ -24,7 +17,6 @@ var errorPlacement = function(error, element) {
  */
 $(document).ready(function() {
   $("#signup-form").validate({
-    highlight: highlight,
     unhighlight: unhighlight,
     errorPlacement: errorPlacement,
     rules: {
@@ -96,27 +88,23 @@ $(document).ready(function() {
     var ingrInput = $("input#ingredient")
     if (ingrInput.val()) {
       $("ul#ingredients")
-        .append('<li><div class="input"><div class="input-append">' +
-                '<input class="span4" type="text" value="' +
-                ingrInput.val().replace(/\"/g, "&#34;") + '" /><label class="add-on">' +
-                '<a class="close" href="#">x</a></label></div></div>' +
-                '</li><li class="clearfix"></li>');
+        .append('<li><div class="input-append"><input class="span4" type="text" value="' +
+                ingrInput.val().replace(/\"/g, "&#34;") + '" /><span class="add-on">' +
+                '<a class="close" href="#">&times;</a></span></div>');
       ingrInput.val("").focus();
     }
   });
 
   // Delete ingredient button click action.
   $("ul#ingredients a.close").live("click", function() {
-    var li = $(this).parents("li");
-    li.next().remove();
-    li.remove();
+    $(this).parents("li").remove();
     return false;
   });
 
   // Fill in the "name" attributes of ingredient inputs on form submission.
   $("form#recipe-form").submit(function() {
     $("ul#ingredients")
-      .find("li:not(.clearfix) input")
+      .find("li input")
       .each(function(i, input) {
         $(input).attr("name", "ingredients[" + i + "]");
       });

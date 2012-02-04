@@ -15,8 +15,8 @@
 
 @main("Create an account") {
   <div class="row">
-    <div class="span10">
-      <h1>Create an identity on Gingrsnap!</h1>
+    <div class="span8">
+      <h1>Create an identity on Gingrsnap</h1>
       <form id="signup-form" class="form-stacked" method="POST">
         <input name="twAccessToken" type="hidden" value="@twAccessToken" />
         <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
@@ -24,44 +24,28 @@
         @if(!imgUrl.isEmpty) {
           <img src="@imgUrl" />
         }
-        <div class="clearfix">
-          <label for="fullname">Name</label>
-          <div class="input">
-            <input class="medium span6" id="fullname" name="fullname" type="text" value="@fullname" />
-          </div>
-        </div>
+        <label for="fullname">Name</label>
+        <input class="medium span4" id="fullname" name="fullname" type="text" value="@fullname" />
 
-        <div class="clearfix">
-          <label for="emailAddr">Email Address</label>
-          <div class="input">
-            <input class="medium span6" id="emailAddr" name="emailAddr" type="text" />
-          </div>
-        </div>
+        <label for="emailAddr">Email Address</label>
+        <input class="medium span4" id="emailAddr" name="emailAddr" type="text" />
 
-        <div class="clearfix">
-          <label for="password">Password</label>
-          <div class="input">
-            <input class="medium span6" id="password" name="password" type="password" />
-          </div>
-        </div>
+        <label for="password">Password</label>
+        <input class="medium span4" id="password" name="password" type="password" />
 
-        <div class="clearfix">
-          <label for="confirmpassword">Confirm Password</label>
-          <div class="input">
-            <input class="medium span6" id="confirmpassword" name="confirmpassword" type="password" />
-          </div>
-        </div>
+        <label for="confirmpassword">Confirm Password</label>
+        <input class="medium span4" id="confirmpassword" name="confirmpassword" type="password" />
 
-        <div class="actions">
-          <input class="btn primary" type="submit" value="Submit"/>
+        <div class="form-actions">
+          <input class="btn btn-primary" type="submit" value="Submit"/>
         </div>
       </form>
     </div>
 
-    <div class="span6">
+    <div class="span4">
       <div class="well">
         @if(twAccessToken.isEmpty && twAccessTokenSecret.isEmpty) {
-          <p><a class="btn primary" href="@action(OAuth.connect("twitter"))">Sign up with Twitter&raquo;</a></p>
+          <p><a class="btn btn-primary" href="@action(OAuth.connect("twitter"))">Sign up with Twitter&raquo;</a></p>
         } else {
           <p><a class="btn" href="@action(GingrsnapUsers.neue())">Don't connect with Twitter</a></p>
         }

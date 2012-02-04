@@ -19,7 +19,7 @@
 
 @main(title = user.fullname) {
   <div class="row">
-    <div class="span10">
+    <div class="span8">
       <div id="userinfo">
         <h1>@user.fullname</h1>
         @profileImageUrlOpt.map { case (baseUrl, extension) =>
@@ -45,7 +45,7 @@
       @views.common.html.eventFeed(new PrettyTime(), eventFeed)
     </div>
 
-    <div class="span6">
+    <div class="span4">
       <div class="well">
         @views.common.html.recipeList(connectedUserOpt, user, recipes)
       </div>

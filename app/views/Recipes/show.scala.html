@@ -24,7 +24,7 @@
 
 @main(title) {
   <div class="row">
-    <div class="span10">
+    <div class="span8">
       <span id="recipe-id" style="display: none;">@recipeId</span>
       <h1>@title</h1>
       <h2>Ingredients</h2>
@@ -54,17 +54,17 @@
           <form id="tips" method="POST" action="/tips/new">
             <input name="userId" type="hidden" value="@connectedUser.id()" />
             <input name="recipeId" type="hidden" value="@recipeId" />
-            <textarea name="tipBody" class="span10"></textarea>
-            <button class="btn primary" type="submit">Submit</button>
+            <textarea name="tipBody" class="span8"></textarea>
+            <button class="btn btn-primary" type="submit">Submit</button>
           </form>
         }
       }
     </div>
 
-    <div class="span6">
+    <div class="span4">
       <div class="well">
         @imageBaseUrlOpt.map { case (baseUrl, extension) =>
-          <a class="recipe-image" href="@(baseUrl + "_original." + extension)">
+          <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
             <img src="@(baseUrl + "_thumbnail." + extension)" />
           </a>
         }
@@ -87,8 +87,12 @@
             }
           </div>
           @if(connectedUser.id() == authorId) {
-            <a class="btn" href="@action(Recipes.edit(recipeId))">Edit this recipe</a>
-            <a class="btn danger" id="delete-recipe">Delete this recipe</a>
+            <a class="btn" href="@action(Recipes.edit(recipeId))">
+              <i class="icon-pencil"></i>Edit this recipe
+            </a>
+            <a class="btn danger" id="delete-recipe">
+              <i class="icon-trash"></i>Delete this recipe
+            </a>
           } else {
             @if(Feature(Constants.Forking)) {
               <a class="btn" href="@action(Recipes.fork(recipeId))">Fork this recipe</a>

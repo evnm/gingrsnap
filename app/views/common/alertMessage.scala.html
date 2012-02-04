@@ -7,10 +7,12 @@
 )
 
 @if((errors != null && errors.nonEmpty) || (flash != null && flash.get("error"))) {
-  <div class="alert-message error">
+  <div class="alert alert-error">
     <p><strong>@errorPrelude</strong></p>
-    @for(err <- errors) {
-      <p>@err._2</p>
+    @if(errors != null) {
+      @for(err <- errors) {
+        <p>@err._2</p>
+      }
     }
 
     @if(flash.get("error")) {
@@ -20,11 +22,11 @@
 }
 
 @if(flash != null && flash.get("warning")) {
-  <div class="alert-message warning">
+  <div class="alert alert-warning">
     <p>@flash.get("warning")</p>
   </div>
 }
 
 @if(flash != null && flash.get("success") != null) {
-  <div class="alert-message success">@flash.get("success")</div>
+  <div class="alert alert-success">@flash.get("success")</div>
 }

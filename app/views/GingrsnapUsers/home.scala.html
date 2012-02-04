@@ -14,12 +14,12 @@
 
 @main(title = "Your dashboard") {
   <div class="row">
-    <div class="span10">
+    <div class="span8">
       <h1>Most recent recipes</h1>
       @views.common.html.eventFeed(new PrettyTime(), eventFeed)
     </div>
 
-    <div class="span6">
+    <div class="span4">
       <div class="well">
         @views.common.html.recipeList(Some(user), user, recipes)
       </div>

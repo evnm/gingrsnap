@@ -17,69 +17,51 @@
   <input id="isPublished" name="isPublished" type="hidden" value="false" />
 
   <div class="row">
-    <div class="span10">
+    <div class="span8">
+      <h1>Create a new recipe</h1>
       <fieldset>
-        <legend>Create a new recipe</legend>
-        <div class="clearfix">
-          <label for="title">Title</label>
-          <div class="input">
-            <input class="big span10" id="title" name="title" type="text" value="@title" />
-          </div>
+        <label for="title">Title</label>
+        <input class="big span8" id="title" name="title" type="text" value="@title" />
+
+        <label for="slug">URL</label>
+        <div class="input-prepend">
+          <span class="add-on">http://gingrsnap.com/@userSlug/</span>
+          <input class="slug span4" id="slug" name="slug" type="text" value="@recipeSlug" />
         </div>
 
-        <div class="clearfix">
-          <label for="slug">URL</label>
-          <div class="input">
-            <div class="input-prepend">
-              <span class="add-on">http://gingrsnap.com/@userSlug/</span>
-              <input class="slug span6" id="slug" name="slug" type="text" value="@recipeSlug" />
-            </div>
-          </div>
+        <label for="ingredients">Ingredients</label>
+        <ul id="ingredients">
+          @ingredients.map { ingr =>
+            <li>
+              <div class="input-append">
+                <input class="span4" type="text" value="@ingr" />
+                <span class="add-on">
+                  <a class="close" href="#">&times;</a>
+                </span>
+              </div>
+            </li>
+          }
+        </ul>
+        <div class="input-append">
+          <input class="span4" id="ingredient" type="text" />
+          <span class="add-on">
+            <button id="add-ingredient" class="btn btn-success" type="button">
+              <i class="icon-plus icon-white"></i>
+            </button>
+          </span>
         </div>
 
-        <div class="clearfix">
-          <label for="ingredients">Ingredients</label>
-          <ul id="ingredients">
-            <li class="clearfix"></li>
-            @ingredients.map { ingr =>
-              <li>
-                <div class="input">
-                  <div class="input-append">
-                    <input class="span4" type="text" value="@ingr" />
-                    <label class="add-on">
-                      <a class="close" href="#">x</a>
-                    </label>
-                  </div>
-                </div>
-              </li>
-              <li class="clearfix"></li>
-            }
-          </ul>
-          <div class="input">
-            <div class="input-append">
-              <input class="span4" id="ingredient" type="text" />
-              <label class="add-on">
-                <button id="add-ingredient" class="small success btn" type="button">Add</button>
-              </label>
-            </div>
-          </div>
-        </div>
+        <label for="recipeBody">Body</label>
+        <textarea class="wysiwyg" id="recipeBody" name="recipeBody" type="text">@recipeBody</textarea>
 
-        <div class="clearfix">
-          <label for="recipeBody">Body</label>
-          <div class="input">
-            <textarea class="wysiwyg" id="recipeBody" name="recipeBody" type="text">@recipeBody</textarea>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button id="publish" class="btn primary" type="submit">Publish</button>
+        <div class="form-actions">
+          <button id="publish" class="btn btn-primary" type="submit">Publish</button>
           <button class="btn" type="submit">Save as draft</button>
           <button class="btn cancel">Cancel</button>
         </div>
       </fieldset>
     </div>
-    <div class="span6">
+    <div class="span4">
       <div class="well">
         @views.common.html.imageUpload(imageBaseUrlOpt)
       </div>

@@ -1,6 +1,6 @@
 @(
   title: String = "",
-  h1Text: String = "",
+  h1Text: Option[String] = None,
   focusElement: Option[String] = None
 )(
   body: => Html
@@ -30,14 +30,16 @@
     <link href="http://fonts.googleapis.com/css?family=Lobster+Two:700" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Bitter:400,700" rel="stylesheet" type="text/css">
     <link rel="stylesheet" media="screen" href="@asset("public/stylesheets/main.css")">
-    <link rel="shortcut icon" type="image/png" href="@asset("public/images/favicon.png")">
+    <link rel="shortcut icon" type="image/png" href="@asset("public/img/favicon.png")">
   </head>
   <body>
+    @views.common.html.alertMessage()
     <div class="container">
       <div class="overlay">
         <a class="brand" href="@action(Application.index)">Gingrsnap</a>
-	      <h1>@h1Text</h1>
-        @views.common.html.alertMessage()
+        @h1Text.map { text =>
+          <h1>@text</h1>
+        }
         @body
       </div>
     </div>

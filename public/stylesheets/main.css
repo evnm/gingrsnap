@@ -1,5 +1,6 @@
 body {
-  background: #ad7351 url(/public/images/ad7351-noise.gif) repeat;
+  background: #ad7351 url(/public/img/ad7351-noise.gif) repeat;
+  font-size: 14px;
 }
 
 /**
@@ -9,12 +10,36 @@ a {
   color: #ac5d2f;  //#AF541F;
 }
 
+a.close {
+  vertical-align: text-top;
+  position: relative;
+  top: -2px;
+  left: -1px;
+  font-size: 26px;
+}
+
+p {
+  font-size: 14px;
+  line-height: 170%;
+}
+
+.help-block {
+  font-size: 13px;
+}
+
 a:hover {
   color: #d66929;
   text-decoration: none;
 }
 
-h1, h2 {
+.brand {
+  font-family: 'Lobster Two';
+  text-shadow: 0 2px 0 rgba(150, 150, 150, .3);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, legend {
+  color: #404040;
   font-family: "Bitter";
   text-shadow: 0 2px rgba(212, 212, 212, .5);
   -webkit-font-smoothing: antialiased;
@@ -24,13 +49,14 @@ h1, h2 {
 h1 {
   font-size: 28px;
   font-weight: 400;
+  margin-bottom: 18px;
 }
 
-h2 {
+h2, legend {
   font-size: 18px;
-  font-weight: 070;
-  line-height: 18px;
-  margin-bottom: 12px;
+  font-weight: 700;
+  line-height: 140%;
+  margin-bottom: 16px;
 }
 
 img {
@@ -46,16 +72,18 @@ img {
   border-radius: 4px;
 }
 
+
+
 .twitter-icon {
   padding-left: 24px;
-  background: url(/public/images/twitter-icon.png) no-repeat center left;
+  background: url(/public/img/twitter-icon.png) no-repeat center left;
 }
 
 /**
  * Header
  */
 header {
-  padding: 6px 0 16px 0;
+  padding: 10px 0 16px 0;
 //  background: #f7f5f3;
   background: #353535;
 //  -moz-box-shadow: inset 0 -1px 2px #eaeaea;
@@ -65,11 +93,18 @@ header {
   border-bottom: 1px solid #202020;
 }
 
-.brand {
-  font: 32px 'Lobster Two';
+header .navbar {
+  margin: 0;
+}
+
+header .navbar .brand {
+  float: none;
+  display: inline-block;
+  font-size: 32px;
   color: #e5e5e5;
   text-shadow: 0 2px 0 rgba(150, 150, 150, .3);
-  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
 }
 
 a.brand:hover {
@@ -80,7 +115,7 @@ a.brand:hover {
 /**
  * Flash/alert message bar.
  */
-div.alert-message {
+div.alert {
   margin: 0;
   text-align: center;
 }
@@ -88,15 +123,20 @@ div.alert-message {
 /**
  * Navigation lists.
  */
+ul.nav {
+  margin: 0;
+}
+
 ul.nav li {
   margin: 10px 24px 10px 0;
 }
 
-.nav a.btn {
-  padding: 4px 15px;
+.nav > li > a:hover {
+  background-color: inherit;
+  color: #f5f5f5;
 }
 
-.nav a {
+.navbar .nav > li > a {
   padding: 0;
   color: #c5c5c5;
 }
@@ -142,9 +182,10 @@ ol.event-feed li {
   border-bottom: 1px solid #ddd;
 }
 
-.recipe-image {
+.sidebar-image {
   display: block;
-  margin: 0 auto 1em auto;
+  margin-bottom: 1em;
+  margin-left: -8px;
   text-align: center;
 }
 
@@ -182,18 +223,20 @@ footer p, footer a {
   color: #e0c5b6;
 }
 
-footer .nav .brand {
+footer .navbar .brand {
+  float: right;
   font-size: 24px;
   color: #b8825f;
   text-shadow: 0 -2px 0 rgba(160, 113, 82, 1);
 }
 
-footer .nav a {
+footer .navbar .nav > li > a {
   color: #f7f6f5;
   font-weight: bold;
 }
 
-footer a:hover, footer .nav a:hover {
+footer .navbar .nav > li > a:hover {
+  background-color: inherit;
   color: #e9e6e4;
 }
 
@@ -208,12 +251,27 @@ footer a {
 /**
  * Forms
  */
+fieldset {
+  margin-bottom: 18px;
+}
+
+.form-actions {
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+label {
+  font-family: "Bitter";
+  margin-bottom: 3px;
+}
+
 input, textarea {
   box-shadow: inset 1px 1px 1px #ccc;
 }
 
-input, textarea, .input-prepend .add-on, .input-append .add-on {
-  padding: 6px;
+input, textarea {
+  padding: 6px 8px;
 }
 
 input.input-file {
@@ -224,8 +282,27 @@ input.input-file {
   padding-left: 0px;
 }
 
+.btn i {
+  margin-right: 6px;
+}
+
+.input-prepend .add-on, .input-append .add-on {
+  padding: 6px;
+  text-align: middle;
+}
+
 .add-on button.btn {
-  padding: 3px 6px;
+  height: 22px;
+  width: 22px;
+  padding: 3px;
+  line-height: normal;
+  position: relative;
+  top: -2px;
+}
+
+.add-on button.btn i {
+  display: block;
+  margin: 0 auto;
 }
 
 input.medium {
@@ -245,18 +322,33 @@ form#recipe-form ul#ingredients {
   list-style-type: none;
 }
 
-form#recipe-form ul#ingredients li {
-  margin: 3px 0;
-  clear: both;
+form#recipe-form ul#ingredients li input {
+  margin: 0;
 }
 
-form#recipe-form ul#ingredients label.add-on a {
-  height: 100%;
-  width: 100%;
+#recipe-form ul#ingredients span.add-on,
+#recipe-form ul#ingredients + div.input-append span.add-on {
+  width: 20px;
 }
 
-form#recipe-form textarea {
-  height: 200px;
+div.wysiwyg {
+  border: none;
+  background: inherit;
+}
+
+div.wysiwyg ul.toolbar {
+  border: none;
+  margin-bottom: 4px;
+}
+
+div.wysiwyg iframe {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  border: 1px solid #CCC;
+  -webkit-border-radius: 3px 0 0 3px;
+  -moz-border-radius: 3px 0 0 3px;
+  border-radius: 3px 0 0 3px;
 }
 
 div.actions button.cancel {
@@ -274,19 +366,61 @@ div#contact-modal textarea {
  * Overlay pages (login, password reset).
  */
 div.overlay {
-  margin: 22px auto;
-  padding: 24px 48px;
-  width: 600px;
+  margin: 28px auto;
+  padding: 24px 52px;
+  width: 612px;
   text-align: center;
   background-color: #f7f6f5;
-  border-radius: 4px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
   box-shadow: 1px 1px 2px #666;
+}
+
+div.overlay h1 {
+  margin-top: 20px;
+}
+
+div.overlay div.row {
+  margin-top: 48px;
+}
+
+div.overlay > h1 + div.row {
+  margin-top: 0;
+}
+
+div.overlay div.row .action , div.overlay div.row .copy {
+  text-align: left;
+}
+
+div.overlay div.row .left {
+  float: left;
+}
+
+div.overlay div.row .right {
+  float: right;
+}
+
+div.overlay div.row .action {
+  width: 240px;
+
+}
+
+div.overlay div.row .copy {
+  width: 340px;
+  margin-top: 16px;
+}
+
+div.overlay input {
+  width: 100%;
+  font-size: 16px;
 }
 
 div.overlay a.brand {
   display: block;
   font-size: 48px;
-  margin-bottom: 16px;
+  line-height: 48px;
+  text-align: center;
   color: #363636;
 }
 
@@ -299,19 +433,12 @@ div.overlay > form {
   float: left;
 }
 
-div.overlay > div#external-auth {
-  float: right;
-  margin-top: 18px;
-}
-
-div.overlay > div#external-auth > p {
-  margin-top: 16px;
-  font-size: .9em;
-  line-height: 1.6em;
+div.overlay div#external-auth > p {
+  margin-top: 14px;
 }
 
 div.overlay > p#notamember {
   clear: both;
-  padding-top: 18px;
+  margin: 44px 0 0 0;
   font-size: 1.2em;
 }

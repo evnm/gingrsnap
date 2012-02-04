@@ -12,35 +12,32 @@
 
 @overlay(
   title = "Connect with Twitter",
-  h1Text = "Connect with Twitter",
+  h1Text = Some("Connect with Twitter"),
   focusElement = Some("input#emailAddr")
 ) {
-  <form id="connect-twitter-form" class="form-stacked" method="POST">
-    <input name="twUsername" type="hidden" value="@twUsername" />
-    <input name="imgUrl" type="hidden" value="@imgUrl" />
-    <input name="twAccessToken" type="hidden" value="@twAccessToken" />
-    <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
-		<div class="clearfix">
-			<label for="username">Email address</label>
-      <div class="input">
-			  <input type="text" name="emailAddr" id="emailAddr" tabindex="1" />
-      </div>
-		</div>
-		<div class="clearfix">
-			<label for="password">Password <a href="@action(Accounts.passwordResetPrompt())">Forgot?</a></label>
-      <div class="input">
-			  <input type="password" name="password" id="password" tabindex="2" />
-      </div>
-		</div>
-		<input type="hidden" name="remember" value="true" />
-		<input type="submit" class="btn primary" id="signin" value="Connect" tabindex="3" />
-	</form>
+  <div class="row">
+    <form id="connect-twitter-form" class="form-stacked action left" method="POST">
+      <input name="twUsername" type="hidden" value="@twUsername" />
+      <input name="imgUrl" type="hidden" value="@imgUrl" />
+      <input name="twAccessToken" type="hidden" value="@twAccessToken" />
+      <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
 
-  <div>
-    @if(!imgUrl.isEmpty) {
-    <img src="@imgUrl" />
-    }
-    <p>The Twitter account <a href="https://twitter.com/@twUsername">@@@twUsername</a> isn't connected to Gingrsnap. Enter your Gingrsnap credentials to complete the process.</p>
+		  <label for="username">Email address</label>
+		  <input type="text" name="emailAddr" id="emailAddr" tabindex="1" />
+
+		  <label for="password">Password</label>
+		  <input type="password" name="password" id="password" tabindex="2" />
+
+		  <input type="hidden" name="remember" value="true" />
+		  <button type="submit" class="btn btn-primary" tabindex="3">Connect</button>
+	  </form>
+
+    <div class="copy right">
+      @if(!imgUrl.isEmpty) {
+      <img src="@imgUrl" />
+      }
+      <p>The Twitter account <a href="https://twitter.com/@twUsername">@@@twUsername</a> isn't connected to Gingrsnap. Enter your Gingrsnap credentials to complete the process.</p>
+    </div>
   </div>
 
   <p id="notamember">Not a member yet? <a href="@action(GingrsnapUsers.neue())">Sign up here.</a></p>

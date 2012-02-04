@@ -9,7 +9,7 @@
 @viewerOpt match {
   case Some(viewer) if user.id() == viewer.id() => {
     <h2>Your recipes</h2>
-    <a class="btn primary new-recipe" href="@action(Recipes.neue())">Create a new recipe</a>
+    <a class="btn btn-primary new-recipe" href="@action(Recipes.neue())">Create a new recipe</a>
   }
   case _ => {
     <h2>@user.fullname's recipes</h2>

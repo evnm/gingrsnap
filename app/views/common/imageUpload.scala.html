@@ -3,7 +3,7 @@
 )
 
 @imageUrlOpt.map { case (baseUrl, extension) =>
-  <a class="recipe-image" href="@(baseUrl + "_original." + extension)">
+  <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
     <img src="@(baseUrl + "_thumbnail." + extension)" />
   </a>
   <label>Upload a different image</label>

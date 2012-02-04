@@ -24,11 +24,12 @@
     <meta name="description" content="">
     <meta name="Evan Meagher" content="">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" media="all" href="@asset("public/stylesheets/bootstrap.min.css")">
     <link href="http://fonts.googleapis.com/css?family=Lobster+Two:700" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Bitter:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" media="all" href="@asset("public/stylesheets/bootstrap.min.css")">
+    <link rel="stylesheet" media="screen" href="@asset("public/stylesheets/jquery.wysiwyg.css")">
     <link rel="stylesheet" media="screen" href="@asset("public/stylesheets/main.css")">
-    <link rel="shortcut icon" type="image/png" href="@asset("public/images/favicon.png")">
+    <link rel="shortcut icon" type="image/png" href="@asset("public/img/favicon.png")">
     <script type="text/javascript" src="@asset("public/javascripts/jquery-1.7.0.min.js")"></script>
     <script type="text/javascript" src="@asset("public/javascripts/jquery.validate.min.js")"></script>
     <script type="text/javascript" src="@asset("public/javascripts/jquery.wysiwyg.js")"></script>
@@ -36,22 +37,23 @@
     <script type="text/javascript" src="@asset("public/javascripts/bootstrap-buttons.js")"></script>
     <script type="text/javascript" src="@asset("public/javascripts/bootstrap-twipsy.js")"></script>
     <script type="text/javascript" src="@asset("public/javascripts/bootstrap-modal.js")"></script>
-    <link rel="stylesheet" media="screen" href="@asset("public/stylesheets/jquery.wysiwyg.css")">
-    <link rel="stylesheet" media="screen" href="@asset("public/stylesheets/wysiwyg-editor.css")">
+
     <script type="text/javascript" src="@asset("public/javascripts/app.js")"></script>
   </head>
   <body>
     <header>
       <div class="container">
-        <a class="brand" href="@action(Application.index)">Gingrsnap</a>
-        <ul class="nav secondary-nav">
+        <div class="navbar">
+          <a class="brand" href="@action(Application.index)">Gingrsnap</a>
           @accountLinks(user: models.GingrsnapUser) = {
-            <li><a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a></li>
-            <li><a href="@action(Accounts.edit)">Account settings</a></li>
-            <li><a href="@action(Authentication.logout)">Logout</a></li>
+            <ul class="nav pull-right">
+              <li><a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a></li>
+              <li><a href="@action(Accounts.edit)">Account settings</a></li>
+              <li><a href="@action(Authentication.logout)">Logout</a></li>
+            </ul>
           }
           @loginLink = {
-            <li><a class="btn" href="@action(Authentication.login)">Login</a></li>
+            <a class="btn pull-right" href="@action(Authentication.login)">Sign in</a>
           }
           @if(renderArgs != null) {
             @(renderArgs.get(Constants.GingrsnapUserObjKey) match {
@@ -61,7 +63,7 @@
           } else {
             @loginLink
           }
-        </ul>
+        </div>
       </div>
     </header>
 
@@ -75,15 +77,14 @@
 
     <footer>
       <div class="container">
-        <ul class="nav">
-          <li><a href="@action(Application.about)">About</a></li>
-          <li><a data-controls-modal="contact-modal" data-backdrop="true" data-keyboard="true">Contact</a></li>
-          <li><a href="https://twitter.com/gingrsnap">@@gingrsnap</a></li>
-        </ul>
-        <div class="clearfix"></div>
-        <ul class="nav secondary-nav">
-          <span class="brand" href="@action(Application.index)">Gingrsnap</span>
-        </ul>
+        <div class="navbar">
+          <ul class="nav">
+            <li><a href="@action(Application.about)">About</a></li>
+            <li><a data-controls-modal="contact-modal" data-backdrop="true" data-keyboard="true">Contact</a></li>
+            <li><a href="https://twitter.com/gingrsnap">@@gingrsnap</a></li>
+          </ul>
+          <span class="brand pull-right" href="@action(Application.index)">Gingrsnap</span>
+        </div>
         <p>&copy; 2011-2012 <a href="http://evanmeagher.net">Evan Meagher<a/></p>
       </div>
     </footer>

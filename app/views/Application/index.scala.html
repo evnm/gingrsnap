@@ -11,14 +11,14 @@
 
 @main("") {
   <div class="row">
-    <div class="span10">
+    <div class="span8">
       <h1>Most recent events</h1>
       @views.common.html.eventFeed(new PrettyTime(), eventFeed)
     </div>
-    <div class="span6">
+    <div class="span4">
       <div class="well">
         <div class="hero-unit">
-          <a class="btn large primary" href="@action(controllers.GingrsnapUsers.neue())">Create an account</a>
+          <a class="btn btn-large btn-primary" href="@action(controllers.GingrsnapUsers.neue())">Create an account</a>
           <p>This is some copy explaining the benefit of signing up for Gingrsnap.</p>
         </div>
       </div>
