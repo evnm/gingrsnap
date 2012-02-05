@@ -11,21 +11,22 @@
     <li>
       @eventTuple match {
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipePublish, RecipeObject(obj)) => {
-          @views.common.eventItems.html.recipePublish(prettyTime, createdAt, subject, obj)
+          @views.common.eventItems.html.recipePublish(subject, obj)
         }
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeFork, RecipeObject(obj)) => {
-          @views.common.eventItems.html.recipeFork(prettyTime, createdAt, subject, obj)
+          @views.common.eventItems.html.recipeFork(subject, obj)
         }
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeUpdate, RecipeObject(obj)) => {
-          @views.common.eventItems.html.recipeUpdate(prettyTime, createdAt, subject, obj)
+          @views.common.eventItems.html.recipeUpdate(subject, obj)
         }
         case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeMake, RecipeObject(obj)) => {
-          @views.common.eventItems.html.recipeMake(prettyTime, createdAt, subject, obj)
+          @views.common.eventItems.html.recipeMake(subject, obj)
         }
         case (createdAt, GingrsnapUserSubject(subject), EventType.TipLeave, RecipeObject(obj)) => {
-          @views.common.eventItems.html.tipLeave(prettyTime, createdAt, subject, obj)
+          @views.common.eventItems.html.tipLeave(subject, obj)
         }
       }
+      <span class="event-timestamp">@prettyTime.format(eventTuple._1)</span>
     </li>
   }
 </ol>

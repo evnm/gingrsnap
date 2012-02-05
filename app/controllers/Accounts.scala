@@ -121,7 +121,7 @@ object Accounts extends BaseController with Secure {
             newAccount,
             if (image == null) None else Some(image))
 
-          flash.success("Saved.")
+          flash.success("Saved")
         }
 
         Action(Accounts.edit)

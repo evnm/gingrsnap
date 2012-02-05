@@ -56,7 +56,7 @@ h2, legend {
   font-size: 18px;
   font-weight: 700;
   line-height: 140%;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 img {
@@ -72,8 +72,6 @@ img {
   border-radius: 4px;
 }
 
-
-
 .twitter-icon {
   padding-left: 24px;
   background: url(/public/img/twitter-icon.png) no-repeat center left;
@@ -85,10 +83,11 @@ img {
 header {
   padding: 10px 0 16px 0;
 //  background: #f7f5f3;
-  background: #353535;
+  background: #353535 url(/public/img/353535-noise.gif) repeat;
 //  -moz-box-shadow: inset 0 -1px 2px #eaeaea;
 //  -webkit-box-shadow: inset 0 -1px 2px #eaeaea;
 //  box-shadow: inset 0 -1px 2px #eaeaea;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.85) inset,0 1px 2px rgba(255,255,255,0.8)
   border-top: 2px solid #202020;
   border-bottom: 1px solid #202020;
 }
@@ -118,6 +117,7 @@ a.brand:hover {
 div.alert {
   margin: 0;
   text-align: center;
+  border-radius: none;
 }
 
 /**
@@ -268,6 +268,7 @@ label {
 
 input, textarea {
   box-shadow: inset 1px 1px 1px #ccc;
+  font-size: 14px;
 }
 
 input, textarea {
@@ -465,4 +466,42 @@ div.overlay > p#notamember {
   clear: both;
   margin: 44px 0 0 0;
   font-size: 1.2em;
+}
+
+/**
+ * Account-edit page.
+ */
+form#edit-account input[type="text"] {
+  width: 400px;
+}
+
+form#edit-account input#slug {
+  width: 200px;
+}
+
+/**
+ * User profile pages.
+ */
+div.user-info {
+  margin-bottom: 32px;
+}
+
+div.user-info dt {
+  float: left;
+  width: 160px;
+  font-weight: normal;
+  color: #999;
+}
+
+div.user-info dd {
+  margin-bottom: 6px;
+}
+
+/**
+ * Recipe pages.
+ */
+.attribution {
+  color: #999;
+  margin-top: -20px;
+  font-style: oblique;
 }

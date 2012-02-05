@@ -1,6 +1,5 @@
 package controllers
 
-import java.util.Date
 import models.{Account, Event, Image, Make, Recipe, GingrsnapUser}
 import notifiers.Mails
 import play._
@@ -70,8 +69,7 @@ object GingrsnapUsers extends BaseController {
         Mails.welcome(createdUser)
         Action(Application.index)
       } getOrElse {
-        flash.error(
-          "Unfortunately, there was an error while creating your account. Please try again.")
+        flash.error("Unfortunately, there was an error while creating your account")
         Action(Application.index)
       }
     }

@@ -34,7 +34,7 @@ object Recipes extends BaseController with Secure {
     Validation.required("slug", slug)
       .message("You must provide a URL for your recipe")
     Validation.isTrue("slug", slug.matches("[a-z0-9]+([+][a-z0-9]+)*"))
-      .message("URL can only contain lowercase letters and numbers.")
+      .message("URL can only contain lowercase letters and numbers")
     Validation.isTrue("ingredients", !ingredients.isEmpty)
       .message("You must provide at least one ingredient")
     Validation.required("recipeBody", recipeBody)
@@ -91,15 +91,15 @@ object Recipes extends BaseController with Secure {
           if (image == null) None else Some(image)
         ).toOptionLoggingError map { createdRecipe =>
           if (isPublished) {
-            flash.success("Success! Your recipe has been published.")
+            flash.success("Your recipe has been published")
             Action(Recipes.show(user.slug, createdRecipe.slug))
           } else {
-            flash.success("Success! Your recipe has been saved.")
+            flash.success("Your recipe has been saved")
             Action(Recipes.edit(createdRecipe.id()))
           }
         } getOrElse {
           // TODO: Better error handling here.
-          NotFound("There was a problem creating your recipe. Please try again.")
+          NotFound("There was a problem creating your recipe")
         }
       }
     }
@@ -128,10 +128,10 @@ object Recipes extends BaseController with Secure {
     case Some(recipe) => GingrsnapUser.getById(userId) match {
       case Some(user) => {
         if (recipe.authorId == userId) {
-          flash += ("warning" -> "You can't fork your own recipes.")
+          flash += ("warning" -> "You can't fork your own recipes")
           Action(Application.index)
         } else if (Recipe.getBySlugs(user.slug, recipe.slug).isDefined) {
-          flash += ("warning" -> "You can't fork that recipe because you already have one by the same name.")
+          flash += ("warning" -> "You can't fork that recipe because you already have one by the same name")
         _show(recipeId)
       } else {
         Recipe.fork(recipe, userId).toOptionLoggingError map { createdRecipe =>
@@ -139,14 +139,14 @@ object Recipes extends BaseController with Secure {
             Action(Recipes.show(user.slug, createdRecipe.slug))
           } getOrElse {
             // TODO: Better error handling here.
-            NotFound("There was a problem while forking this recipe. Please try again.")
+            NotFound("There was a problem while forking this recipe")
           }
         }
       }
       case None => NotFound("The User trying to fork this recipe doesn't exist")
     }
     case None => {
-      flash += ("error" -> "The recipe you're trying to fork doesn't exist.")
+      flash.error("The recipe you're trying to fork doesn't exist")
       Action(Application.index)
     }
   }
@@ -165,7 +165,7 @@ object Recipes extends BaseController with Secure {
       Recipe.getById(recipeId) match {
         case Some(recipe) => {
           if (recipe.authorId != user.id()) {
-            flash += ("error" -> "Looks like you tried to edit someone else's recipe. Try forking it instead.")
+            flash.error("Looks like you tried to edit someone else's recipe")
             Application.index
           } else {
             html.edit(
@@ -182,7 +182,7 @@ object Recipes extends BaseController with Secure {
           }
         }
         case None => {
-          flash += ("error" -> "The recipe you're trying to edit doesn't exist.")
+          flash.error("The recipe you're trying to edit doesn't exist")
           Action(Application.index)
         }
       }
@@ -210,7 +210,7 @@ object Recipes extends BaseController with Secure {
       Recipe.getById(recipeId) match {
         case Some(oldRecipe) => {
           if (oldRecipe.authorId != user.id()) {
-            flash.error("Looks like you tried to edit someone else's recipe. Try forking it instead.")
+            flash.error("Looks like you tried to edit someone else's recipe")
             Action(Application.index)
           } else {
             validateRecipe(user.id(), title, slug, ingredients, recipeBody)
@@ -226,7 +226,9 @@ object Recipes extends BaseController with Secure {
               val newRecipe = oldRecipe.copy(
                 title = title,
                 slug = slug,
-                publishedAt = if (isPublished) Some(timestamp) else None,
+                publishedAt = oldRecipe.publishedAt orElse {
+                  if (isPublished) Some(timestamp) else None
+                },
                 body = recipeBody)
               Recipe.update(
                 newRecipe,
@@ -235,20 +237,20 @@ object Recipes extends BaseController with Secure {
                 oldRecipe.publishedAt.isDefined)
 
               if (isPublished && oldRecipe.publishedAt.isDefined) {
-                flash.success("Success! Your recipe has been updated.")
+                flash.success("Your recipe has been updated")
                 Action(Recipes.show(user.slug, newRecipe.slug))
               } else if (isPublished && oldRecipe.publishedAt.isEmpty) {
-                flash.success("Success! Your recipe has been published.")
+                flash.success("Your recipe has been published")
                 Action(Recipes.show(user.slug, newRecipe.slug))
               } else {
-                flash.success("Success! Your recipe has been saved.")
+                flash.success("Your recipe has been saved")
                 Action(Recipes.edit(newRecipe.id()))
               }
             }
           }
         }
         case None => {
-          flash.error("The recipe you're trying to edit doesn't exist!")
+          flash.error("The recipe you're trying to edit doesn't exist")
           Action(Application.index)
         }
       }
@@ -268,16 +270,16 @@ object Recipes extends BaseController with Secure {
       Recipe.getById(recipeId) match {
         case Some(recipe) => {
           if (recipe.authorId != user.id()) {
-            flash += ("warning" -> "You can't delete recipes that aren't yours.")
+            flash += ("warning" -> "You can't delete recipes that aren't yours")
             _show(recipeId)
           } else {
             Recipe.delete(recipeId)
-            flash.success("Successfully deleted " + recipe.title + ".")
+            flash.success("Successfully deleted " + recipe.title)
             Action(Application.index)
           }
         }
         case None => {
-          flash += ("error" -> "The recipe you're trying to delete doesn't exist.")
+          flash += ("error" -> "The recipe you're trying to delete doesn't exist")
           Action(Application.index)
         }
       }
@@ -311,37 +313,40 @@ object Recipes extends BaseController with Secure {
     // Store request url so we can redirect back in case user subsequently logs in.
     flash.put("url", request.url)
 
-    Recipe.getBySlugs(userSlug, recipeSlug) map { case (recipe, ingredients) =>
-      // Only show recipe if it's published.
-      recipe.publishedAt match {
-        case Some(_) => {
-          val tips = if (Feature(RecipeTips)) {
-            Some(Tip.getByRecipeId(recipe.id()) map { Tip.hydrate(_) })
-          } else {
-            None
-          }
-          val totalMakeCount = Make.getCountByRecipeId(recipe.id())
-          val userMakeCountOpt = connectedUser map { u =>
-            Make.getCountByUserAndRecipe(u.id(), recipe.id())
-          }
-          val isMakable = connectedUser map { u: GingrsnapUser =>
-            Recipe.isMakable(u.id(), recipe.id())
-          } getOrElse(false)
+    GingrsnapUser.getBySlug(userSlug) flatMap { author =>
+      Recipe.getBySlugs(userSlug, recipeSlug) map { case (recipe, ingredients) =>
+        // Only show recipe if it's published.
+        recipe.publishedAt match {
+          case Some(_) => {
+            val tips = if (Feature(RecipeTips)) {
+              Some(Tip.getByRecipeId(recipe.id()) map { Tip.hydrate(_) })
+            } else {
+              None
+            }
+            val totalMakeCount = Make.getCountByRecipeId(recipe.id())
+            val userMakeCountOpt = connectedUser map { u =>
+              Make.getCountByUserAndRecipe(u.id(), recipe.id())
+            }
+            val isMakable = connectedUser map { u: GingrsnapUser =>
+              Recipe.isMakable(u.id(), recipe.id())
+            } getOrElse(false)
 
-          html.show(
-            recipe.id(),
-            recipe.title,
-            recipe.authorId,
-            ingredients map { _.name },
-            recipe.body,
-            tips,
-            Image.getBaseUrlByRecipeId(recipe.id()),
-            totalMakeCount,
-            userMakeCountOpt,
-            isMakable,
-            connectedUser)
+            html.show(
+              recipe.id(),
+              recipe.title,
+              author,
+              ingredients map { _.name },
+              recipe.body,
+              recipe.publishedAt,
+              tips,
+              Image.getBaseUrlByRecipeId(recipe.id()),
+              totalMakeCount,
+              userMakeCountOpt,
+              isMakable,
+              connectedUser)
+          }
+          case None => NotFound("No such recipe")
         }
-        case None => NotFound("No such recipe")
       }
     } getOrElse(NotFound("No such recipe"))
   }

@@ -1,9 +1,10 @@
 @(
   recipeId: Long,
   title: String,
-  authorId: Long,
+  author: models.GingrsnapUser,
   ingredients: Seq[String],
   bodyHtml: String,
+  publishedAt: Option[java.sql.Timestamp],
   tips: Option[Seq[(models.Tip, models.GingrsnapUser)]],
   imageBaseUrlOpt: Option[(String, String)],
   totalMakeCount: Long,
@@ -19,6 +20,7 @@
 )
 
 @import controllers._
+@import java.text.DateFormat
 @import models.{Feature, Make}
 @import play.templates.JavaExtensions
 
@@ -27,6 +29,11 @@
     <div class="span8">
       <span id="recipe-id" style="display: none;">@recipeId</span>
       <h1>@title</h1>
+      <p class="attribution">Published by @author.fullname on
+        @publishedAt.map { publishedAt =>
+          @DateFormat.getDateInstance.format(publishedAt)
+        }
+      </p>
       <h2>Ingredients</h2>
       <ul id="ingredients">
         @for(ingr <- ingredients) {
@@ -86,7 +93,7 @@
               <button class="btn" disabled="true" title="You've made this recipe too recently to make again!">I made this!</button>
             }
           </div>
-          @if(connectedUser.id() == authorId) {
+          @if(connectedUser.id() == author.id()) {
             <a class="btn" href="@action(Recipes.edit(recipeId))">
               <i class="icon-pencil"></i>Edit this recipe
             </a>

@@ -128,7 +128,7 @@ object OAuth extends BaseController with Secure {
             user.copy(
               twAccessToken = Some(accessToken.getToken()),
               twAccessTokenSecret = Some(accessToken.getTokenSecret())))
-          flash.success("Success! Your Twitter account has been connected.")
+          flash.success("Your Twitter account has been connected")
           Action(Accounts.edit)
         }
         case None => {
