@@ -21,12 +21,12 @@
       <h1>Create a new recipe</h1>
       <fieldset>
         <label for="title">Title</label>
-        <input class="big span8" id="title" name="title" type="text" value="@title" />
+        <input class="big" id="title" name="title" type="text" value="@title" />
 
         <label for="slug">URL</label>
-        <div class="input-prepend">
+        <div class="input-prepend" id="recipe-url">
           <span class="add-on">http://gingrsnap.com/@userSlug/</span>
-          <input class="slug span4" id="slug" name="slug" type="text" value="@recipeSlug" />
+          <input id="slug" name="slug" type="text" value="@recipeSlug" />
         </div>
 
         <label for="ingredients">Ingredients</label>
@@ -34,7 +34,7 @@
           @ingredients.map { ingr =>
             <li>
               <div class="input-append">
-                <input class="span4" type="text" value="@ingr" />
+                <input type="text" value="@ingr" />
                 <span class="add-on">
                   <a class="close" href="#">&times;</a>
                 </span>
@@ -42,25 +42,25 @@
             </li>
           }
         </ul>
-        <div class="input-append">
-          <input class="span4" id="ingredient" type="text" />
+        <div class="input-append" id="ingredient">
+          <input type="text" />
           <span class="add-on">
             <button id="add-ingredient" class="btn btn-success" type="button">
               <i class="icon-plus icon-white"></i>
             </button>
           </span>
         </div>
-
-        <label for="recipeBody">Body</label>
-        <textarea class="wysiwyg" id="recipeBody" name="recipeBody" type="text">@recipeBody</textarea>
-
-        <div class="form-actions">
-          <button id="publish" class="btn btn-primary" type="submit">Publish</button>
-          <button class="btn" type="submit">Save as draft</button>
-          <button class="btn cancel">Cancel</button>
-        </div>
       </fieldset>
+
+      <textarea class="wysiwyg" id="recipeBody" name="recipeBody" type="text">@recipeBody</textarea>
+
+      <div class="form-actions">
+        <button id="publish" class="btn btn-primary" type="submit">Publish</button>
+        <button class="btn" type="submit">Save as draft</button>
+        <button class="btn cancel">Cancel</button>
+      </div>
     </div>
+
     <div class="span4">
       <div class="well">
         @views.common.html.imageUpload(imageBaseUrlOpt)

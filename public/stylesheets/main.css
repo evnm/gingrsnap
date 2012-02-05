@@ -13,7 +13,7 @@ a {
 a.close {
   vertical-align: text-top;
   position: relative;
-  top: -2px;
+  top: -3px;
   left: -1px;
   font-size: 26px;
 }
@@ -255,10 +255,10 @@ fieldset {
   margin-bottom: 18px;
 }
 
-.form-actions {
+.form-actions, .modal-footer {
   margin: 0;
-  padding-left: 0;
-  padding-right: 0;
+  padding: 14px;
+  background-color: #F7F5F3;
 }
 
 label {
@@ -291,9 +291,14 @@ input.input-file {
   text-align: middle;
 }
 
+#recipe-form #ingredient .add-on,
+#recipe-form ul#ingredients .add-on {
+  padding: 4px;
+}
+
 .add-on button.btn {
-  height: 22px;
-  width: 22px;
+  height: 20px;
+  width: 21px;
   padding: 3px;
   line-height: normal;
   position: relative;
@@ -303,6 +308,8 @@ input.input-file {
 .add-on button.btn i {
   display: block;
   margin: 0 auto;
+  position: relative;
+  top: -1px;
 }
 
 input.medium {
@@ -317,6 +324,14 @@ input.big {
   line-height: 24px;
 }
 
+form#recipe-form input#title {
+  width: 460px;
+}
+
+form#recipe-form input#slug {
+  width: 260px;
+}
+
 form#recipe-form ul#ingredients {
   margin: 0;
   list-style-type: none;
@@ -326,14 +341,20 @@ form#recipe-form ul#ingredients li input {
   margin: 0;
 }
 
+form#recipe-form ul#ingredients li input, #ingredient input {
+  padding: 4px 6px;
+  width: 220px;
+}
 #recipe-form ul#ingredients span.add-on,
 #recipe-form ul#ingredients + div.input-append span.add-on {
   width: 20px;
 }
 
 div.wysiwyg {
+  width: 592px;
   border: none;
   background: inherit;
+  margin-bottom: 16px;
 }
 
 div.wysiwyg ul.toolbar {
@@ -342,6 +363,7 @@ div.wysiwyg ul.toolbar {
 }
 
 div.wysiwyg iframe {
+  width: 602px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
@@ -354,6 +376,10 @@ div.wysiwyg iframe {
 div.actions button.cancel {
   float: right;
   color: #A60101;
+}
+
+div#contact-modal form {
+  margin: 0;
 }
 
 div#contact-modal textarea {
@@ -378,7 +404,7 @@ div.overlay {
 }
 
 div.overlay h1 {
-  margin-top: 20px;
+  margin: 20px 0 28px 0;
 }
 
 div.overlay div.row {

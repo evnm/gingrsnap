@@ -75,7 +75,7 @@ $(document).ready(function() {
   });
 
   // Translate "return" in ingredient input to add-button click.
-  $("input#ingredient").keypress(function(event) {
+  $("#ingredient input").keypress(function(event) {
     var code = event.keyCode || event.which;
     if (code == 13) {
       $("button#add-ingredient").click();
@@ -85,7 +85,7 @@ $(document).ready(function() {
 
   // Add ingredient button click action.
   $("button#add-ingredient").click(function() {
-    var ingrInput = $("input#ingredient")
+    var ingrInput = $("#ingredient input")
     if (ingrInput.val()) {
       $("ul#ingredients")
         .append('<li><div class="input-append"><input class="span4" type="text" value="' +
