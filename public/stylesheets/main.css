@@ -223,6 +223,10 @@ footer p, footer a {
   color: #e0c5b6;
 }
 
+footer a:hover {
+  color: #CFA589;
+}
+
 footer .navbar .brand {
   float: right;
   font-size: 24px;
