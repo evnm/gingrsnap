@@ -77,23 +77,26 @@
 
     <div class="span4">
       <div class="well">
-        <div class="recipe-actions">
-          <h2>Actions</h2>
-          @connectedUserOpt.map { connectedUser =>
-            @if(connectedUser.id() == author.id()) {
+        @connectedUserOpt.map { connectedUser =>
+          @if(connectedUser.id() == author.id()) {
+            <div class="recipe-actions">
+              <h2>Actions</h2>
               <a class="btn" href="@action(Recipes.edit(recipeId))">
                 <i class="icon-pencil"></i>Edit
               </a>
               <a class="btn btn-danger">
                 <i class="icon-trash icon-white"></i>Delete
               </a>
-            } else {
-              @if(Feature(Constants.Forking)) {
+            </div>
+          } else {
+            @if(Feature(Constants.Forking)) {
+              <div class="recipe-actions">
+                <h2>Actions</h2>
                 <a class="btn" href="@action(Recipes.fork(recipeId))">Fork this recipe</a>
-              }
+              </div>
             }
           }
-        </div>
+        }
 
         @imageBaseUrlOpt.map { case (baseUrl, extension) =>
           <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
