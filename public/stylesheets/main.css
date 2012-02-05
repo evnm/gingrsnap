@@ -505,3 +505,12 @@ div.user-info dd {
   margin-top: -20px;
   font-style: oblique;
 }
+
+.attribution a {
+  color: #999;
+  font-weight: bold;
+}
+
+.attribution a:hover {
+  color: #777;
+}

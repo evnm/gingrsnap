@@ -29,9 +29,9 @@
     <div class="span8">
       <span id="recipe-id" style="display: none;">@recipeId</span>
       <h1>@title</h1>
-      <p class="attribution">Published by @author.fullname on
+      <p class="attribution">Published by <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
         @publishedAt.map { publishedAt =>
-          @DateFormat.getDateInstance.format(publishedAt)
+          on @DateFormat.getDateInstance.format(publishedAt)
         }
       </p>
       <h2>Ingredients</h2>
