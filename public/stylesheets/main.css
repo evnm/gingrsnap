@@ -1,11 +1,18 @@
 body {
   background: #ad7351 url(/public/img/ad7351-noise.gif) repeat;
-  font-size: 14px;
+  font-size: 13px;
+  font-family: 'Open Sans', helvetica neue, helvetica, sans-serif;
+  font-weight: 400;
 }
 
 /**
  * Basic elements.
  */
+body, p, input, button, select, textarea {
+  font-family: 'Open Sans', helvetica neue, helvetica, sans-serif;
+  font-weight: 400;
+}
+
 a {
   color: #ac5d2f;  //#AF541F;
 }
@@ -16,10 +23,11 @@ a.close {
   top: -3px;
   left: -1px;
   font-size: 26px;
+  font-family: helvetica neue, helvetica, sans-serif;
 }
 
 p {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 170%;
 }
 
@@ -122,7 +130,7 @@ a.brand:hover {
 div.alert {
   margin: 0;
   text-align: center;
-  border-radius: none;
+  border-radius: 0;
 }
 
 /**
@@ -133,7 +141,7 @@ ul.nav {
 }
 
 ul.nav li {
-  margin: 10px 24px 10px 0;
+  margin: 10px 0 10px 24px;
 }
 
 .nav > li > a:hover {
@@ -243,9 +251,13 @@ footer .navbar .brand {
   text-shadow: 0 -2px 0 rgba(160, 113, 82, 1);
 }
 
+.navbar ul.nav li {
+  margin: 10px 24px 10px 0;
+}
+
 footer .navbar .nav > li > a {
   color: #f7f6f5;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 footer .navbar .nav > li > a:hover {
@@ -281,7 +293,7 @@ label {
 
 input, textarea {
   box-shadow: inset 1px 1px 1px #ccc;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 input, textarea {
@@ -302,6 +314,8 @@ input.input-file {
 
 .btn i {
   margin-right: 6px;
+  position: relative;
+  top: 2px;
 }
 
 .input-prepend .add-on, .input-append .add-on {
