@@ -70,11 +70,30 @@
 
     <div class="span4">
       <div class="well">
+        <div class="recipe-actions">
+          <h2>Actions</h2>
+          @connectedUserOpt.map { connectedUser =>
+            @if(connectedUser.id() == author.id()) {
+              <a class="btn" href="@action(Recipes.edit(recipeId))">
+                <i class="icon-pencil"></i>Edit
+              </a>
+              <a class="btn btn-danger">
+                <i class="icon-trash icon-white"></i>Delete
+              </a>
+            } else {
+              @if(Feature(Constants.Forking)) {
+                <a class="btn" href="@action(Recipes.fork(recipeId))">Fork this recipe</a>
+              }
+            }
+          }
+        </div>
+
         @imageBaseUrlOpt.map { case (baseUrl, extension) =>
           <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
             <img src="@(baseUrl + "_thumbnail." + extension)" />
           </a>
         }
+
         <p>
           This recipe has been made <span id="total-make-count">@totalMakeCount</span> <span id="total-make-times">time@JavaExtensions.pluralize(totalMakeCount)</span>.
         </p>
@@ -93,20 +112,34 @@
               <button class="btn" disabled="true" title="You've made this recipe too recently to make again!">I made this!</button>
             }
           </div>
-          @if(connectedUser.id() == author.id()) {
-            <a class="btn" href="@action(Recipes.edit(recipeId))">
-              <i class="icon-pencil"></i>Edit this recipe
-            </a>
-            <a class="btn danger" id="delete-recipe">
-              <i class="icon-trash"></i>Delete this recipe
-            </a>
-          } else {
-            @if(Feature(Constants.Forking)) {
-              <a class="btn" href="@action(Recipes.fork(recipeId))">Fork this recipe</a>
+
+        }
+
+        @if(Feature(Constants.TweetButtons) || Feature(Constants.FbLikeButtons)) {
+          <div class="share-buttons">
+            <h2>Share this recipe</h2>
+            @if(Feature(Constants.TweetButtons)) {
+              <a href="https://twitter.com/share" class="twitter-share-button" data-text="@title" data-via="gingrsnap" data-size="large">Tweet this recipe</a>
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
             }
-          }
+
+            @if(Feature(Constants.FbLikeButtons)) {
+              <div id="fb-root"></div>
+              <script>
+                (function(d, s, id) {
+                  var js, fjs = d.getElementsByTagName(s)[0];
+                  if (d.getElementById(id)) return;
+                  js = d.createElement(s); js.id = id;
+                  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+                  fjs.parentNode.insertBefore(js, fjs);
+                }(document, 'script', 'facebook-jssdk'));
+              </script>
+              <div class="fb-like" data-send="false" data-width="450" data-show-faces="false"></div>
+            }
+          </div>
         }
       </div>
     </div>
   </div>
+
 }

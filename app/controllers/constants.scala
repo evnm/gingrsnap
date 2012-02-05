@@ -20,4 +20,6 @@ object Constants {
   // Feature keys
   val Forking = "forking"
   val RecipeTips = "recipe-tips"
+  val TweetButtons = "tweet-buttons"
+  val FbLikeButtons = "fb-like-buttons"
 }

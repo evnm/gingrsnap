@@ -207,6 +207,10 @@ ol.event-feed li {
   margin: 0;
 }
 
+div.share-buttons {
+  margin-top: 24px;
+}
+
 /**
  * Footer
  */
@@ -517,4 +521,8 @@ div.user-info dd {
 
 .attribution a:hover {
   color: #777;
+}
+
+div.recipe-actions {
+  margin-bottom: 24px;
 }
