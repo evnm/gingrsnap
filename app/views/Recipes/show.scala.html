@@ -5,6 +5,7 @@
   ingredients: Seq[String],
   bodyHtml: String,
   publishedAt: Option[java.sql.Timestamp],
+  prettyTime: com.ocpsoft.pretty.time.PrettyTime,
   tips: Option[Seq[(models.Tip, models.GingrsnapUser)]],
   imageBaseUrlOpt: Option[(String, String)],
   totalMakeCount: Long,
@@ -46,25 +47,31 @@
       </div>
 
       @if(Feature(Constants.RecipeTips)) {
-        @tips.map { tipSeq =>
-          <ol>
-            @tipSeq.map { case (tip, user) =>
-              <li>
-                <a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a>
-                <span class="timestamp"></span>
-                <p>@tip.body</p>
-              </li>
+        <div class="recipe-tips">
+          @tips.map { tipSeq =>
+            @if(tipSeq.nonEmpty) {
+              <h2>Tips</h2>
+              <ol>
+                @tipSeq.map { case (tip, user) =>
+                  <li>
+                    <a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a>
+                    <span class="timestamp">@prettyTime.format(tip.createdAt)</span>
+                    <p>@tip.body</p>
+                  </li>
+                }
+              </ol>
             }
-          </ol>
-        }
-        @connectedUserOpt.map { connectedUser =>
-          <form id="tips" method="POST" action="/tips/new">
-            <input name="userId" type="hidden" value="@connectedUser.id()" />
-            <input name="recipeId" type="hidden" value="@recipeId" />
-            <textarea name="tipBody" class="span8"></textarea>
-            <button class="btn btn-primary" type="submit">Submit</button>
-          </form>
-        }
+          }
+          @connectedUserOpt.map { connectedUser =>
+            <form id="tips" method="POST" action="/tips/new">
+              <input name="userId" type="hidden" value="@connectedUser.id()" />
+              <input name="recipeId" type="hidden" value="@recipeId" />
+              <h3>Leave a tip for this recipe</h3>
+              <textarea name="tipBody"></textarea>
+              <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+          }
+        </div>
       }
     </div>
 

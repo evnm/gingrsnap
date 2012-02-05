@@ -1,6 +1,7 @@
 package controllers
 
 import collection.JavaConversions._
+import com.ocpsoft.pretty.time.PrettyTime
 import Constants.{GingrsnapUserObjKey, RecipeTips}
 import java.io.File
 import java.sql.Timestamp
@@ -338,6 +339,7 @@ object Recipes extends BaseController with Secure {
               ingredients map { _.name },
               recipe.body,
               recipe.publishedAt,
+              new PrettyTime(),
               tips,
               Image.getBaseUrlByRecipeId(recipe.id()),
               totalMakeCount,

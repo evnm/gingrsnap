@@ -52,12 +52,12 @@ object Tip extends Magic[Tip] with Timestamped[Tip] {
   }
 
   /**
-   * Gets a user's most recent Tip of a given recipe.
+   * Gets a user's most recent Tip for a given recipe.
    */
   def getMostRecent(userId: Long, recipeId: Long): Option[Tip] = {
     SQL("""
-        select * from Tip m
-        where m.userId = {userId} and m.recipeId = {recipeId}
+        select * from Tip
+        where userId = {userId} and recipeId = {recipeId}
         order by createdAt desc
         limit 1
         """)
@@ -69,6 +69,12 @@ object Tip extends Magic[Tip] with Timestamped[Tip] {
    * Gets all of the tips associated with a given recipe.
    */
   def getByRecipeId(recipeId: Long): Seq[Tip] = {
-    Tip.find("recipeId = {recipeId}").on("recipeId" -> recipeId).list()
+    SQL("""
+        select * from Tip
+        where recipeId = {recipeId}
+        order by createdAt desc
+        """)
+      .on("recipeId" -> recipeId)
+      .as(Tip *)
   }
 }

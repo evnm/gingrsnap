@@ -59,6 +59,11 @@ h2, legend {
   margin-bottom: 8px;
 }
 
+h3 {
+  font-size: 15px;
+  color: #666;
+}
+
 img {
   outline: 1px solid #f7f6f5;
   border: 4px solid white;
@@ -281,6 +286,10 @@ input, textarea {
 
 input, textarea {
   padding: 6px 8px;
+}
+
+textarea {
+  line-height: 160%;
 }
 
 input.input-file {
@@ -525,4 +534,39 @@ div.user-info dd {
 
 div.recipe-actions {
   margin-bottom: 24px;
+}
+
+form#tips textarea {
+  height: 60px;
+  width: 440px;
+  margin-right: 8px;
+}
+
+div.recipe-tips {
+  border-top: 1px solid #ddd;
+  margin-top: 32px;
+  padding-top: 24px;
+}
+
+div.recipe-tips ol {
+  margin-left: 0;
+  list-style-type: none;
+}
+
+div.recipe-tips li {
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  background-color: #F7F5F3;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+div.recipe-tips li p {
+  margin: 8px 0 0 0;
+}
+
+div.recipe-tips ol li span.timestamp {
+  display: inline-block;
+  margin-left: 6px;
+  color: #999;
 }
