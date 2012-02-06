@@ -1,4 +1,6 @@
-@()(
+@(
+  userIsConnected: Boolean
+)(
   implicit
   renderArgs: play.mvc.Scope.RenderArgs,
   flash: play.mvc.Scope.Flash,
@@ -7,18 +9,27 @@
 
 @import controllers._
 
+@heroContent = {
+  <h1>Upgrade your recipe collection.</h1>
+  <p><strong>Gingrsnap</strong> is a simple service that allows you to publish recipes and keep track of what you've been making.</p>
+}
+
 @main("About") {
   <div class="hero-unit">
-    <div class="row">
-      <div class="span7">
-        <h1>Upgrade your recipe collection.</h1>
-        <p><strong>Gingrsnap</strong> is a simple service that allows you to publish recipes and keep track of what you've been making.</p>
+    @if(!userIsConnected) {
+      <div class="row">
+        <div class="span7">
+          @heroContent
         </div>
-      <div class="span3 pull-right">
-        <a class="btn btn-primary create-account" href="@action(GingrsnapUsers.neue())">Create an account &raquo;</a>
-        <p>Signup is a snap. Try Gingrsnap for free today!</p>
+
+        <div class="span3 pull-right">
+          <a class="btn btn-primary create-account" href="@action(GingrsnapUsers.neue())">Create an account &raquo;</a>
+          <p>Signup is a snap. Try Gingrsnap for free today!</p>
+        </div>
       </div>
-    </div>
+    } else {
+      @heroContent
+    }
   </div>
 
   <div class="row">

@@ -19,5 +19,7 @@ object Application extends BaseController {
     }
   }
 
-  def about = views.Application.html.about()
+  def about = {
+    views.Application.html.about(Authentication.getLoggedInUser.isDefined)
+  }
 }
