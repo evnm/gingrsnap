@@ -1,6 +1,5 @@
 body {
   background: #ad7351 url(/public/img/ad7351-noise.gif) repeat;
-  font-size: 13px;
   font-family: 'Open Sans', helvetica neue, helvetica, sans-serif;
   font-weight: 400;
 }
@@ -27,8 +26,8 @@ a.close {
 }
 
 p {
-  font-size: 13px;
   line-height: 170%;
+  margin-bottom: 22px;
 }
 
 .help-block {
@@ -166,14 +165,36 @@ ul.secondary-nav li {
  * Splash stuff.
  */
 .hero-unit {
-  padding: 32px 0;
+  padding: 28px 32px;
+  background-color: #f7f5f3;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.hero-unit p {
+  margin: 0;
 }
 
 .hero-unit h1 {
-  margin-bottom: 12px;
-  font-size: 44px;
+  margin-bottom: 22px;
+  font-size: 36px;
   font-weight: normal;
+}
+
+a.create-account {
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.hero-unit div.pull-right p {
+  font-size: 14px;
 }
 
 /**
@@ -212,7 +233,7 @@ ol.event-feed li {
   position: absolute;
   top: 18px;
   right: 16px;
-  padding: 4px 10px;
+  padding: 3px 8px;
 }
 
 .well ul, .well ol {

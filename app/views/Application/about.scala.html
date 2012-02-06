@@ -8,18 +8,32 @@
 @import controllers._
 
 @main("About") {
-  <div class="row">
-    <div class="span8">
-      <div class="hero-unit">
-        <h1>Escape from cookbooks.</h1>
-        <p>Sign up now and find out what the world tastes like.</p>
+  <div class="hero-unit">
+    <div class="row">
+      <div class="span7">
+        <h1>Upgrade your recipe collection.</h1>
+        <p><strong>Gingrsnap</strong> is a simple service that allows you to publish recipes and keep track of what you've been making.</p>
+        </div>
+      <div class="span3 pull-right">
+        <a class="btn btn-primary create-account" href="@action(GingrsnapUsers.neue())">Create an account &raquo;</a>
+        <p>Signup is a snap. Try Gingrsnap for free today!</p>
       </div>
     </div>
+  </div>
+
+  <div class="row">
     <div class="span4">
-      <div class="hero-unit">
-        <a class="btn large btn-primary" href="@action(GingrsnapUsers.neue())">Create an account</a>
-        <p>This is some copy explaining the benefit of signing up for Gingrsnap.</p>
-      </div>
+      <h2>Publish your recipes.</h2>
+      <p>After getting creative in the kitchen, don't just write up what you made on paper or settle for a text file somewhere on your computer.</p>
+      <p>Publishing on Gingrsnap allows you to easily share what you've created. The next time a friend asks you for a recipe, you can send them a link instead of transcribing a piece of paper into an email.</p>
+    </div>
+    <div class="span4">
+      <h2>Share what you've been making.</h2>
+      <p>Keep track of what you cook by recording "makes" on Gingrsnap. Recipes accumulate makes, giving an organic measurement of a dish's popularity.</p>
+    </div>
+    <div class="span4">
+      <h2>Collaborate on recipes by leaving tips.</h2>
+      <p>Find a new twist to a dish on Gingrsnap? Leave a tip on the recipe so others can try out your creation.</p>
     </div>
   </div>
 }
