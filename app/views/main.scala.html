@@ -50,6 +50,7 @@
             <ul class="nav pull-right">
               <li><a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a></li>
               <li><a href="@action(Accounts.edit)">Account settings</a></li>
+              <li><a data-controls-modal="contact-modal" data-backdrop="true" data-keyboard="true">Feedback</a></li>
               <li><a href="@action(Authentication.logout)">Logout</a></li>
             </ul>
           }

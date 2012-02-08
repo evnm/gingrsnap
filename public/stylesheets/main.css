@@ -13,7 +13,8 @@ body, p, input, button, select, textarea {
 }
 
 a {
-  color: #ac5d2f;  //#AF541F;
+  color: #ac5d2f;
+  cursor: pointer;
 }
 
 a.close {
@@ -288,10 +289,6 @@ footer .navbar .nav > li > a:hover {
 
 footer p {
   clear: both;
-}
-
-footer a {
-  cursor: pointer;
 }
 
 /**
