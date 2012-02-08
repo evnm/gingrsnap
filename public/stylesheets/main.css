@@ -75,6 +75,8 @@ img {
   outline: 1px solid #f7f6f5;
   border: 4px solid white;
   box-shadow: 1px 1px 5px #eaeaea;
+  -webkit-box-shadow: 1px 1px 5px #eaeaea;
+  -moz-box-shadow: 1px 1px 5px #eaeaea;
 }
 
 .oauth-connection-badge {
@@ -94,11 +96,7 @@ img {
  */
 header {
   padding: 10px 0 16px 0;
-//  background: #f7f5f3;
   background: #353535 url(/public/img/353535-noise.gif) repeat;
-//  -moz-box-shadow: inset 0 -1px 2px #eaeaea;
-//  -webkit-box-shadow: inset 0 -1px 2px #eaeaea;
-//  box-shadow: inset 0 -1px 2px #eaeaea;
   box-shadow: 0 2px 5px rgba(0,0,0,0.85) inset,0 1px 2px rgba(255,255,255,0.8)
   border-top: 2px solid #202020;
   border-bottom: 1px solid #202020;
@@ -255,6 +253,8 @@ footer {
   -moz-box-shadow: 0 -2px 2px #ccc;
   -webkit-box-shadow: 0 -2px 2px #ccc;
   box-shadow: 0 -2px 2px #ccc;
+  -moz-box-shadow: 0 -2px 2px #ccc;
+  -webkit-box-shadow: 0 -2px 2px #ccc;
 }
 
 footer p, footer a {
@@ -314,6 +314,8 @@ label {
 
 input, textarea {
   box-shadow: inset 1px 1px 1px #ccc;
+  -webkit-box-shadow: inset 1px 1px 1px #ccc;
+  -moz-box-shadow: inset 1px 1px 1px #ccc;
   font-size: 13px;
 }
 
@@ -345,7 +347,7 @@ input.input-file {
 }
 
 #recipe-form #ingredient .add-on,
-#recipe-form ul#ingredients .add-on {
+#recipe-form ul#ingredients-inputs .add-on {
   padding: 4px;
 }
 
@@ -385,21 +387,21 @@ form#recipe-form input#slug {
   width: 260px;
 }
 
-form#recipe-form ul#ingredients {
+form#recipe-form ul#ingredients-inputs {
   margin: 0;
   list-style-type: none;
 }
 
-form#recipe-form ul#ingredients li input {
+form#recipe-form ul#ingredients-inputs li input {
   margin: 0;
 }
 
-form#recipe-form ul#ingredients li input, #ingredient input {
+form#recipe-form ul#ingredients-inputs li input, #ingredient input {
   padding: 4px 6px;
   width: 220px;
 }
 #recipe-form ul#ingredients span.add-on,
-#recipe-form ul#ingredients + div.input-append span.add-on {
+#recipe-form ul#ingredients-inputs + div.input-append span.add-on {
   width: 20px;
 }
 
@@ -417,13 +419,13 @@ div.wysiwyg ul.toolbar {
 
 div.wysiwyg iframe {
   width: 602px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   border: 1px solid #CCC;
+  border-radius: 3px 0 0 3px;
   -webkit-border-radius: 3px 0 0 3px;
   -moz-border-radius: 3px 0 0 3px;
-  border-radius: 3px 0 0 3px;
 }
 
 div.actions button.cancel {
@@ -454,6 +456,8 @@ div.overlay {
   -moz-border-radius: 3px;
   border-radius: 3px;
   box-shadow: 1px 1px 2px #666;
+  -webkit-box-shadow: 1px 1px 2px #666;
+  -moz-box-shadow: 1px 1px 2px #666;
 }
 
 div.overlay h1 {
@@ -579,7 +583,7 @@ form#tips textarea {
 
 div.recipe-tips {
   border-top: 1px solid #ddd;
-  margin-top: 32px;
+  margin-top: 40px;
   padding-top: 24px;
 }
 
@@ -593,7 +597,10 @@ div.recipe-tips li {
   padding: 10px 14px;
   background-color: #F7F5F3;
   border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
 div.recipe-tips li p {
@@ -604,4 +611,26 @@ div.recipe-tips ol li span.timestamp {
   display: inline-block;
   margin-left: 6px;
   color: #999;
+}
+
+ul#ingredients {
+  color: #777;
+  width: 72%;
+  list-style-type: none;
+  margin: -5px 0 40px 0;
+  padding: 4px 0;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+ul#ingredients li {
+  padding: 5px 10px;
+  border-bottom: 1px solid #eee;
+/*  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);*/
+}
+
+ul#ingredients li:last-child {
+  border: none;
 }

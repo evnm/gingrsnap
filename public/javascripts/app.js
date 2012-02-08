@@ -87,7 +87,7 @@ $(document).ready(function() {
   $("button#add-ingredient").click(function() {
     var ingrInput = $("#ingredient input")
     if (ingrInput.val()) {
-      $("ul#ingredients")
+      $("ul#ingredients-inputs")
         .append('<li><div class="input-append"><input class="span4" type="text" value="' +
                 ingrInput.val().replace(/\"/g, "&#34;") + '" /><span class="add-on">' +
                 '<a class="close" href="#">&times;</a></span></div>');
@@ -96,14 +96,14 @@ $(document).ready(function() {
   });
 
   // Delete ingredient button click action.
-  $("ul#ingredients a.close").live("click", function() {
+  $("ul#ingredients-inputs a.close").live("click", function() {
     $(this).parents("li").remove();
     return false;
   });
 
   // Fill in the "name" attributes of ingredient inputs on form submission.
   $("form#recipe-form").submit(function() {
-    $("ul#ingredients")
+    $("ul#ingredients-inputs")
       .find("li input")
       .each(function(i, input) {
         $(input).attr("name", "ingredients[" + i + "]");
