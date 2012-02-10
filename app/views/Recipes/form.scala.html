@@ -6,7 +6,8 @@
   recipeSlug: String,
   ingredients: java.util.List[String],
   recipeBody: String,
-  imageBaseUrlOpt: Option[(String, String)] = None
+  imageBaseUrlOpt: Option[(String, String)] = None,
+  isPublished: Boolean = false
 )
 
 <form class="form-stacked" id="recipe-form" method="POST" enctype="multipart/form-data">
@@ -56,7 +57,9 @@
 
       <div class="form-actions">
         <button id="publish" class="btn btn-primary" type="submit">Publish</button>
-        <button class="btn" type="submit">Save as draft</button>
+        @if(!isPublished) {
+          <button class="btn" type="submit">Save as draft</button>
+        }
         <button class="btn cancel">Cancel</button>
       </div>
     </div>

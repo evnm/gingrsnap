@@ -178,7 +178,8 @@ object Recipes extends BaseController with Secure {
               if (ingredients.isEmpty) Ingredient.getByRecipeId(recipeId) map { _.name }
               else ingredients,
               recipeBody.getOrElse(recipe.body),
-              Image.getBaseUrlByRecipeId(recipeId)
+              Image.getBaseUrlByRecipeId(recipeId),
+              recipe.publishedAt.isDefined
             )
           }
         }
@@ -235,7 +236,7 @@ object Recipes extends BaseController with Secure {
                 newRecipe,
                 ingredients,
                 if (image == null) None else Some(image),
-                oldRecipe.publishedAt.isDefined)
+                oldRecipe.publishedAt)
 
               if (isPublished && oldRecipe.publishedAt.isDefined) {
                 flash.success("Your recipe has been updated")

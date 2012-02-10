@@ -3,10 +3,11 @@
   userSlug: String,
   recipeId: Long,
   title: String,
-  slug: String,
+  recipeSlug: String,
   ingredients: java.util.List[String],
   recipeBody: String,
-  imageBaseUrlOpt: Option[(String, String)] = None
+  imageBaseUrlOpt: Option[(String, String)] = None,
+  isPublished: Boolean = false
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -23,8 +24,9 @@
     userSlug,
     Some(recipeId),
     title,
-    slug,
+    recipeSlug,
     ingredients,
     recipeBody,
-    imageBaseUrlOpt)
+    imageBaseUrlOpt,
+    isPublished)
 }
