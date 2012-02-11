@@ -166,13 +166,6 @@ ul.secondary-nav li {
 .hero-unit {
   padding: 28px 32px;
   background-color: #f7f5f3;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
 .hero-unit p {
