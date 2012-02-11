@@ -438,7 +438,7 @@ div#contact-modal textarea {
  */
 div.overlay {
   margin: 28px auto;
-  padding: 24px 52px;
+  padding: 24px 40px;
   width: 612px;
   text-align: center;
   background-color: #f7f6f5;
@@ -455,7 +455,7 @@ div.overlay h1 {
 }
 
 div.overlay div.row {
-  margin-top: 48px;
+  margin: 48px 0 0 0;
 }
 
 div.overlay > h1 + div.row {
@@ -479,11 +479,11 @@ div.overlay div.row .action {
 }
 
 div.overlay div.row .copy {
-  width: 340px;
+  width: 330px;
 }
 
 div.overlay input {
-  width: 100%;
+  width: 90%;
   font-size: 16px;
 }
 
