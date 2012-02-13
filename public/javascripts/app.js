@@ -141,43 +141,42 @@ $(document).ready(function() {
     event.preventDefault();
   });
 
-  $("button.make-recipe")
-    .click(function(event) {
-      var that = $(this);
-      that.button('loading');
-      $.ajax({
-        type: "POST",
-        dataType: "text json",
-        url: "/makes/new",
-        data: "userId=" + $("span#user-id").text() + "&recipeId=" +
-          $("span#recipe-id").text(),
-        success: function(response) {
-          if (response.error) {
-            // TODO
-          } else {
-            that.button("complete");
-            that.attr("disabled", "true");
-            var totalMakeCount = $("span#total-make-count");
-            // Add or remove 's' from "time[s]" label, if necessary.
-            if (totalMakeCount.text() == "0") {
-              $("span#total-make-times").text("time");
-            } else if (totalMakeCount.text() == "1") {
-              $("span#total-make-times").text("times");
-            }
-            totalMakeCount.text(parseInt(totalMakeCount.text()) + 1);
-
-            var userMakeCount = $("span#user-make-count");
-            if (userMakeCount.text() == "0") {
-              $("span#user-make-times").text("time");
-            } else if (userMakeCount.text() == "1") {
-              $("span#user-make-times").text("times");
-            }
-            userMakeCount.text(parseInt(userMakeCount.text()) + 1);
+  $("button.make-recipe").click(function(event) {
+    var that = $(this);
+    that.button('loading');
+    $.ajax({
+      type: "POST",
+      dataType: "text json",
+      url: "/makes/new",
+      data: "userId=" + $("span#user-id").text() + "&recipeId=" +
+        $("span#recipe-id").text(),
+      success: function(response) {
+        if (response.error) {
+          // TODO
+        } else {
+          that.button("complete");
+          that.attr("disabled", "true");
+          var totalMakeCount = $("span#total-make-count");
+          // Add or remove 's' from "time[s]" label, if necessary.
+          if (totalMakeCount.text() == "0") {
+            $("span#total-make-times").text("time");
+          } else if (totalMakeCount.text() == "1") {
+            $("span#total-make-times").text("times");
           }
+          totalMakeCount.text(parseInt(totalMakeCount.text()) + 1);
+
+          var userMakeCount = $("span#user-make-count");
+          if (userMakeCount.text() == "0") {
+            $("span#user-make-times").text("time");
+          } else if (userMakeCount.text() == "1") {
+            $("span#user-make-times").text("times");
+          }
+          userMakeCount.text(parseInt(userMakeCount.text()) + 1);
         }
-      });
-      event.preventDefault();
+      }
     });
+    event.preventDefault();
+  });
 });
 
 /**
@@ -309,7 +308,7 @@ $(document).ready(function() {
 $(document).ready(function() {
   $("form#feedback-form").submit(function(event) {
     var that = $(this).find("button");
-    that.button('loading');
+    that.button("loading");
     event.preventDefault();
     $.post(
       "/feedback",
@@ -337,7 +336,10 @@ $(document).ready(function() {
 
   // Pagination.
   $("ol.event-feed li#pagination-control button").click(function(event) {
-    var lastLi = $(this).parent();
+    var that = $(this);
+    that.button("loading");
+
+    var lastLi = that.parent();
     var ol = lastLi.parent("ol")
     // TODO: Couldn't get GET requests to work here. Issue with Play?
     $.ajax({
@@ -395,6 +397,8 @@ $(document).ready(function() {
               event.createdAt + '</span></li>';
             $(lastLi).before(result)
           });
+
+          that.button("complete");
         }
       }
     });
