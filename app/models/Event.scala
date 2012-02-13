@@ -123,7 +123,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
    */
   def getMostRecentFollowed(userId: Long, n: Int): Seq[Event] = {
     SQL("""
-        select e.* from Event e
+        select distinct e.* from Event e
         left outer join Follow f on f.objectid = e.subjectid
         where e.subjectId = {userId} or f.subjectid = {userId}
         order by e.createdAt desc
@@ -199,7 +199,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
    */
   def getNextFollowedPage(userId: Long, lastTimestamp: String, n: Int): Seq[Event] = {
     SQL("""
-        select * from Event e
+        select distinct e.* from Event e
         left outer join Follow f on f.objectid = e.subjectid
         where e.createdAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS')
         and (e.subjectId = {userId} or f.subjectid = {userId})
