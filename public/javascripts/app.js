@@ -197,6 +197,52 @@ $(document).ready(function() {
     }
     event.preventDefault();
   });
+
+  // Follow button behavior.
+  $("button.follow-user").live("click", function(event) {
+    var that = $(this);
+    var userInfoDiv = $(that).parent("div");
+    $.ajax({
+      type: "POST",
+      dataType: "text json",
+      url: "/follows/new/user",
+      data: "userId=" + $("#user-id", userInfoDiv).text(),
+      success: function(response) {
+        if (response.error) {
+          // TODO
+        } else {
+          that.toggleClass("follow-user");
+          that.toggleClass("unfollow-user");
+          that.toggleClass("btn-danger");
+          that.text("Unfollow");
+        }
+      }
+    });
+    event.preventDefault();
+  });
+
+  // Unfollow button behavior.
+  $("button.unfollow-user").live("click", function(event) {
+    var that = $(this);
+    var userInfoDiv = $(that).parent("div");
+    $.ajax({
+      type: "POST",
+      dataType: "text json",
+      url: "/follows/delete/user",
+      data: "userId=" + $("#user-id", userInfoDiv).text(),
+      success: function(response) {
+        if (response.error) {
+          // TODO
+        } else {
+          that.toggleClass("follow-user");
+          that.toggleClass("unfollow-user");
+          that.toggleClass("btn-danger");
+          that.text("Follow");
+        }
+      }
+    });
+    event.preventDefault();
+  });
 });
 
 /**
@@ -277,5 +323,81 @@ $(document).ready(function() {
         }
       }
     );
+  });
+});
+
+/**
+ * Event feeds.
+ */
+$(document).ready(function() {
+  // jQuery timeago.
+  $(".timeago").each(function(i, el) {
+    $(el).timeago();
+  });
+
+  // Pagination.
+  $("ol.event-feed li#pagination-control button").click(function(event) {
+    var lastLi = $(this).parent();
+    var ol = lastLi.parent("ol")
+    // TODO: Couldn't get GET requests to work here. Issue with Play?
+    $.ajax({
+      type: "POST",
+      dataType: "text json",
+      url: "/events/getNextPage",
+      data: {
+        eventFeedType: $("#event-feed-type", ol).text(),
+        lastTimestamp: $("#event-timestamp", lastLi.prev()).text(),
+        userId: $("#user-id", ol).text(),
+        n: $("#page-size", ol).text()
+      },
+      success: function(response) {
+        if (response.error) {
+          // TODO
+        } else {
+          $.each(response.events, function(i, event) {
+            var result = '<li>';
+            if (event.eventType == 0) {
+              result += '<i class="icon-list-alt"></i><a href="/' +
+                event.subjectSlug + '">' + event.subjectFullname +
+                '</a> published recipe <a href="/' + event.authorSlug + '/' +
+                event.recipeSlug + '">' + event.recipeTitle + '</a>';
+            } else if (event.eventType == 1) {
+              result += '<a href="/' + event.subjectSlug + '">' +
+                event.subjectFullname + '</a> forked recipe <a href="/' +
+                event.authorSlug + '/' + event.recipeSlug + '">' +
+                event.recipeTitle + '</a>';
+            } else if (event.eventType == 2) {
+              result += '<i class="icon-pencil"></i><a href="/' +
+                event.subjectSlug + '">' + event.subjectFullname +
+                '</a> updated recipe <a href="/' + event.authorSlug + '/' +
+                event.recipeSlug + '">' + event.recipeTitle + '</a>';
+            } else if (event.eventType == 3) {
+              result += '<i class="icon-ok"></i><a href="/' + event.subjectSlug +
+                '">' + event.subjectFullname + '</a> made <a href="/' +
+                event.authorSlug + '/' + event.recipeSlug + '">' +
+                event.recipeTitle + '</a>';
+            } else if (event.eventType == 4) {
+              result += '<i class="icon-comment"></i><a href="/' +
+                event.subjectSlug + '">' + event.subjectFullname +
+                '</a> left a tip on <a href="/' + event.authorSlug + '/' +
+                event.recipeSlug + '">' + event.recipeTitle + '</a>';
+            } else if (event.eventType == 5) {
+              result += '<i class="icon-user"></i><a href="/' +
+                event.subjectSlug + '">' + event.subjectFullname +
+                '</a> started following <a href="/' + event.objSlug +
+                '">' + event.objFullname + '</a>';
+            }
+
+
+            result += ' <span class="timeago">' +
+              $.timeago(event.createdAt) + '</span>' +
+              '<span id="event-timestamp" style="display: none;">' +
+              event.createdAt + '</span></li>';
+            $(lastLi).before(result)
+          });
+        }
+      }
+    });
+    event.preventDefault();
   });
 });

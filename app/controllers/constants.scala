@@ -22,4 +22,5 @@ object Constants {
   val RecipeTips = "recipe-tips"
   val TweetButtons = "tweet-buttons"
   val FbLikeButtons = "fb-like-buttons"
+  val UserFollowing = "user-following"
 }

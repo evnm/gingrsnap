@@ -1,32 +1,43 @@
 @(
-  prettyTime: com.ocpsoft.pretty.time.PrettyTime,
-  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)]
+  eventFeedType: Int,
+  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)],
+  userId: Option[Long] = None
 )
 
 
 @import models._
 
 <ol class="event-feed">
+  <span id="user-id" style="display: none;">@userId.getOrElse("-1")</span>
+  <span id="event-feed-type" style="display: none;">@eventFeedType</span>
+  <span id="page-size" style="display: none;">@eventFeed.size</span>
   @eventFeed.map { eventTuple =>
     <li>
       @eventTuple match {
-        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipePublish, RecipeObject(obj)) => {
+        case (createdAt, GingrsnapUserEventSubject(subject), EventType.RecipePublish, RecipeEventObject(obj)) => {
           @views.common.eventItems.html.recipePublish(subject, obj)
         }
-        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeFork, RecipeObject(obj)) => {
+        case (createdAt, GingrsnapUserEventSubject(subject), EventType.RecipeFork, RecipeEventObject(obj)) => {
           @views.common.eventItems.html.recipeFork(subject, obj)
         }
-        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeUpdate, RecipeObject(obj)) => {
+        case (createdAt, GingrsnapUserEventSubject(subject), EventType.RecipeUpdate, RecipeEventObject(obj)) => {
           @views.common.eventItems.html.recipeUpdate(subject, obj)
         }
-        case (createdAt, GingrsnapUserSubject(subject), EventType.RecipeMake, RecipeObject(obj)) => {
+        case (createdAt, GingrsnapUserEventSubject(subject), EventType.RecipeMake, RecipeEventObject(obj)) => {
           @views.common.eventItems.html.recipeMake(subject, obj)
         }
-        case (createdAt, GingrsnapUserSubject(subject), EventType.TipLeave, RecipeObject(obj)) => {
+        case (createdAt, GingrsnapUserEventSubject(subject), EventType.TipLeave, RecipeEventObject(obj)) => {
           @views.common.eventItems.html.tipLeave(subject, obj)
         }
+        case (createdAt, GingrsnapUserEventSubject(subject), EventType.GingrsnapUserFollow, GingrsnapUserEventObject(obj)) => {
+          @views.common.eventItems.html.gingrsnapUserFollow(subject, obj)
+        }
       }
-      <span class="event-timestamp">@prettyTime.format(eventTuple._1)</span>
+      <span class="timeago" title="@eventTuple._1"></span>
+      <span id="event-timestamp" style="display: none;">@eventTuple._1</span>
     </li>
   }
+  <li id="pagination-control">
+    <button class="btn">Load more events</button>
+  </li>
 </ol>

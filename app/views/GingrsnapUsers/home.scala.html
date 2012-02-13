@@ -10,13 +10,18 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
-@import com.ocpsoft.pretty.time.PrettyTime
+@import controllers.Constants
+@import models.{EventFeedType, Feature}
 
 @main(title = "Home") {
   <div class="row">
     <div class="span8">
       <h1>Recent events</h1>
-      @views.common.html.eventFeed(new PrettyTime(), eventFeed)
+      @if(Feature(Constants.UserFollowing)) {
+        @views.common.html.eventFeed(EventFeedType.Following.id, eventFeed, Some(user.id()))
+      } else {
+        @views.common.html.eventFeed(EventFeedType.Global.id, eventFeed, Some(user.id()))
+      }
     </div>
 
     <div class="span4">

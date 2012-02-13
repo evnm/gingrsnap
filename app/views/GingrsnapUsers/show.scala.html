@@ -1,6 +1,7 @@
 @(
   user: models.GingrsnapUser,
   connectedUserOpt: Option[models.GingrsnapUser],
+  isFollowedByConnectedUser: Boolean,
   account: models.Account,
   profileImageUrlOpt: Option[(String, String)],
   recipes: Seq[models.Recipe],
@@ -14,14 +15,24 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
-@import com.ocpsoft.pretty.time.PrettyTime
 @import java.text.DateFormat
+@import models.EventFeedType
 
 @main(title = user.fullname) {
   <div class="row">
     <div class="span8">
       <div class="user-info">
         <h1>@user.fullname</h1>
+        @connectedUserOpt.map { connectedUser =>
+          @if(connectedUser.id() != user.id()) {
+            @if(isFollowedByConnectedUser) {
+            <button class="btn unfollow-user btn-danger" href="#">Unfollow</button>
+            } else {
+              <button class="btn follow-user" href="#">Follow</button>
+            }
+          }
+        }
+        <span id="user-id" style="display: none;">@user.id()</span>
         @profileImageUrlOpt.map { case (baseUrl, extension) =>
           <a href="@(baseUrl + "_original." + extension)">
             <img src="@(baseUrl + "_thumbnail." + extension)" />
@@ -43,7 +54,7 @@
       </div>
 
       <h2>Activity</h2>
-      @views.common.html.eventFeed(new PrettyTime(), eventFeed)
+      @views.common.html.eventFeed(EventFeedType.SingleUser.id, eventFeed, Some(user.id()))
     </div>
 
     <div class="span4">

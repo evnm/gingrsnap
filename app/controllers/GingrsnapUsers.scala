@@ -1,6 +1,6 @@
 package controllers
 
-import models.{Account, Event, Image, Make, Recipe, GingrsnapUser}
+import models._
 import notifiers.Mails
 import play._
 import play.cache.Cache
@@ -14,6 +14,32 @@ import twitter4j.auth.AccessToken
 object GingrsnapUsers extends BaseController {
   import Constants.TwIfaceCacheKey
   import views.GingrsnapUsers.html
+
+  /**
+   * User home page.
+   *
+   * Invoking Application.index directly because Application.index and
+   * GingrsnapUsers.home are mutually recursive.
+   */
+  def home: templates.Html = Authentication.getLoggedInUser match {
+    case Some(user) => {
+      val events = (
+        if (Feature(Constants.UserFollowing)) {
+          Event.getMostRecentFollowed(user.id(), 20)
+        } else {
+          Event.getMostRecent(20)
+        }).map {
+          Event.hydrate(_)
+        }
+
+      views.GingrsnapUsers.html.home(
+        user,
+        Recipe.getByUserId(user.id()),
+        events
+      )
+    }
+    case None => Application.index
+  }
 
   /**
    * Handles GET to signup page.
@@ -85,12 +111,17 @@ object GingrsnapUsers extends BaseController {
    * Show a user's profile
    */
   def show(userSlug: String) = GingrsnapUser.getBySlug(userSlug) map { user =>
-    val eventFeed = Event.getMostRecentByUserId(user.id(), 20) map { e =>
+    val eventFeed = Event.getMostRecentByUserId(user.id(), 10) map { e =>
       Event.hydrate(e)
     }
+    val connectedUser = Authentication.getLoggedInUser
+    val isFollowedByConnectedUser = (connectedUser map { connectedUser =>
+      Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
+    }).getOrElse(false)
     html.show(
       user,
-      Authentication.getLoggedInUser,
+      connectedUser,
+      isFollowedByConnectedUser,
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
       Recipe.getByUserId(user.id()),

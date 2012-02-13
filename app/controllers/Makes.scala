@@ -25,7 +25,7 @@ object Makes extends Controller with Secure {
           "{\"make\": {\"id\": \"" + newMake.id() + "\", \"userId\": \"" + newMake.userId +
           "\", \"recipeId\": \"" + newMake.recipeId + "\", \"createdAt\": \"" +
           newMake.createdAt.getTime + "\"}}")
-        case None => Json("{error: 'Failed to create Make record'}")
+        case None => Json("{\"error\": \"Failed to create Make record\"}")
       }
     }
   }

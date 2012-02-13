@@ -6,16 +6,16 @@ import play.cache.Cache
 import play.mvc.Controller
 
 object Application extends BaseController {
-  def index = {
-    val mostRecentEvents = Event.getMostRecent(20) map { e =>
-      Event.hydrate(e)
-    }
-    Authentication.getLoggedInUser match {
-      case Some(user) => views.GingrsnapUsers.html.home(
-        user,
-        Recipe.getByUserId(user.id()),
-        mostRecentEvents)
-      case None => views.Application.html.index(mostRecentEvents)
+  /**
+   * Annotating return type and nvoking GingrsnapUsers.home directly because
+   * Application.index and GingrsnapUsers.home are mutually recursive.
+   */
+  def index: templates.Html = Authentication.getLoggedInUser match {
+    case Some(user) => GingrsnapUsers.home
+    case None => {
+      views.Application.html.index(
+        Event.getMostRecent(20) map { Event.hydrate(_) }
+      )
     }
   }
 

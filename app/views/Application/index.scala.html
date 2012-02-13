@@ -7,20 +7,29 @@
   errors: Map[String, play.data.validation.Error]
 )
 
-@import com.ocpsoft.pretty.time.PrettyTime
+@import controllers.Application
+@import models.EventFeedType
 
 @main("") {
+  <div class="hero-unit">
+    <div class="row">
+      <div class="span7">
+        <h1>Upgrade your recipe collection.</h1>
+        <p><strong>Gingrsnap</strong> is a simple service that allows you to publish recipes and keep track of what you've been making.</p>
+      </div>
+      <div class="span3 pull-right">
+        <a class="btn btn-primary create-account" href="@action(Application.about)">Learn more &raquo;</a>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
     <div class="span8">
       <h1>Recent events</h1>
-      @views.common.html.eventFeed(new PrettyTime(), eventFeed)
+      @views.common.html.eventFeed(EventFeedType.Global.id, eventFeed)
     </div>
     <div class="span4">
       <div class="well">
-        <div class="hero-unit">
-          <a class="btn btn-large btn-primary" href="@action(controllers.GingrsnapUsers.neue())">Create an account</a>
-          <p>This is some copy explaining the benefit of signing up for Gingrsnap.</p>
-        </div>
       </div>
     </div>
   </div>

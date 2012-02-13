@@ -5,7 +5,6 @@
   ingredients: Seq[String],
   bodyHtml: String,
   publishedAt: Option[java.sql.Timestamp],
-  prettyTime: com.ocpsoft.pretty.time.PrettyTime,
   tips: Option[Seq[(models.Tip, models.GingrsnapUser)]],
   imageBaseUrlOpt: Option[(String, String)],
   totalMakeCount: Long,
@@ -55,7 +54,7 @@
                 @tipSeq.map { case (tip, user) =>
                   <li>
                     <a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a>
-                    <span class="timestamp">@prettyTime.format(tip.createdAt)</span>
+                    <span class="timeago" title="@tip.createdAt"></span>
                     <p>@tip.body</p>
                   </li>
                 }

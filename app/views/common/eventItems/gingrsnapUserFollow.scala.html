@@ -1,0 +1,8 @@
+@(
+  user: models.GingrsnapUser,
+  obj: models.GingrsnapUser
+)
+
+@import controllers.{GingrsnapUsers, Recipes}
+
+<i class="icon-user"></i><a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a> started following <a href="@action(GingrsnapUsers.show(obj.slug))">@obj.fullname</a>
