@@ -10,5 +10,5 @@ server.pid
 dist/
 bin/
 data/
-TODO
+TODO.md
 pg/
