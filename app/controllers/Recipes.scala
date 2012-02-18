@@ -330,8 +330,8 @@ object Recipes extends BaseController with Secure {
             }
             val isMakable = connectedUser map { u: GingrsnapUser =>
               Recipe.isMakable(u.id(), recipe.id())
-            } getOrElse(false)
-
+            } getOrElse(false
+)
             html.show(
               recipe.id(),
               recipe.title,

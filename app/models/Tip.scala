@@ -31,7 +31,11 @@ object Tip extends Magic[Tip] with Timestamped[Tip] {
   /**
    * Hydrates a Tip into a renderable tuble of (tip, user who left tip).
    */
-  def hydrate(tip: Tip) = (tip, GingrsnapUser.getById(tip.userId).get)
+  def hydrate(tip: Tip) = (
+    tip,
+    GingrsnapUser.getById(tip.userId).get,
+    Image.getBaseUrlByUserId(tip.userId)
+  )
 
   /**
    * Returns true if user can leave a tip on a given recipe. (i.e. they haven't

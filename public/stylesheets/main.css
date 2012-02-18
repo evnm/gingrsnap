@@ -604,6 +604,33 @@ div.recipe-tips li {
   -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
+div.recipe-tips .tip-header {
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #eee;
+  height: 36px;
+}
+
+div.recipe-tips .tip-header .user-thumbnail {
+  margin-right: 1.2em;
+  height: 32px;
+  width: 32px;
+  display: inline;
+  float: left;
+}
+
+div.recipe-tips .tip-header .user-thumbnail img {
+  border-width: 2px;
+}
+
+div.recipe-tips .tip-header .tip-meta {
+  display: inline;
+}
+
+div.recipe-tips .tip-header * {
+  line-height: 32px;
+}
+
 div.recipe-tips li p {
   margin: 8px 0 0 0;
 }

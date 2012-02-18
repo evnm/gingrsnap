@@ -5,7 +5,7 @@
   ingredients: Seq[String],
   bodyHtml: String,
   publishedAt: Option[java.sql.Timestamp],
-  tips: Option[Seq[(models.Tip, models.GingrsnapUser)]],
+  tips: Option[Seq[(models.Tip, models.GingrsnapUser, Option[(String, String)])]],
   imageBaseUrlOpt: Option[(String, String)],
   totalMakeCount: Long,
   userMakeCountOpt: Option[Long],
@@ -51,11 +51,22 @@
             @if(tipSeq.nonEmpty) {
               <h2>Tips</h2>
               <ol>
-                @tipSeq.map { case (tip, user) =>
+                @tipSeq.map { case (tip, user, imageOpt) =>
                   <li>
-                    <a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a>
-                    <span class="timeago" title="@tip.createdAt"></span>
-                    <p>@tip.body</p>
+                    <div class="tip-header">
+                      @imageOpt.map { case (baseUrl, extension) =>
+                        <a class="user-thumbnail" href="@action(GingrsnapUsers.show(user.slug))">
+                          <img src="@(baseUrl + "_thumbnail." + extension)" />
+                        </a>
+                      }
+                      <div class="tip-meta">
+                        <a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a>
+                        <span class="timeago" title="@tip.createdAt"></span>
+                      </div>
+                    </div>
+                    <div class="tip-body">
+                      <p>@tip.body</p>
+                    </div>
                   </li>
                 }
               </ol>
@@ -99,7 +110,7 @@
 
         @imageBaseUrlOpt.map { case (baseUrl, extension) =>
           <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
-            <img src="@(baseUrl + "_thumbnail." + extension)" />
+            <img src="@(baseUrl + "_portrait." + extension)" />
           </a>
         }
 

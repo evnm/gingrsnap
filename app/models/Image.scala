@@ -2,10 +2,14 @@ package models
 
 import com.amazonaws.services.s3.model.{
   CannedAccessControlList, DeleteObjectRequest, PutObjectRequest}
+import java.awt.{Color, Image => AwtImage}
+import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URLConnection
 import java.util.UUID
-import play.db.anorm._
+import javax.imageio.{IIOImage, ImageIO}
+import javax.imageio.stream.FileImageOutputStream;
+import play.Logger
 import play.db.anorm._
 import play.db.anorm.defaults._
 import play.db.anorm.SqlParser._
@@ -21,39 +25,92 @@ case class Image(
 )
 
 object Image extends Magic[Image] {
+  val SizeMap = Map[String, (Option[Int], Option[Int])](
+    "thumbnail" -> (Some(32), Some(32)),
+    "portrait" -> (Some(296), None))
+
   protected[this] def mimetypeToExtension(mimetype: String) = mimetype match {
     case "image/jpeg" => "jpg"
     case "image/gif" => "gif"
     case "image/png" => "png"
   }
 
+  /**
+   * Crop and resize an image to be a square of variable height/width.
+   */
+  def cropSquare(originalImage: File, to: File, size: Int) = {
+    try {
+      val source: BufferedImage = ImageIO.read(originalImage)
+      val mimeType = to.getName() match {
+        case filename if filename.endsWith(".png") => "image/png"
+        case filename if filename.endsWith(".gif") => "image/gif"
+        case _ => "image/jpeg"
+      }
+
+      val (srcHeight, srcWidth) = (source.getHeight(), source.getWidth())
+      val croppedImage =
+        if (srcHeight > srcWidth) {
+          source.getSubimage(0, (srcHeight - srcWidth) / 2, srcWidth, srcWidth)
+        } else {
+          source.getSubimage((srcWidth - srcHeight) / 2, 0, srcHeight, srcHeight)
+        }
+      val resizedImage = croppedImage.getScaledInstance(size, size, AwtImage.SCALE_SMOOTH)
+      val dest = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB)
+      val graphics = dest.getGraphics()
+
+      graphics.setColor(Color.WHITE)
+      graphics.fillRect(0, 0, size, size)
+      graphics.drawImage(resizedImage, 0, 0, null)
+
+      val writer = ImageIO.getImageWritersByMIMEType(mimeType).next()
+      val params = writer.getDefaultWriteParam()
+
+      writer.setOutput(new FileImageOutputStream(to))
+      val image = new IIOImage(dest, null, null)
+      writer.write(null, image, params)
+    } catch {
+      case e: Throwable => {
+        Logger.error("Exception thrown while attempting to crop a square image: %s".format(e.getMessage))
+      }
+    }
+  }
+
   def create(file: File) = {
-    val key = UUID.randomUUID().toString()
+    val imgPathPrefix = "image/" + UUID.randomUUID().toString()
     val mimetype = URLConnection.guessContentTypeFromName(file.getName())
     val extension = mimetypeToExtension(mimetype)
 
-    val thumbnail = File.createTempFile("thumbnail", null)
-    Images.resize(file, thumbnail, 296, -1)
-    Seq(
-      ("original", file),
-      ("thumbnail", thumbnail)
-    ) foreach { case (size, file) =>
-      // Upload the file to S3.
+    // First, upload the original file.
+    val tempFile = File.createTempFile("original", null)
+    S3.client.putObject(
+      new PutObjectRequest(S3.bucket, imgPathPrefix + "_original." + extension, file)
+        .withCannedAcl(CannedAccessControlList.PublicRead))
+
+    // Then generate and upload all cropped/resized versions.
+    Image.SizeMap.keySet foreach { sizeKey =>
+      Image.SizeMap(sizeKey) match {
+        case (Some(x), Some(y)) if x == y => cropSquare(file, tempFile, x)
+        case (Some(x), Some(y)) => Images.resize(file, tempFile, x, y)
+        case (Some(x), None) => Images.resize(file, tempFile, x, -1)
+        case (None, Some(y)) => Images.resize(file, tempFile, -1, y)
+        case invalid => Logger.error("Invalid Image.SizeMap entry: %s".format(invalid))
+      }
       S3.client.putObject(
-        new PutObjectRequest(S3.bucket, "image/" + key + "_" + size + "." + extension, file)
+        new PutObjectRequest(S3.bucket, imgPathPrefix + "_" + sizeKey + "." + extension, tempFile)
           .withCannedAcl(CannedAccessControlList.PublicRead))
     }
+    tempFile.delete()
 
     // Store Image object in db.
-    super.create(Image(NotAssigned, "image/" + key, extension))
+    super.create(Image(NotAssigned, imgPathPrefix, extension))
   }
 
   /**
    * Deletes an image by key in S3.
    */
   def delete(image: Image): Boolean = {
-    Seq("original", "thumbnail") foreach { size =>
-      S3.client.deleteObject(S3.bucket, image.s3Key + "_" + size)
+    Image.SizeMap.keySet + "original" foreach { sizeKey =>
+      S3.client.deleteObject(S3.bucket, image.s3Key + "_" + sizeKey + "." + image.extension)
     }
 
     SQL("delete from Image where id = {imageId}")

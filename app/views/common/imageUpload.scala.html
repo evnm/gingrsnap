@@ -2,15 +2,17 @@
   imageUrlOpt: Option[(String, String)]
 )
 
-@imageUrlOpt.map { case (baseUrl, extension) =>
-  <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
-    <img src="@(baseUrl + "_thumbnail." + extension)" />
-  </a>
-  <label>Upload a different image</label>
-}.getOrElse {
-  <label>Upload an image</label>
-}
-<div class="clearfix">
-  <input class="input-file" type="file" name="image" accept="image/gif,image/jpeg,image/jpg,image/png" />
+<div class="uploaded-image">
+  @imageUrlOpt.map { case (baseUrl, extension) =>
+    <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
+      <img src="@(baseUrl + "_portrait." + extension)" />
+    </a>
+    <label>Upload a different image</label>
+  }.getOrElse {
+    <label>Upload an image</label>
+  }
+  <div class="clearfix">
+    <input class="input-file" type="file" name="image" accept="image/gif,image/jpeg,image/jpg,image/png" />
+  </div>
+  <span class="help-block">JPEG, GIF, or PNG. Max size 1 MB.</span>
 </div>
-<span class="help-block">JPEG, GIF, or PNG. Max size 1 MB.</span>

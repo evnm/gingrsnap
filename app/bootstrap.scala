@@ -1,9 +1,15 @@
+import com.amazonaws.services.s3.model.{
+  CannedAccessControlList, DeleteObjectRequest, PutObjectRequest}
+import java.io.{File, FileOutputStream}
 import java.sql.Timestamp
 import models._
+import org.apache.commons.net.io
+import play.{Logger, Play}
 import play.db.anorm._
 import play.jobs.{OnApplicationStart, Job}
-import play.{Logger, Play}
+import play.libs.Images
 import play.test._
+import s3.S3
 
 @OnApplicationStart class Bootstrap extends Job {
   override def doJob {
@@ -53,5 +59,41 @@ import play.test._
         }
       }
     }
+
+    /**
+     * S3 image backfill.
+     */
+    Logger.info("Bootstrap task: Backfilling new image sizes on S3")
+    val originalFile = File.createTempFile("original", null)
+    val tempFile = File.createTempFile("temp", null)
+
+    Image.find().list() foreach { image =>
+      // Get original file from S3.
+      val s3InStream = S3.client.getObject(S3.bucket, image.s3Key + "_original." + image.extension)
+        .getObjectContent()
+      val fileOutStream = new FileOutputStream(originalFile)
+      io.Util.copyStream(s3InStream, fileOutStream)
+      s3InStream.close()
+      fileOutStream.close()
+
+      S3.client.deleteObject(S3.bucket, image.s3Key + "_thumbnail." + image.extension)
+
+      // Generate and upload new cropped/resized versions.
+      Image.SizeMap.keySet foreach { sizeKey =>
+        Image.SizeMap(sizeKey) match {
+          case (Some(x), Some(y)) if x == y => Image.cropSquare(originalFile, tempFile, x)
+          case (Some(x), Some(y)) => Images.resize(originalFile, tempFile, x, y)
+          case (Some(x), None) => Images.resize(originalFile, tempFile, x, -1)
+          case (None, Some(y)) => Images.resize(originalFile, tempFile, -1, y)
+          case invalid => Logger.error("Invalid Image.SizeMap entry: %s".format(invalid))
+        }
+        S3.client.putObject(
+          new PutObjectRequest(S3.bucket, image.s3Key + "_" + sizeKey + "." + image.extension, tempFile)
+            .withCannedAcl(CannedAccessControlList.PublicRead))
+      }
+    }
+
+    originalFile.delete()
+    tempFile.delete()
   }
 }

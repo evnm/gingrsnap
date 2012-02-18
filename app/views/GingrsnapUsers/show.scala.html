@@ -35,7 +35,7 @@
         <span id="user-id" style="display: none;">@user.id()</span>
         @profileImageUrlOpt.map { case (baseUrl, extension) =>
           <a href="@(baseUrl + "_original." + extension)">
-            <img src="@(baseUrl + "_thumbnail." + extension)" />
+            <img src="@(baseUrl + "_portrait." + extension)" />
           </a>
         }
         <dl>
