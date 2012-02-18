@@ -62,7 +62,7 @@ import s3.S3
 
     /**
      * S3 image backfill.
-     */
+
     Logger.info("Bootstrap task: Backfilling new image sizes on S3")
     val originalFile = File.createTempFile("original", null)
     val tempFile = File.createTempFile("temp", null)
@@ -95,5 +95,6 @@ import s3.S3
 
     originalFile.delete()
     tempFile.delete()
+    */
   }
 }
