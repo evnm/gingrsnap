@@ -28,7 +28,7 @@ object Tips extends BaseController with Secure {
             } else {
               Tip.create(Tip(userId, recipeId, tipBody)).toOptionLoggingError match {
                 case Some(newTip) => {
-                  flash.success("Your tip has been left")
+                  flash.success("You've left a tip")
                 }
                 case None => {
                   Logger.error(
