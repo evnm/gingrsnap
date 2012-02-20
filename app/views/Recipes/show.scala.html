@@ -54,11 +54,13 @@
                 @tipSeq.map { case (tip, user, imageOpt) =>
                   <li>
                     <div class="tip-header">
-                      @imageOpt.map { case (baseUrl, extension) =>
-                        <a class="user-thumbnail" href="@action(GingrsnapUsers.show(user.slug))">
-                          <img src="@(baseUrl + "_thumbnail." + extension)" />
-                        </a>
-                      }
+                      <div class="tip-author-icon">
+                        @imageOpt.map { case (baseUrl, extension) =>
+                          <a class="user-thumbnail" href="@action(GingrsnapUsers.show(user.slug))">
+                            <img src="@(baseUrl + "_thumbnail." + extension)" />
+                          </a>
+                        }
+                      </div>
                       <div class="tip-meta">
                         <a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a>
                         <span class="timeago" title="@tip.createdAt"></span>

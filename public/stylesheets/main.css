@@ -607,19 +607,26 @@ div.recipe-tips li {
 div.recipe-tips .tip-header {
   padding-bottom: 5px;
   margin-bottom: 5px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   height: 36px;
 }
 
-div.recipe-tips .tip-header .user-thumbnail {
-  margin-right: 1.2em;
-  height: 32px;
-  width: 32px;
-  display: inline;
-  float: left;
+div.recipe-tips .tip-header > * {
+  line-height: 36px;
 }
 
-div.recipe-tips .tip-header .user-thumbnail img {
+div.recipe-tips .tip-header .tip-author-icon {
+  height: 36px;
+  width: 36px;
+  margin-right: 1em;
+  display: inline;
+  float: left;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+div.recipe-tips .tip-header .tip-author-icon img {
   border-width: 2px;
 }
 
@@ -627,16 +634,12 @@ div.recipe-tips .tip-header .tip-meta {
   display: inline;
 }
 
-div.recipe-tips .tip-header * {
-  line-height: 32px;
-}
-
 div.recipe-tips li p {
   margin: 8px 0 0 0;
 }
 
 div.recipe-tips ol li span.timestamp {
-  display: inline-block;
+  display: inline;
   margin-left: 6px;
   color: #999;
 }
