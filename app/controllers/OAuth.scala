@@ -81,8 +81,11 @@ object OAuth extends BaseController with Secure {
       }
     }
   } catch {
-    case e: Throwable =>
+    case e: Throwable => {
       Logger.error("Error during Twitter OAuth authentication: %s".format(e.toString))
+      flash.error("There was a problem while authenticating with Twitter")
+      Action(Application.index)
+    }
   }
 
   /**
