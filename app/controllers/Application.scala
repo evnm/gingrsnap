@@ -36,4 +36,17 @@ Disallow: /feedback
 Disallow: /oauth/*
 """
   )
+
+  def humans = Text("""/* TEAM */
+Evan Meagher
+http://evanmeagher.net
+@evanm
+San Francisco, CA
+
+/* THANKS */
+Dustin Richmond: @darichmond
+Alexa Rhoads: @lexr
+Kelly Dunn: @kellyleland
+"""
+  )
 }
