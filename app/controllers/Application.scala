@@ -6,6 +6,8 @@ import play.cache.Cache
 import play.mvc.Controller
 
 object Application extends BaseController {
+  import views.Application._
+
   /**
    * Annotating return type and nvoking GingrsnapUsers.home directly because
    * Application.index and GingrsnapUsers.home are mutually recursive.
@@ -13,13 +15,25 @@ object Application extends BaseController {
   def index: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) => GingrsnapUsers.home
     case None => {
-      views.Application.html.index(
+      html.index(
         Event.getMostRecent(20) map { Event.hydrate(_) }
       )
     }
   }
 
   def about = {
-    views.Application.html.about(Authentication.getLoggedInUser.isDefined)
+    html.about(Authentication.getLoggedInUser.isDefined)
   }
+
+  def robots = Text("""User-agent: *
+Disallow: /makes/*
+Disallow: /follows/*
+Disallow: /events/*
+Disallow: /recipes/*
+Disallow: /tips/*
+Disallow: /account/*?
+Disallow: /feedback
+Disallow: /oauth/*
+"""
+  )
 }
