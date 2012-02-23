@@ -80,6 +80,57 @@ img {
   -moz-box-shadow: 1px 1px 5px #eaeaea;
 }
 
+.btn {
+  background-color: hsl(0, 0%, 91%) !important;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(hsl(0, 0%, 109%)), to(hsl(0, 0%, 91%)));
+  background-image: -moz-linear-gradient(top, hsl(0, 0%, 109%), hsl(0, 0%, 91%));
+  background-image: -ms-linear-gradient(top, hsl(0, 0%, 109%), hsl(0, 0%, 91%));
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(0, 0%, 109%)), color-stop(100%, hsl(0, 0%, 91%)));
+  background-image: -webkit-linear-gradient(top, hsl(0, 0%, 109%), hsl(0, 0%, 91%));
+  background-image: -o-linear-gradient(top, hsl(0, 0%, 109%), hsl(0, 0%, 91%));
+  background-image: linear-gradient(hsl(0, 0%, 109%), hsl(0, 0%, 91%));
+  border-color: #ddd;
+  color: #333 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.29);
+  -webkit-font-smoothing: antialiased;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background-color: hsl(110, 22%, 19%) !important;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(hsl(110, 22%, 37%)), to(hsl(110, 22%, 19%)));
+  background-image: -moz-linear-gradient(top, hsl(110, 22%, 37%), hsl(110, 22%, 19%));
+  background-image: -ms-linear-gradient(top, hsl(110, 22%, 37%), hsl(110, 22%, 19%));
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(110, 22%, 37%)), color-stop(100%, hsl(110, 22%, 19%)));
+  background-image: -webkit-linear-gradient(top, hsl(110, 22%, 37%), hsl(110, 22%, 19%));
+  background-image: -o-linear-gradient(top, hsl(110, 22%, 37%), hsl(110, 22%, 19%));
+  background-image: linear-gradient(hsl(110, 22%, 37%), hsl(110, 22%, 19%));
+  border-color: hsl(110, 22%, 19%) hsl(110, 22%, 19%) hsl(110, 22%, 14.5%);
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.29);
+  -webkit-font-smoothing: antialiased;
+  font-weight: 700;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.btn-danger {
+  background-color: hsl(0, 36%, 18%) !important;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(hsl(0, 36%, 36%)), to(hsl(0, 36%, 18%)));
+  background-image: -moz-linear-gradient(top, hsl(0, 36%, 36%), hsl(0, 36%, 18%));
+  background-image: -ms-linear-gradient(top, hsl(0, 36%, 36%), hsl(0, 36%, 18%));
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(0, 36%, 36%)), color-stop(100%, hsl(0, 36%, 18%)));
+  background-image: -webkit-linear-gradient(top, hsl(0, 36%, 36%), hsl(0, 36%, 18%));
+  background-image: -o-linear-gradient(top, hsl(0, 36%, 36%), hsl(0, 36%, 18%));
+  background-image: linear-gradient(hsl(0, 36%, 36%), hsl(0, 36%, 18%));
+  border-color: hsl(0, 36%, 18%) hsl(0, 36%, 18%) hsl(0, 36%, 13.5%);
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.29);
+  -webkit-font-smoothing: antialiased;
+}
+
 .oauth-connection-badge {
   width: 100px;
   padding: 6px 8px;
@@ -300,6 +351,10 @@ footer p {
  */
 fieldset {
   margin-bottom: 18px;
+}
+
+.form-actions .btn {
+  margin-right: 8px;
 }
 
 .form-actions, .modal-footer {
@@ -574,6 +629,10 @@ div.user-info dd {
 
 div.recipe-actions {
   margin-bottom: 24px;
+}
+
+div.recipe-actions .btn {
+  margin-right: 8px;
 }
 
 form#tips textarea {
