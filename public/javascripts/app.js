@@ -355,6 +355,9 @@ $(document).ready(function() {
       success: function(response) {
         if (response.error) {
           // TODO
+        } else if (response.events.length == 0) {
+          // Delete the "load more" button.
+          $(lastLi).remove();
         } else {
           $.each(response.events, function(i, event) {
             var result = '<li>';
