@@ -69,7 +69,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
    * Renders a JSON representation of a hydrated event.
    */
   def toJson(event: Event): String = {
-    val (createdAt, eventSubject, eventType, eventObject) = Event.hydrate(event)
+    val (createdAt, eventSubject, thumbnailUrlOpt, eventType, eventObject) = Event.hydrate(event)
 
     val result =  (eventSubject, eventObject) match {
       case (GingrsnapUserEventSubject(subject), RecipeEventObject((recipe, author))) => {
@@ -83,15 +83,23 @@ object Event extends Magic[Event] with Timestamped[Event] {
       }
     }
 
+    val thumbnailUrlStr = thumbnailUrlOpt.map { url =>
+      ", \"thumbnailUrl\": \"" + url + "\""
+    } getOrElse("")
+
     "{\"eventType\": \"" + event.eventType + "\", \"createdAt\": \"" + event.createdAt +
-    "\", " + result + "}"
+    "\", " + result + thumbnailUrlStr + "}"
   }
 
   /**
-   * Hydrates an Event into a renderable tuple of (subject, eventtype, object).
+   * Hydrates an Event into a renderable tuple of
+   * (timestamp, subject, image thumbnail url, eventtype, object).
    */
-  def hydrate(event: Event): (Timestamp, EventSubject, EventType.Value, EventObject) = {
+  def hydrate(event: Event): (Timestamp, EventSubject, Option[String], EventType.Value, EventObject) = {
     val user = GingrsnapUser.getById(event.subjectId).get
+    val userThumbnailOpt = Image.getBaseUrlByUserId(user.id()) map { case (baseUrl, extension) =>
+      baseUrl + "_thumbnail." + extension
+    }
 
     EventType(event.eventType) match {
       case EventType.GingrsnapUserFollow => {
@@ -100,6 +108,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
         (
           event.createdAt,
           GingrsnapUserEventSubject(user),
+          userThumbnailOpt,
           EventType(event.eventType),
           GingrsnapUserEventObject(obj)
         )
@@ -111,6 +120,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
         (
           event.createdAt,
           GingrsnapUserEventSubject(user),
+          userThumbnailOpt,
           EventType(event.eventType),
           RecipeEventObject(recipe, author)
         )

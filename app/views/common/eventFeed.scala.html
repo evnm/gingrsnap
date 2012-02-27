@@ -1,6 +1,6 @@
 @(
   eventFeedType: Int,
-  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)],
+  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)],
   userId: Option[Long] = None
 )
 
@@ -14,23 +14,23 @@
   @eventFeed.map { eventTuple =>
     <li>
       @eventTuple match {
-        case (createdAt, GingrsnapUserEventSubject(subject), EventType.RecipePublish, RecipeEventObject(obj)) => {
-          @views.common.eventItems.html.recipePublish(subject, obj)
+        case (createdAt, GingrsnapUserEventSubject(subject), imgUrl, EventType.RecipePublish, RecipeEventObject(obj)) => {
+          @views.common.eventItems.html.recipePublish(subject, obj, imgUrl)
         }
-        case (createdAt, GingrsnapUserEventSubject(subject), EventType.RecipeFork, RecipeEventObject(obj)) => {
+        case (createdAt, GingrsnapUserEventSubject(subject), imgUrl, EventType.RecipeFork, RecipeEventObject(obj)) => {
           @views.common.eventItems.html.recipeFork(subject, obj)
         }
-        case (createdAt, GingrsnapUserEventSubject(subject), EventType.RecipeUpdate, RecipeEventObject(obj)) => {
-          @views.common.eventItems.html.recipeUpdate(subject, obj)
+        case (createdAt, GingrsnapUserEventSubject(subject), imgUrl, EventType.RecipeUpdate, RecipeEventObject(obj)) => {
+          @views.common.eventItems.html.recipeUpdate(subject, obj, imgUrl)
         }
-        case (createdAt, GingrsnapUserEventSubject(subject), EventType.RecipeMake, RecipeEventObject(obj)) => {
-          @views.common.eventItems.html.recipeMake(subject, obj)
+        case (createdAt, GingrsnapUserEventSubject(subject), imgUrl, EventType.RecipeMake, RecipeEventObject(obj)) => {
+          @views.common.eventItems.html.recipeMake(subject, obj, imgUrl)
         }
-        case (createdAt, GingrsnapUserEventSubject(subject), EventType.TipLeave, RecipeEventObject(obj)) => {
-          @views.common.eventItems.html.tipLeave(subject, obj)
+        case (createdAt, GingrsnapUserEventSubject(subject), imgUrl, EventType.TipLeave, RecipeEventObject(obj)) => {
+          @views.common.eventItems.html.tipLeave(subject, obj, imgUrl)
         }
-        case (createdAt, GingrsnapUserEventSubject(subject), EventType.GingrsnapUserFollow, GingrsnapUserEventObject(obj)) => {
-          @views.common.eventItems.html.gingrsnapUserFollow(subject, obj)
+        case (createdAt, GingrsnapUserEventSubject(subject), imgUrl, EventType.GingrsnapUserFollow, GingrsnapUserEventObject(obj)) => {
+          @views.common.eventItems.html.gingrsnapUserFollow(subject, obj, imgUrl)
         }
       }
       <span class="timeago" title="@eventTuple._1"></span>

@@ -6,7 +6,7 @@
   profileImageUrlOpt: Option[(String, String)],
   recipes: Seq[models.Recipe],
   totalMakeCount: Long,
-  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)]
+  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
 )(
   implicit
   params: play.mvc.Scope.Params,

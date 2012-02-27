@@ -255,14 +255,27 @@ div#wrapper {
   padding: 24px 0 65px 0;
 }
 
+.header-with-subtitle h1 {
+  display: inline-block;
+  margin-right: 12px;
+}
+
+.header-with-subtitle h1 + span {
+  font-weight: bold;
+  font-size: 14px;
+  color: #bbb;
+}
+
 ol.event-feed {
   list-style-type: none;
   margin: 0;
 }
 
 ol.event-feed li {
+  height: 36px;
+  line-height: 36px;
   margin-bottom: 1em;
-  padding: 8px 12px;
+  padding: 6px 12px;
   border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 3px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -674,7 +687,7 @@ div.recipe-tips .tip-header > * {
   line-height: 36px;
 }
 
-div.recipe-tips .tip-header .tip-author-icon {
+.recipe-tips .tip-header .tip-author-icon, .event-subject-icon {
   height: 36px;
   width: 36px;
   margin-right: 1em;
@@ -685,7 +698,7 @@ div.recipe-tips .tip-header .tip-author-icon {
   -moz-box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-div.recipe-tips .tip-header .tip-author-icon img {
+.recipe-tips .tip-header .tip-author-icon img, .event-subject-icon img {
   border-width: 2px;
 }
 

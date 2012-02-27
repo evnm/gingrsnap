@@ -1,8 +1,16 @@
 @(
   user: models.GingrsnapUser,
-  recipe: (models.Recipe, models.GingrsnapUser)
+  recipe: (models.Recipe, models.GingrsnapUser),
+  thumbnailUrlOpt: Option[String] = None
 )
 
 @import controllers.{GingrsnapUsers, Recipes}
 
-<i class="icon-pencil"></i><a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a> updated recipe <a href="@action(Recipes.show(recipe._2.slug, recipe._1.slug))">@recipe._1.title</a>
+<div class="event-subject-icon">
+  @thumbnailUrlOpt.map { thumbnailUrl =>
+    <a href="@action(GingrsnapUsers.show(user.slug))">
+      <img src="@thumbnailUrl" />
+    </a>
+  }
+</div>
+<a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a> updated recipe <a href="@action(Recipes.show(recipe._2.slug, recipe._1.slug))">@recipe._1.title</a>

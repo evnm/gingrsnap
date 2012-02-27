@@ -1,7 +1,7 @@
 @(
   user: models.GingrsnapUser,
   recipes: Seq[models.Recipe],
-  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)]
+  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -16,7 +16,10 @@
 @main(title = "Home") {
   <div class="row">
     <div class="span8">
-      <h1>Recent events</h1>
+      <div class="header-with-subtitle">
+        <h1>Activity</h1>
+        <span>Recent events from people that you follow</span>
+      </div>
       @if(Feature(Constants.UserFollowing)) {
         @views.common.html.eventFeed(EventFeedType.Following.id, eventFeed, Some(user.id()))
       } else {

@@ -1,5 +1,5 @@
 @(
-  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, models.EventType.Value, models.EventObject)]
+  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
 )(
   implicit
   renderArgs: play.mvc.Scope.RenderArgs = null, // This is a hack
@@ -25,7 +25,10 @@
 
   <div class="row">
     <div class="span8">
-      <h1>Recent events</h1>
+      <div class="header-with-subtitle">
+        <h1>Activity</h1>
+        <span>Recent events from people using Gingrsnap</span>
+      </div>
       @views.common.html.eventFeed(EventFeedType.Global.id, eventFeed)
     </div>
     <div class="span4">
