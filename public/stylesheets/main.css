@@ -611,6 +611,20 @@ div.user-info {
   margin-bottom: 32px;
 }
 
+.user-header {
+  position: relative;
+}
+
+.user-header h1 {
+  display: inline-block;
+  margin-right: 22px;
+}
+
+.user-header button {
+  position: absolute;
+  top: 3px;
+}
+
 div.user-info dt {
   float: left;
   width: 160px;

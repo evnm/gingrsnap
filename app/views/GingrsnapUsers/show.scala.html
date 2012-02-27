@@ -22,16 +22,19 @@
   <div class="row">
     <div class="span8">
       <div class="user-info">
-        <h1>@user.fullname</h1>
-        @connectedUserOpt.map { connectedUser =>
-          @if(connectedUser.id() != user.id()) {
-            @if(isFollowedByConnectedUser) {
-            <button class="btn unfollow-user btn-danger" href="#">Unfollow</button>
-            } else {
-              <button class="btn follow-user" href="#">Follow</button>
+        <div class="user-header">
+          <h1>@user.fullname</h1>
+          @connectedUserOpt.map { connectedUser =>
+            @if(connectedUser.id() != user.id()) {
+              @if(isFollowedByConnectedUser) {
+                <button class="btn unfollow-user btn-danger" href="#">Unfollow</button>
+              } else {
+                <button class="btn follow-user" href="#">Follow</button>
+              }
             }
           }
-        }
+        </div>
+
         <span id="user-id" style="display: none;">@user.id()</span>
         @profileImageUrlOpt.map { case (baseUrl, extension) =>
           <a href="@(baseUrl + "_original." + extension)">
