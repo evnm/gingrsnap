@@ -45,7 +45,7 @@
     <div class="span4">
       <div class="well">
         @if(twAccessToken.isEmpty && twAccessTokenSecret.isEmpty) {
-          <p><a class="btn btn-primary" href="@action(OAuth.connect("twitter"))">Sign up with Twitter&raquo;</a></p>
+          <p><a class="btn btn-primary" href="@action(OAuth.connect("twitter"))">Connect with Twitter&raquo;</a></p>
         } else {
           <p><a class="btn" href="@action(GingrsnapUsers.neue())">Don't connect with Twitter</a></p>
         }

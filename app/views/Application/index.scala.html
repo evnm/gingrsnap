@@ -7,21 +7,39 @@
   errors: Map[String, play.data.validation.Error]
 )
 
-@import controllers.Application
+@import controllers.{Application, GingrsnapUsers, OAuth}
 @import models.EventFeedType
 
 @main("") {
-  <div class="hero-unit">
-    <div class="row">
-      <div class="span7">
-        <h1>Upgrade your recipe collection.</h1>
-        <p><strong>Gingrsnap</strong> is a simple service that allows you to publish recipes and keep track of what you've been making.</p>
-      </div>
-      <div class="span3 pull-right">
-        <a class="btn btn-primary create-account" href="@action(Application.about)">Learn more &raquo;</a>
+  <section>
+    <div class="hero-unit">
+      <div class="row">
+        <div class="span7">
+          <h1>Upgrade your recipe collection.</h1>
+          <p><strong>Gingrsnap</strong> is a simple service that allows you to publish recipes and keep track of what you've been making.</p>
+        </div>
+        <div class="span3 pull-right">
+          <a class="btn btn-primary btn-large" href="@action(Application.about)">Learn more &raquo;</a>
+        </div>
       </div>
     </div>
-  </div>
+
+    <div class="row">
+      <div class="span4">
+        <h2>Publish your recipes.</h2>
+        <p>After getting creative in the kitchen, don't just write up what you made on paper or settle for a text file somewhere on your computer.</p>
+        <p>Publishing on Gingrsnap allows you to easily share what you've created. The next time a friend asks you for a recipe, you can send them a link instead of transcribing a piece of paper into an email.</p>
+      </div>
+      <div class="span4">
+        <h2>Share what you've been making.</h2>
+        <p>Keep track of what you cook by recording "makes" on Gingrsnap. Recipes accumulate makes, giving an organic measurement of a dish's popularity.</p>
+      </div>
+      <div class="span4">
+        <h2>Collaborate on recipes by leaving tips.</h2>
+        <p>Find a new twist to a dish on Gingrsnap? Leave a tip on the recipe so others can try out your creation.</p>
+      </div>
+    </div>
+  </section>
 
   <div class="row">
     <div class="span8">
@@ -33,6 +51,14 @@
     </div>
     <div class="span4">
       <div class="well">
+        <h2>Sign up today!</h2>
+        <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Create an account &raquo;</a>
+        <p>Gingrsnap is a free service and signup is quick.</p>
+        <a class="btn btn-primary btn-large btn-twitter" href="@action(OAuth.connect("twitter"))">
+          <i class="icon-twitter icon-white"></i>Connect with Twitter &raquo;
+        </a>
+        <p>Start the sign-up process by connecting with your Twitter account.</p>
+        <p>Connecting will let you sign into Gingrsnap with a single click using your Twitter credentials.</p>
       </div>
     </div>
   </div>

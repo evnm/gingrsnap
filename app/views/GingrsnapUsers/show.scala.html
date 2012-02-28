@@ -26,6 +26,7 @@
           <h1>@user.fullname</h1>
           @connectedUserOpt.map { connectedUser =>
             @if(connectedUser.id() != user.id()) {
+              <span id="user-id" style="display: none;">@user.id()</span>
               @if(isFollowedByConnectedUser) {
                 <button class="btn unfollow-user btn-danger" href="#">Unfollow</button>
               } else {
@@ -35,25 +36,26 @@
           }
         </div>
 
-        <span id="user-id" style="display: none;">@user.id()</span>
+
         @profileImageUrlOpt.map { case (baseUrl, extension) =>
           <a href="@(baseUrl + "_original." + extension)">
             <img src="@(baseUrl + "_portrait." + extension)" />
           </a>
         }
         <dl>
-        @account.location.map { location =>
-          <dt>Location</dt>
-          <dd>@location</dd>
-        }
-        @account.url.map { url =>
-          <dt>Website</dt>
-          <dd>@url</dd>
-        }
-        <dt>Member since</dt>
-        <dd>@DateFormat.getDateInstance.format(user.createdAt)</dd>
-        <dt>Total recipes made</dt>
-        <dd>@totalMakeCount</dd>
+          @account.location.map { location =>
+            <dt>Location</dt>
+            <dd>@location</dd>
+          }
+          @account.url.map { url =>
+            <dt>Website</dt>
+            <dd><a href="@url">@url</a></dd>
+          }
+          <dt>Member since</dt>
+          <dd>@DateFormat.getDateInstance.format(user.createdAt)</dd>
+          <dt>Total recipes made</dt>
+          <dd>@totalMakeCount</dd>
+        </dl>
       </div>
 
       <h2>Activity</h2>

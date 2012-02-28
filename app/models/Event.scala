@@ -135,7 +135,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
     SQL("""
         select distinct e.* from Event e
         left outer join Follow f on f.objectid = e.subjectid
-        where e.subjectId = {userId} or f.subjectid = {userId}
+        where (e.subjectId = {userId} or f.subjectid = {userId}) and e.eventType != 5
         order by e.createdAt desc
         limit {n}
         """)
@@ -154,6 +154,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
   def getMostRecent(n: Int): Seq[Event] = {
     SQL("""
         select * from Event e
+        where e.eventType != 5
         order by createdAt desc
         limit {n}
         """)
@@ -191,7 +192,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
   def getNextGlobalPage(lastTimestamp: String, n: Int): Seq[Event] = {
     SQL("""
         select * from Event
-        where createdAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS')
+        where createdAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS') and e.eventType != 5
         order by createdAt desc
         limit {n}
         """)
@@ -211,7 +212,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
     SQL("""
         select distinct e.* from Event e
         left outer join Follow f on f.objectid = e.subjectid
-        where e.createdAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS')
+        where e.createdAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS') and e.eventType != 5
         and (e.subjectId = {userId} or f.subjectid = {userId})
         order by e.createdAt desc
         limit {n}

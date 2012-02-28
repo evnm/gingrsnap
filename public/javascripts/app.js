@@ -156,21 +156,10 @@ $(document).ready(function() {
         } else {
           that.button("complete");
           that.attr("disabled", "true");
-          var totalMakeCount = $("span#total-make-count");
-          // Add or remove 's' from "time[s]" label, if necessary.
-          if (totalMakeCount.text() == "0") {
-            $("span#total-make-times").text("time");
-          } else if (totalMakeCount.text() == "1") {
-            $("span#total-make-times").text("times");
-          }
+          var totalMakeCount = $("#total-make-count");
           totalMakeCount.text(parseInt(totalMakeCount.text()) + 1);
 
-          var userMakeCount = $("span#user-make-count");
-          if (userMakeCount.text() == "0") {
-            $("span#user-make-times").text("time");
-          } else if (userMakeCount.text() == "1") {
-            $("span#user-make-times").text("times");
-          }
+          var userMakeCount = $("#user-make-count");
           userMakeCount.text(parseInt(userMakeCount.text()) + 1);
         }
       }
@@ -201,6 +190,7 @@ $(document).ready(function() {
   $("button.follow-user").live("click", function(event) {
     var that = $(this);
     var userInfoDiv = $(that).parent("div");
+    console.log($("#user-id", userInfoDiv).text());
     $.ajax({
       type: "POST",
       dataType: "text json",

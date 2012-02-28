@@ -16,7 +16,7 @@ object Application extends BaseController {
     case Some(user) => GingrsnapUsers.home
     case None => {
       html.index(
-        Event.getMostRecent(20) map { Event.hydrate(_) }
+        Event.getMostRecent(8) map { Event.hydrate(_) }
       )
     }
   }

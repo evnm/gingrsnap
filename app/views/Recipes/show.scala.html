@@ -116,25 +116,24 @@
           </a>
         }
 
-        <p>
-          This recipe has been made <span id="total-make-count">@totalMakeCount</span> <span id="total-make-times">time@JavaExtensions.pluralize(totalMakeCount)</span>.
-        </p>
+        <dl>
+          <dt>Total makes</dt>
+          <dd id="total-make-count">@totalMakeCount</dd>
+          @userMakeCountOpt.map { userMakeCount =>
+            <dt>Makes by you</dt>
+            <dd id="user-make-count">@userMakeCount</dd>
+          }
+        </dl>
 
         @connectedUserOpt.map { connectedUser =>
           <span id="user-id" style="display: none;">@connectedUser.id()</span>
           <div>
-            @userMakeCountOpt.map { userMakeCount =>
-              <p>
-                You've made this recipe <span id="user-make-count">@userMakeCount</span> <span id="user-make-times">time@JavaExtensions.pluralize(userMakeCount)</span>.
-              </p>
-            }
             @if(isMakable) {
               <button class="btn make-recipe" data-loading-text="Loading..." data-complete-text="You made this">I made this!</button>
             } else {
-              <button class="btn" disabled="true" title="You've made this recipe too recently to make again!">I made this!</button>
+              <button class="btn" disabled="true" title="You've made this recipe too recently to make again!">You made this recipe recently</button>
             }
           </div>
-
         }
 
         @if(Feature(Constants.TweetButtons) || Feature(Constants.FbLikeButtons)) {
