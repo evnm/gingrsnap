@@ -8,7 +8,8 @@ import org.scalatest.matchers._
 class RecipeSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfterEach {
   override def beforeEach() = {
     Fixtures.deleteDatabase()
-    GingrsnapUser.create(GingrsnapUser(Id(0), "bob@gmail.com", "secret", "1", "Bob", timestamp, None, None))
+    GingrsnapUser.create(
+      GingrsnapUser(Id(0), "bob@gmail.com", "secret", "1", "Bob", "bob", timestamp, None, None))
   }
 
   val timestamp = new Timestamp(System.currentTimeMillis())
@@ -44,7 +45,7 @@ class RecipeSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfterEac
   it should "lookup by user id" in {
     Recipe.create(Recipe(Id(1), "Fish sticks", "fish-sticks", 0, timestamp, timestamp, None, "dems tasty"))
     Recipe.create(Recipe(Id(2), "Cow pies", "cow-pies", 0, timestamp, timestamp, None, "Buy a cow."))
-    val recipes = Recipe.getByGingrsnapUserId(0)
+    val recipes = Recipe.getByUserId(0)
 
     recipes should not be (Seq.empty)
     recipes(0).title should be ("Fish sticks")
@@ -55,11 +56,11 @@ class RecipeSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfterEac
     recipes(1).body should be ("Buy a cow.")
   }
 
-  it should "lookup by author id and slug" in {
+  it should "lookup by slugs" in {
     Recipe.create(Recipe(Id(1), "Fish sticks", "fish-sticks", 0, timestamp, timestamp, None, "dems tasty"))
     Ingredient.create(Ingredient(Id(1), "potato", 1, timestamp))
     Ingredient.create(Ingredient(Id(2), "carrot", 1, timestamp))
-    val recipe = Recipe.getByAuthorIdAndSlug(0, "fish-sticks")
+    val recipe = Recipe.getBySlugs("bob", "fish-sticks")
 
     recipe should not be (None)
     recipe map { case (r, ingrs) =>

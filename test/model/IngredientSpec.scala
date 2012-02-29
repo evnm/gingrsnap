@@ -9,7 +9,7 @@ class IngredientSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfte
   override def beforeEach() = {
     Fixtures.deleteDatabase()
     GingrsnapUser.create(
-      GingrsnapUser(Id(0), "bob@gmail.com", "secret", "1", "Bob", timestamp, None, None))
+      GingrsnapUser(Id(0), "bob@gmail.com", "secret", "1", "Bob", "bob", timestamp, None, None))
     Recipe.create(
       Recipe(Id(1), "Fish sticks", "fish-sticks", 0, timestamp, timestamp, None, "dems tasty"))
   }

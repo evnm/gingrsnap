@@ -13,7 +13,8 @@ class GingrsnapUserSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndA
   val timestamp = new Timestamp(System.currentTimeMillis())
 
   it should "create and retrieve a user" in {
-    GingrsnapUser.create(GingrsnapUser(NotAssigned, "bob@gmail.com", "secret", "1", "Bob", timestamp, None, None))
+    GingrsnapUser.create(
+      GingrsnapUser(NotAssigned, "bob@gmail.com", "secret", "1", "Bob", "bob", timestamp, None, None))
     val user = GingrsnapUser.find("emailAddr={email}").on("email" -> "bob@gmail.com").first()
 
     GingrsnapUser.count().single() should be (1)
@@ -23,11 +24,15 @@ class GingrsnapUserSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndA
       u.salt should be ("1")
       u.fullname should be ("Bob")
       u.emailAddr should be ("bob@gmail.com")
+      u.slug should be ("bob")
     }
   }
 
   it should "update a user" in {
-    GingrsnapUser.create(GingrsnapUser(NotAssigned, "bob@gmail.com", "secret", "1", "Bob", timestamp, None, None)) map { user =>
+    GingrsnapUser.create(
+      GingrsnapUser(
+        NotAssigned, "bob@gmail.com", "secret", "1", "Bob", "bob", timestamp, None, None)
+    ) map { user =>
       GingrsnapUser.update(user.copy(
         emailAddr = "tim@blah.com",
         password = "foobar",
@@ -49,7 +54,8 @@ class GingrsnapUserSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndA
   }
 
   it should "lookup by encrypted email" in {
-    GingrsnapUser.create(GingrsnapUser(NotAssigned, "bob@gmail.com", "secret", "1", "Bob", timestamp, None, None))
+    GingrsnapUser.create(
+      GingrsnapUser(NotAssigned, "bob@gmail.com", "secret", "1", "Bob", "bob", timestamp, None, None))
     val user = GingrsnapUser.getByEncryptedEmail(Crypto.encryptAES("bob@gmail.com"))
 
     user should not be (None)
@@ -62,7 +68,8 @@ class GingrsnapUserSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndA
   }
 
   it should "lookup by email" in {
-    GingrsnapUser.create(GingrsnapUser(NotAssigned, "bob@gmail.com", "secret", "1", "Bob", timestamp, None, None))
+    GingrsnapUser.create(
+      GingrsnapUser(NotAssigned, "bob@gmail.com", "secret", "1", "Bob", "bob", timestamp, None, None))
     val user = GingrsnapUser.getByEmail("bob@gmail.com")
 
     user should not be (None)
@@ -75,7 +82,8 @@ class GingrsnapUserSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndA
   }
 
   it should "lookup by email and password" in {
-    GingrsnapUser.create(GingrsnapUser("bob@gmail.com", "secret", "Bob", None, None))
+    GingrsnapUser.create(
+      GingrsnapUser(NotAssigned, "bob@gmail.com", "s2xSWEj+4DUpszj6CWoQ4Q==", "1", "Bob", "bob", timestamp, None, None))
     val user = GingrsnapUser.getByEmailAndPass("bob@gmail.com", "secret")
 
     user should not be (None)
@@ -88,7 +96,7 @@ class GingrsnapUserSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndA
   it should "lookup by Twitter access token" in {
     val token = new AccessToken("0-twtoken", "twtokensecret")
     GingrsnapUser.create(
-      GingrsnapUser(NotAssigned, "bob@gmail.com", "secret", "1", "Bob", timestamp,
+      GingrsnapUser(NotAssigned, "bob@gmail.com", "secret", "1", "Bob", "bob", timestamp,
            Some(token.getToken), Some(token.getTokenSecret)))
     val user = GingrsnapUser.getByTwAuth(token)
 
