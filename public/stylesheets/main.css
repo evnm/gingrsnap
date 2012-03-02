@@ -737,7 +737,7 @@ dd {
 
 ul#ingredients {
   color: #777;
-  width: 92%;
+  width: 550px;
   list-style-type: none;
   margin: -5px 0 40px 0;
   padding: 4px 0;
@@ -771,11 +771,11 @@ div.recipe-actions .btn {
 
 form#tips textarea {
   height: 80px;
-  width: 92%;
-  margin-right: 8px;
+  width: 534px;
 }
 
 div.recipe-tips {
+  width: 550px;
   border-top: 1px solid #ddd;
   margin-top: 40px;
   padding-top: 24px;

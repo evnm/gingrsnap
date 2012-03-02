@@ -166,6 +166,29 @@ $(document).ready(function() {
     });
     event.preventDefault();
   });
+
+  // Toggle submit-button disabled state depending on emptiness of textarea.
+  $("form#tips textarea").keyup(function(event) {
+    var that = $(this);
+
+    if (that.val().trim().length > 0) {
+      that.next().removeClass("disabled");
+    } else {
+      that.next().addClass("disabled");
+    }
+  });
+
+  // Don't submit empty tips.
+  $("form#tips a.btn").click(function(event) {
+    var form = $(this).parent("form#tips");
+    var textarea = $("textarea", form);
+
+    if (textarea.val().trim().length > 0) {
+      form.submit();
+    }
+
+    event.preventDefault();
+  });
 });
 
 /**
