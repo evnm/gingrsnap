@@ -36,12 +36,6 @@
           }
         </div>
 
-
-        @profileImageUrlOpt.map { case (baseUrl, extension) =>
-          <a href="@(baseUrl + "_original." + extension)">
-            <img src="@(baseUrl + "_portrait." + extension)" />
-          </a>
-        }
         <dl>
           @account.location.map { location =>
             <dt>Location</dt>
@@ -64,6 +58,12 @@
 
     <div class="span4">
       <div class="well">
+        @profileImageUrlOpt.map { case (baseUrl, extension) =>
+          <a class="well-image" href="@(baseUrl + "_original." + extension)">
+            <img src="@(baseUrl + "_portrait." + extension)" />
+          </a>
+        }
+
         @views.common.html.recipeList(connectedUserOpt, user, recipes)
       </div>
     </div>

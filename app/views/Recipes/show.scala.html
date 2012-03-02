@@ -42,6 +42,7 @@
       </ul>
 
       <div id="recipe-body">
+        <h2>Instructions</h2>
         @Html(bodyHtml)
       </div>
 
@@ -89,6 +90,12 @@
 
     <div class="span4">
       <div class="well">
+        @imageBaseUrlOpt.map { case (baseUrl, extension) =>
+          <a class="well-image" href="@(baseUrl + "_original." + extension)">
+            <img src="@(baseUrl + "_portrait." + extension)" />
+          </a>
+        }
+
         @connectedUserOpt.map { connectedUser =>
           @if(connectedUser.id() == author.id()) {
             <div class="recipe-actions">
@@ -110,20 +117,17 @@
           }
         }
 
-        @imageBaseUrlOpt.map { case (baseUrl, extension) =>
-          <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
-            <img src="@(baseUrl + "_portrait." + extension)" />
-          </a>
-        }
-
-        <dl>
-          <dt>Total makes</dt>
-          <dd id="total-make-count">@totalMakeCount</dd>
-          @userMakeCountOpt.map { userMakeCount =>
-            <dt>Makes by you</dt>
-            <dd id="user-make-count">@userMakeCount</dd>
-          }
-        </dl>
+        <div class="recipe-stats">
+          <h2>Stats</h2>
+          <dl>
+            <dt>Total makes</dt>
+            <dd id="total-make-count">@totalMakeCount</dd>
+            @userMakeCountOpt.map { userMakeCount =>
+              <dt>Makes by you</dt>
+              <dd id="user-make-count">@userMakeCount</dd>
+            }
+          </dl>
+        </div>
 
         @connectedUserOpt.map { connectedUser =>
           <span id="user-id" style="display: none;">@connectedUser.id()</span>

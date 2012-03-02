@@ -6,37 +6,39 @@
 
 @import controllers.Recipes
 
-@viewerOpt match {
-  case Some(viewer) if user.id() == viewer.id() => {
-    <h2>Your recipes</h2>
-    <a class="btn btn-primary new-recipe" href="@action(Recipes.neue())">
-      <i class="icon-plus icon-white"></i>New recipe
-    </a>
-  }
-  case _ => {
-    <h2>@user.fullname's recipes</h2>
-  }
-}
-@if(recipes.nonEmpty) {
-  <ul>
-    @recipes.map { recipe =>
-      <li>
-        @if(recipe.publishedAt.isEmpty) {
-          <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
-          <span class="label">Draft</span>
-        } else {
-          <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
-        }
-      </li>
-    }
-  </ul>
-} else {
+<div class="recipe-list">
   @viewerOpt match {
     case Some(viewer) if user.id() == viewer.id() => {
-      <p>You haven't published any recipes yet.</p>
+      <h2>Your recipes</h2>
+      <a class="btn btn-primary new-recipe" href="@action(Recipes.neue())">
+        <i class="icon-plus icon-white"></i>New recipe
+      </a>
     }
     case _ => {
-      <p>@user.fullname hasn't published any recipes yet.</p>
+      <h2>@user.fullname's recipes</h2>
     }
   }
-}
+  @if(recipes.nonEmpty) {
+    <ul>
+      @recipes.map { recipe =>
+        <li>
+          @if(recipe.publishedAt.isEmpty) {
+            <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
+            <span class="label">Draft</span>
+          } else {
+            <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
+          }
+        </li>
+      }
+    </ul>
+  } else {
+    @viewerOpt match {
+      case Some(viewer) if user.id() == viewer.id() => {
+        <p>You haven't published any recipes yet.</p>
+      }
+      case _ => {
+        <p>@user.fullname hasn't published any recipes yet.</p>
+      }
+    }
+  }
+</div>

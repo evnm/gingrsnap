@@ -2,6 +2,8 @@ body {
   background: #ad7351 url(/public/img/ad7351-noise.gif) repeat;
   font-family: 'Open Sans', helvetica neue, helvetica, sans-serif;
   font-weight: 400;
+  font-size: 13px;
+  line-height: 170%;
 }
 
 /**
@@ -31,7 +33,8 @@ a.close {
 }
 
 p {
-  line-height: 170%;
+  line-height: 185%;
+  font-size: inherit;
   margin-bottom: 22px;
 }
 
@@ -155,6 +158,7 @@ img {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.26);
   -webkit-font-smoothing: antialiased;
   font-weight: 700;
+  padding: inherit 6px;
 }
 
 .oauth-connection-badge {
@@ -162,6 +166,18 @@ img {
   padding: 6px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
+}
+
+.icon-twitter-small {
+  background: url(/public/img/twitter_newbird_white_16.png) no-repeat center left;
+  width: 16px;
+}
+
+.icon-twitter-large {
+  background: url(/public/img/twitter_newbird_white_24.png) no-repeat center left;
+  height: 18px;
+  width: 24px;
+  margin-right: 8px;
 }
 
 .twitter-icon {
@@ -173,11 +189,17 @@ img {
  * Header
  */
 header {
-  padding: 10px 0 16px 0;
-  background: #353535 url(/public/img/353535-noise.gif) repeat;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.85) inset,0 1px 2px rgba(255,255,255,0.8)
-  border-top: 2px solid #202020;
-  border-bottom: 1px solid #202020;
+  padding: 8px 0 8px 0;
+  background-color: #353535;
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0.67, rgb(45,45,46)),
+    color-stop(0.28, rgb(53,53,53))
+  );
+  box-shadow: inset 0 2px 5px rgba(0,0,0,.5);
+  border-bottom: 1px solid #F7F5F3;
 }
 
 header .navbar {
@@ -188,7 +210,8 @@ header .navbar .brand {
   float: none;
   display: inline-block;
   font-size: 32px;
-  color: #e5e5e5;
+  font-weight: 700;
+  color: #ebeaea;
   text-shadow: 0 2px 0 rgba(150, 150, 150, .3);
   margin: 0;
   padding: 0;
@@ -226,11 +249,11 @@ ul.nav li {
 
 .navbar .nav > li > a {
   padding: 0;
-  color: #c5c5c5;
+  color: #d5d5d5;
 }
 
 .nav a:hover {
-  color: #e5e5e5;
+  color: #d9d9d9;
 }
 
 ul.secondary-nav li {
@@ -264,7 +287,7 @@ ul.secondary-nav li {
 
 .hero-unit .pull-right .btn-primary {
   margin-bottom: 18px;
-  padding: 10px 16px;
+  padding: 8px 16px;
   font-size: 16px;
   font-weight: 600;
 }
@@ -279,6 +302,7 @@ ul.secondary-nav li {
 div#wrapper {
   background-color: #fbfbfb;
   padding: 24px 0 65px 0;
+  box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .header-with-subtitle h1 {
@@ -298,7 +322,7 @@ ol.event-feed {
 }
 
 ol.event-feed li {
-  height: 36px;
+  min-height: 36px;
   line-height: 36px;
   margin-bottom: 1em;
   padding: 6px 12px;
@@ -309,7 +333,11 @@ ol.event-feed li {
   -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
-.sidebar-image {
+.event-feed li .event-body {
+  display: inline;
+}
+
+.well-image {
   display: block;
   margin-bottom: 1em;
   margin-left: -8px;
@@ -322,10 +350,14 @@ ol.event-feed li {
   position: relative;
 }
 
+.well .recipe-list {
+  position: relative;
+}
+
 .well a.new-recipe {
   position: absolute;
-  top: 18px;
-  right: 16px;
+  top: 2px;
+  right: -4px;
   padding: 3px 8px;
 }
 
@@ -345,11 +377,9 @@ footer {
   padding: 20px 0 12px 0;
   margin: 0;
   border: none;
-  -moz-box-shadow: 0 -2px 2px #ccc;
-  -webkit-box-shadow: 0 -2px 2px #ccc;
-  box-shadow: 0 -2px 2px #ccc;
-  -moz-box-shadow: 0 -2px 2px #ccc;
-  -webkit-box-shadow: 0 -2px 2px #ccc;
+  box-shadow: 0 -1px 1px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 -1 1px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 -1px 1px rgba(0, 0, 0, 0.3);
 }
 
 footer p, footer a {
@@ -411,11 +441,15 @@ input, textarea {
   box-shadow: inset 1px 1px 1px #ccc;
   -webkit-box-shadow: inset 1px 1px 1px #ccc;
   -moz-box-shadow: inset 1px 1px 1px #ccc;
-  font-size: 13px;
+  font-size: 14px;
+  padding: 6px 8px;
 }
 
-input, textarea {
-  padding: 6px 8px;
+input:focus, textarea:focus {
+  border-color: rgba(190, 110, 80, 0.3);
+  box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.075),0 0 6px rgba(190, 110, 80, 0.4);
+  -webkit-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.075),0 0 6px rgba(190, 110, 80, 0.4);
+  -moz-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.075),0 0 6px rgba(190, 110, 80, 0.4);
 }
 
 textarea {
@@ -609,10 +643,6 @@ div.overlay > form {
   float: left;
 }
 
-div.overlay div#external-auth > p {
-  margin-top: 14px;
-}
-
 div.overlay > p#notamember {
   clear: both;
   margin: 44px 0 0 0;
@@ -664,6 +694,7 @@ div.user-info {
 }
 
 dl {
+  margin-top: 0;
   border: 1px solid #eee;
   border-bottom: none;
   border-radius: 4px;
@@ -704,6 +735,32 @@ dd {
   color: #777;
 }
 
+ul#ingredients {
+  color: #777;
+  width: 92%;
+  list-style-type: none;
+  margin: -5px 0 40px 0;
+  padding: 4px 0;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+ul#ingredients li {
+  padding: 6px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+ul#ingredients li:last-child {
+  border: none;
+}
+
+#recipe-body {
+  width: 94%;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
 div.recipe-actions {
   margin-bottom: 24px;
 }
@@ -713,8 +770,8 @@ div.recipe-actions .btn {
 }
 
 form#tips textarea {
-  height: 60px;
-  width: 440px;
+  height: 80px;
+  width: 92%;
   margin-right: 8px;
 }
 
@@ -755,7 +812,6 @@ div.recipe-tips .tip-header > * {
   height: 36px;
   width: 36px;
   margin-right: 1em;
-  display: inline;
   float: left;
   box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
@@ -765,6 +821,7 @@ div.recipe-tips .tip-header > * {
 .recipe-tips .tip-header .tip-author-icon img, .event-subject-icon img {
   border-width: 2px;
 }
+
 
 div.recipe-tips .tip-header .tip-meta {
   display: inline;
@@ -778,24 +835,4 @@ div.recipe-tips ol li span.timestamp {
   display: inline;
   margin-left: 6px;
   color: #999;
-}
-
-ul#ingredients {
-  color: #777;
-  width: 72%;
-  list-style-type: none;
-  margin: -5px 0 40px 0;
-  padding: 4px 0;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-}
-
-ul#ingredients li {
-  padding: 5px 10px;
-  border-bottom: 1px solid #eee;
-}
-
-ul#ingredients li:last-child {
-  border: none;
 }

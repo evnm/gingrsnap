@@ -359,37 +359,37 @@ $(document).ready(function() {
 
             if (event.eventType == 0) {
               result += '<div class="event-subject-icon">' + thumbnailStr +
-                '</div><a href="/' + event.subjectSlug + '">' +
+                '</div><div class="event-body"><a href="/' + event.subjectSlug + '">' +
                 event.subjectFullname + '</a> published recipe <a href="/' +
                 event.authorSlug + '/' + event.recipeSlug + '">' +
                 event.recipeTitle + '</a>';
             } else if (event.eventType == 1) {
               result += '<div class="event-subject-icon">' + thumbnailStr +
-                '</div><a href="/' + event.subjectSlug + '">' +
+                '</div><div class="event-body"><a href="/' + event.subjectSlug + '">' +
                 event.subjectFullname + '</a> forked recipe <a href="/' +
                 event.authorSlug + '/' + event.recipeSlug + '">' +
                 event.recipeTitle + '</a>';
             } else if (event.eventType == 2) {
               result += '<div class="event-subject-icon">' + thumbnailStr +
-                '</div><a href="/' + event.subjectSlug + '">' +
+                '</div><div class="event-body"><a href="/' + event.subjectSlug + '">' +
                 event.subjectFullname + '</a> updated recipe <a href="/' +
                 event.authorSlug + '/' + event.recipeSlug + '">' +
                 event.recipeTitle + '</a>';
             } else if (event.eventType == 3) {
               result += '<div class="event-subject-icon">' + thumbnailStr +
-                '</div><a href="/' + event.subjectSlug + '">' +
+                '</div><div class="event-body"><a href="/' + event.subjectSlug + '">' +
                 event.subjectFullname + '</a> made <a href="/' +
                 event.authorSlug + '/' + event.recipeSlug + '">' +
                 event.recipeTitle + '</a>';
             } else if (event.eventType == 4) {
               result += '<div class="event-subject-icon">' + thumbnailStr +
-                '</div><a href="/' + event.subjectSlug + '">' +
+                '</div><div class="event-body"><a href="/' + event.subjectSlug + '">' +
                 event.subjectFullname + '</a> left a tip on <a href="/' +
                 event.authorSlug + '/' + event.recipeSlug + '">' +
                 event.recipeTitle + '</a>';
             } else if (event.eventType == 5) {
               result += '<div class="event-subject-icon">' + thumbnailStr +
-                '</div><a href="/' + event.subjectSlug + '">' +
+                '</div><div class="event-body"><a href="/' + event.subjectSlug + '">' +
                 event.subjectFullname + '</a> started following <a href="/' +
                 event.objSlug + '">' + event.objFullname + '</a>';
             }

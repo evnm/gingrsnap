@@ -25,16 +25,16 @@
           <img src="@imgUrl" />
         }
         <label for="fullname">Name</label>
-        <input class="medium span4" id="fullname" name="fullname" type="text" value="@fullname" />
+        <input class="medium span5" id="fullname" name="fullname" type="text" value="@fullname" />
 
         <label for="emailAddr">Email Address</label>
-        <input class="medium span4" id="emailAddr" name="emailAddr" type="text" />
+        <input class="medium span5" id="emailAddr" name="emailAddr" type="text" />
 
         <label for="password">Password</label>
-        <input class="medium span4" id="password" name="password" type="password" />
+        <input class="medium span5" id="password" name="password" type="password" />
 
         <label for="confirmpassword">Confirm Password</label>
-        <input class="medium span4" id="confirmpassword" name="confirmpassword" type="password" />
+        <input class="medium span5" id="confirmpassword" name="confirmpassword" type="password" />
 
         <div class="form-actions">
           <input class="btn btn-primary" type="submit" value="Submit"/>
@@ -45,9 +45,14 @@
     <div class="span4">
       <div class="well">
         @if(twAccessToken.isEmpty && twAccessTokenSecret.isEmpty) {
-          <p><a class="btn btn-primary" href="@action(OAuth.connect("twitter"))">Connect with Twitter&raquo;</a></p>
+          <a class="btn btn-twitter" href="@action(OAuth.connect("twitter"))">
+            <i class="icon-twitter-small"></i>Connect with Twitter&raquo;
+          </a>
+          <p>Connecting will let you sign into Gingrsnap with a single click using your Twitter credentials.</p>
         } else {
-          <p><a class="btn" href="@action(GingrsnapUsers.neue())">Don't connect with Twitter</a></p>
+          <p>
+            <a class="btn" href="@action(GingrsnapUsers.neue())">Don't connect with Twitter</a>
+          </p>
         }
       </div>
     </div>
