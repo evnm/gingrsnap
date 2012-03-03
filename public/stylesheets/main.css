@@ -87,43 +87,42 @@ img {
   -moz-box-shadow: 1px 1px 5px #eaeaea;
 }
 
-/*.btn {
-  background-color: hsl(0, 0%, 91%) !important;
-  background-repeat: repeat-x;
-  background-image: -khtml-gradient(linear, left top, left bottom, from(hsl(0, 0%, 109%)), to(hsl(0, 0%, 91%)));
-  background-image: -moz-linear-gradient(top, hsl(0, 0%, 109%), hsl(0, 0%, 91%));
-  background-image: -ms-linear-gradient(top, hsl(0, 0%, 109%), hsl(0, 0%, 91%));
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(0, 0%, 109%)), color-stop(100%, hsl(0, 0%, 91%)));
-  background-image: -webkit-linear-gradient(top, hsl(0, 0%, 109%), hsl(0, 0%, 91%));
-  background-image: -o-linear-gradient(top, hsl(0, 0%, 109%), hsl(0, 0%, 91%));
-  background-image: linear-gradient(hsl(0, 0%, 109%), hsl(0, 0%, 91%));
-  border-color: #ddd;
-  color: #333 !important;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.29);
-  -webkit-font-smoothing: antialiased;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}*/
-
 .btn {
   margin-bottom: .8em;
 }
 
 .btn-primary {
-  background-color: hsl(110, 22%, 19%) !important;
+  background-color: hsl(110, 56%, 19%) !important;
   background-repeat: repeat-x;
-  background-image: -khtml-gradient(linear, left top, left bottom, from(hsl(110, 22%, 37%)), to(hsl(110, 22%, 19%)));
-  background-image: -moz-linear-gradient(top, hsl(110, 22%, 37%), hsl(110, 22%, 19%));
-  background-image: -ms-linear-gradient(top, hsl(110, 22%, 37%), hsl(110, 22%, 19%));
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(110, 22%, 37%)), color-stop(100%, hsl(110, 22%, 19%)));
-  background-image: -webkit-linear-gradient(top, hsl(110, 22%, 37%), hsl(110, 22%, 19%));
-  background-image: -o-linear-gradient(top, hsl(110, 22%, 37%), hsl(110, 22%, 19%));
-  background-image: linear-gradient(hsl(110, 22%, 37%), hsl(110, 22%, 19%));
-  border-color: hsl(110, 22%, 19%) hsl(110, 22%, 19%) hsl(110, 22%, 14.5%);
+  filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)", #378b27, #1e4b15));
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#378b27), to(#1e4b15));
+  background-image: -moz-linear-gradient(top, #378b27, #1e4b15);
+  background-image: -ms-linear-gradient(top, #378b27, #1e4b15);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #378b27), color-stop(100%, #1e4b15));
+  background-image: -webkit-linear-gradient(top, #378b27, #1e4b15);
+  background-image: -o-linear-gradient(top, #378b27, #1e4b15);
+  background-image: linear-gradient(#378b27, #1e4b15);
+  border-color: #1e4b15 #1e4b15 hsl(110, 56%, 15%);
   color: #fff !important;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.29);
-  -webkit-font-smoothing: antialiased;
-  font-weight: 700;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.26);
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.btn-success {
+  background-color: hsl(110, 56%, 19%) !important;
+  background-repeat: repeat-x;
+  filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)", #378b27, #1e4b15));
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#378b27), to(#1e4b15));
+  background-image: -moz-linear-gradient(top, #378b27, #1e4b15);
+  background-image: -ms-linear-gradient(top, #378b27, #1e4b15);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #378b27), color-stop(100%, #1e4b15));
+  background-image: -webkit-linear-gradient(top, #378b27, #1e4b15);
+  background-image: -o-linear-gradient(top, #378b27, #1e4b15);
+  background-image: linear-gradient(#378b27, #1e4b15);
+  border-color: #1e4b15 #1e4b15 hsl(110, 56%, 15%);
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.26);
+  -webkit-font-smoothing: antialiased;
 }
 
 .btn-danger {
@@ -158,7 +157,7 @@ img {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.26);
   -webkit-font-smoothing: antialiased;
   font-weight: 700;
-  padding: inherit 6px;
+  padding: 8px 10px;
 }
 
 .oauth-connection-badge {
@@ -626,6 +625,15 @@ div.overlay input {
   font-size: 16px;
 }
 
+div.overlay input#password {
+  width: 63%;
+  display: inline;
+}
+
+div.overlay form#LoginForm button {
+  display: inline;
+}
+
 div.overlay a.brand {
   display: block;
   font-size: 48px;
@@ -645,7 +653,7 @@ div.overlay > form {
 
 div.overlay > p#notamember {
   clear: both;
-  margin: 44px 0 0 0;
+  margin: 1.2em 0 0 0;
   font-size: 1.2em;
 }
 
