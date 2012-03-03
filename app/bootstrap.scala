@@ -5,6 +5,7 @@ import java.sql.Timestamp
 import models._
 import org.apache.commons.net.io
 import play.{Logger, Play}
+import play.cache.Cache
 import play.db.anorm._
 import play.jobs.{OnApplicationStart, Job}
 import play.libs.Images
@@ -100,7 +101,7 @@ import twitter4j.auth.AccessToken
 
     /**
      * Twitter user id backfill.
-     */
+
     Logger.info("Bootstrap task: Backfilling Twitter user ids")
     GingrsnapUser.find().list() filter { user =>
       user.twAccessToken.nonEmpty && user.twAccessTokenSecret.nonEmpty
@@ -109,6 +110,12 @@ import twitter4j.auth.AccessToken
         user.copy(twUserId = Some(
           new AccessToken(user.twAccessToken.get, user.twAccessTokenSecret.get)
             .getUserId())))
+    }
+    */
+
+    // Reset all cached feature flags.
+    Feature.find().list() foreach { feature =>
+      Cache.set(Feature.cacheKey(feature.id()), feature.state, "24h")
     }
   }
 }

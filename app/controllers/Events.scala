@@ -24,7 +24,7 @@ object Events extends Controller {
     } else {
       val events = (EventFeedType(eventFeedType) match {
         case EventFeedType.SingleUser => Event.getNextSingleUserPage(userId, lastTimestamp, n)
-        case EventFeedType.Following if Feature(Constants.UserFollowing) =>
+        case EventFeedType.GingrsnapFollowing if Feature(Constants.UserFollowing) =>
           Event.getNextFollowedPage(userId, lastTimestamp, n)
         case _ => Event.getNextGlobalPage(lastTimestamp, n)
       }).map {

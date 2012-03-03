@@ -1,15 +1,14 @@
 @(
-  eventFeedType: Int,
+  eventFeedTypeId: Int,
   eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)],
   userId: Option[Long] = None
 )
-
 
 @import models._
 
 <ol class="event-feed">
   <span id="user-id" style="display: none;">@userId.getOrElse("-1")</span>
-  <span id="event-feed-type" style="display: none;">@eventFeedType</span>
+  <span id="event-feed-type" style="display: none;">@eventFeedTypeId</span>
   <span id="page-size" style="display: none;">@eventFeed.size</span>
   @eventFeed.map { eventTuple =>
     <li>

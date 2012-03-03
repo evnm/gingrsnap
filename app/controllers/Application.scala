@@ -1,6 +1,6 @@
 package controllers
 
-import models.{Event, Recipe, GingrsnapUser}
+import models.{Event, Feature, Recipe, GingrsnapUser}
 import play._
 import play.cache.Cache
 import play.mvc.Controller
@@ -13,7 +13,12 @@ object Application extends BaseController {
    * Application.index and GingrsnapUsers.home are mutually recursive.
    */
   def index: templates.Html = Authentication.getLoggedInUser match {
-    case Some(user) => GingrsnapUsers.home
+    case Some(user) =>
+      if (Feature(Constants.UserFollowing)) {
+        GingrsnapUsers.homeFollowing
+      } else {
+        GingrsnapUsers.homeGlobal
+      }
     case None => {
       html.index(
         Event.getMostRecent(8) map { Event.hydrate(_) }

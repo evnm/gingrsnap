@@ -358,6 +358,15 @@ $(document).ready(function() {
     $(el).timeago();
   });
 
+  $(".nav-event-feed a").click(function(event) {
+    var that = $(this);
+    var eventFeedType = that.data("event-feed-type");
+
+    if (eventFeedType == $("ol.event-feed #event-feed-type").text()) {
+      event.preventDefault();
+    }
+  });
+
   // Pagination.
   $("ol.event-feed li#pagination-control button").click(function(event) {
     var that = $(this);

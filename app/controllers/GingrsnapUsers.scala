@@ -7,44 +7,79 @@ import play.cache.Cache
 import play.mvc.Controller
 import play.data.validation.Validation
 import scala.collection.JavaConversions._
-import secure.PasswordCredential
+import secure.{NonSecure, PasswordCredential}
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 
-object GingrsnapUsers extends BaseController {
+object GingrsnapUsers extends BaseController with Secure {
   import Constants.TwIfaceCacheKey
   import views.GingrsnapUsers.html
 
   /**
-   * User home page.
+   * User home page with feed of events related to users followed on Gingrsnap.
    *
    * Invoking Application.index directly because Application.index and
    * GingrsnapUsers.home are mutually recursive.
    */
-  def home: templates.Html = Authentication.getLoggedInUser match {
-    case Some(user) => {
-      val events = (
-        if (Feature(Constants.UserFollowing)) {
-          Event.getMostRecentFollowed(user.id(), 20)
-        } else {
-          Event.getMostRecent(20)
-        }).map {
+  def homeFollowing: templates.Html = Authentication.getLoggedInUser match {
+    case Some(user) =>
+      if (Feature(Constants.UserFollowing)) {
+        val events = Event.getMostRecentFollowed(user.id(), 20) map {
           Event.hydrate(_)
         }
 
+        views.GingrsnapUsers.html.home(
+          user,
+          Recipe.getByUserId(user.id()),
+          EventFeedType.GingrsnapFollowing.id,
+          events
+        )
+      } else {
+        GingrsnapUsers.homeGlobal
+      }
+    case None => Application.index
+  }
+
+  /**
+   * User home page with feed of events related to all users.
+   */
+  def homeGlobal: templates.Html = Authentication.getLoggedInUser match {
+    case Some(user) =>
+      val events = Event.getMostRecent(20).map(Event.hydrate)
       views.GingrsnapUsers.html.home(
         user,
         Recipe.getByUserId(user.id()),
-        events
-      )
-    }
+        EventFeedType.Global.id,
+        events)
+    case None => Application.index
+  }
+
+  /**
+   * User home page with feed of events related to users followed on Twitter.
+   */
+  def homeTwitter: templates.Html = Authentication.getLoggedInUser match {
+    case Some(user) =>
+      if (Feature(Constants.TwitterEventFeeds)) {
+        val events = Event.getMostRecentFollowed(user.id(), 20) map {
+          Event.hydrate(_)
+        }
+
+        views.GingrsnapUsers.html.home(
+          user,
+          Recipe.getByUserId(user.id()),
+          EventFeedType.GingrsnapFollowing.id,
+          events
+        )
+      } else {
+        GingrsnapUsers.homeGlobal
+      }
     case None => Application.index
   }
 
   /**
    * Handles GET to signup page.
    */
-  def neue(
+  @NonSecure def neue(
     twUserId: Long = -1,
     twAccessToken: String = "",
     twAccessTokenSecret: String = ""
@@ -74,7 +109,7 @@ object GingrsnapUsers extends BaseController {
   /**
    * Handles POST of user creation.
    */
-  def create(
+  @NonSecure def create(
     fullname: String,
     emailAddr: String,
     password: String,
@@ -122,7 +157,7 @@ object GingrsnapUsers extends BaseController {
   /**
    * Show a user's profile
    */
-  def show(userSlug: String) = GingrsnapUser.getBySlug(userSlug) map { user =>
+  @NonSecure def show(userSlug: String) = GingrsnapUser.getBySlug(userSlug) map { user =>
     val eventFeed = Event.getMostRecentByUserId(user.id(), 10) map { e =>
       Event.hydrate(e)
     }

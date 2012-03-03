@@ -33,7 +33,6 @@ object Follows extends Controller with Secure {
 
   def deleteUserFollow(userId: Long) = Authentication.getLoggedInUser match {
     case Some(connectedUser) => {
-      println(userId, connectedUser)
       Validation.required("userId", userId)
       Validation.isTrue(
         "userId",

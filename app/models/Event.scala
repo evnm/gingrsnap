@@ -47,8 +47,9 @@ object EventType extends Enumeration {
 object EventFeedType extends Enumeration {
   type EventFeedType = Value
   val Global = Value(0)
-  val Following = Value(1)
+  val GingrsnapFollowing = Value(1)
   val SingleUser = Value(2)
+  val TwitterFollowing = Value(3)
 }
 
 object Event extends Magic[Event] with Timestamped[Event] {
