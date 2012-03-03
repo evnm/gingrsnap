@@ -89,6 +89,7 @@ img {
 
 .btn {
   margin-bottom: .8em;
+  border-radius: 3px;
 }
 
 .btn-primary {
@@ -496,7 +497,7 @@ i {
   padding: 3px;
   line-height: normal;
   position: relative;
-  top: -2px;
+  top: -1px;
 }
 
 .add-on button.btn i {
