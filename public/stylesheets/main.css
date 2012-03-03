@@ -349,8 +349,19 @@ ol.event-feed li {
   position: relative;
 }
 
-.well .recipe-list {
+.recipe-list {
   position: relative;
+}
+
+.recipe-list li {
+  margin-bottom: .4em;
+  padding: 4px 6px;
+  background-color: #F7F5F3;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 }
 
 .well a.new-recipe {
