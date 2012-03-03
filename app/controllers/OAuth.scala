@@ -76,7 +76,10 @@ object OAuth extends BaseController with Secure {
           val twUser = twitterIface.verifyCredentials()
           Cache.delete(mkCacheKey(TwIfaceCacheKey))
           Action(OAuth.linkTwitterPrompt(
-            twUser.getScreenName(), accessToken.getToken(), accessToken.getTokenSecret()))
+            twUser.getScreenName(),
+            twUser.getId(),
+            accessToken.getToken(),
+            accessToken.getTokenSecret()))
         }
       }
     }
@@ -131,13 +134,17 @@ object OAuth extends BaseController with Secure {
           // Connect user and redirect to Account edit page.
           GingrsnapUser.update(
             user.copy(
+              twUserId = Some(accessToken.getUserId()),
               twAccessToken = Some(accessToken.getToken()),
               twAccessTokenSecret = Some(accessToken.getTokenSecret())))
           flash.success("Your Twitter account has been connected")
           Action(Accounts.edit)
         }
         case None => {
-          Action(GingrsnapUsers.neue(accessToken.getToken(), accessToken.getTokenSecret()))
+          Action(GingrsnapUsers.neue(
+            accessToken.getUserId(),
+            accessToken.getToken(),
+            accessToken.getTokenSecret()))
         }
       }
     }
@@ -150,6 +157,7 @@ object OAuth extends BaseController with Secure {
    */
   @NonSecure def linkTwitterPrompt(
     twUsername: String,
+    twUserId: Long,
     twAccessToken: String,
     twAccessTokenSecret: String
   ) = try {
@@ -157,7 +165,7 @@ object OAuth extends BaseController with Secure {
     twitterIface.setOAuthAccessToken(new AccessToken(twAccessToken, twAccessTokenSecret))
     val twUser = twitterIface.verifyCredentials()
     val imgUrl = twUser.getProfileImageURL().toString
-    html.linkTwitter(twUsername, twAccessToken, twAccessTokenSecret, imgUrl)
+    html.linkTwitter(twUsername, twUserId, twAccessToken, twAccessTokenSecret, imgUrl)
   } catch { case e: Throwable =>
     flash.error("Login failed")
     Action(Authentication.login)
@@ -171,12 +179,14 @@ object OAuth extends BaseController with Secure {
     imgUrl: String,
     emailAddr: String,
     password: String,
+    twUserId: Long,
     twAccessToken: String,
     twAccessTokenSecret: String
   ) = GingrsnapUser.getByEmailAndPass(emailAddr, password) match {
     case Some(user) => {
       GingrsnapUser.update(
         user.copy(
+          twUserId = Some(twUserId),
           twAccessToken = Some(twAccessToken),
           twAccessTokenSecret = Some(twAccessTokenSecret)))
       Authentication.authenticate(user.emailAddr, PasswordCredential(password))
@@ -184,7 +194,7 @@ object OAuth extends BaseController with Secure {
     }
     case None => {
       flash.error("Login failed")
-      html.linkTwitter(twUsername, twAccessToken, twAccessTokenSecret, imgUrl)
+      html.linkTwitter(twUsername, twUserId, twAccessToken, twAccessTokenSecret, imgUrl)
     }
   }
 
@@ -202,7 +212,7 @@ object OAuth extends BaseController with Secure {
 
   protected[this] def revokeTwitter() = Authentication.getLoggedInUser match {
     case Some(user) => {
-      val newUser = user.copy(twAccessToken = None, twAccessTokenSecret = None)
+      val newUser = user.copy(twUserId = None, twAccessToken = None, twAccessTokenSecret = None)
       GingrsnapUser.update(newUser)
       Action(Accounts.edit)
     }

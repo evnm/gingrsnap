@@ -44,17 +44,27 @@ object GingrsnapUsers extends BaseController {
   /**
    * Handles GET to signup page.
    */
-  def neue(twAccessToken: String = "", twAccessTokenSecret: String = "") = Authentication.getLoggedInUser match {
+  def neue(
+    twUserId: Long = -1,
+    twAccessToken: String = "",
+    twAccessTokenSecret: String = ""
+  ) = Authentication.getLoggedInUser match {
     case Some(_) => Action(Application.index)
     case None => {
-      if (twAccessToken.nonEmpty && twAccessTokenSecret.nonEmpty) {
+      if (twUserId > 0 && twAccessToken.nonEmpty && twAccessTokenSecret.nonEmpty) {
         val twitterIface = new TwitterFactory().getInstance()
         twitterIface.setOAuthAccessToken(new AccessToken(twAccessToken, twAccessTokenSecret))
         val twUser = twitterIface.verifyCredentials()
         val (fullname, location, imgUrl) =
           (twUser.getName(), twUser.getLocation(), twUser.getProfileImageURL().toString)
 
-          html.neue(fullname, location, imgUrl, twAccessToken, twAccessTokenSecret)
+          html.neue(
+            Some(fullname),
+            Some(location),
+            Some(imgUrl),
+            Some(twUserId),
+            Some(twAccessToken),
+            Some(twAccessTokenSecret))
       } else {
         html.neue()
       }
@@ -68,6 +78,7 @@ object GingrsnapUsers extends BaseController {
     fullname: String,
     emailAddr: String,
     password: String,
+    twUserId: Long = -1,
     twAccessToken: String = "",
     twAccessTokenSecret: String = ""
   ) = Authentication.getLoggedInUser match {
@@ -89,11 +100,12 @@ object GingrsnapUsers extends BaseController {
       if (Validation.hasErrors) {
         neue()
       } else {
+        val twId = if (twUserId > 0) Some(twUserId) else None
         val twToken = if (twAccessToken.nonEmpty) Some(twAccessToken) else None
         val twSecret = if (twAccessTokenSecret.nonEmpty) Some(twAccessTokenSecret) else None
 
         GingrsnapUser.create(
-          GingrsnapUser(emailAddr, password, fullname, twToken, twSecret)
+          GingrsnapUser(emailAddr, password, fullname, twId, twToken, twSecret)
         ).toOptionLoggingError map { createdUser =>
           Authentication.authenticate(emailAddr, PasswordCredential(password))
           flash.success("Successfully created your account! Welcome to Gingrsnap, " + fullname + ".")

@@ -1,5 +1,6 @@
 @(
   twUsername: String,
+  twUserId: Long,
   twAccessToken: String,
   twAccessTokenSecret: String,
   imgUrl: String
@@ -18,6 +19,7 @@
   <div class="row">
     <form id="connect-twitter-form" class="form-stacked action left" method="POST">
       <input name="twUsername" type="hidden" value="@twUsername" />
+      <input name="twUserId" type="hidden" value="@twUserId" />
       <input name="imgUrl" type="hidden" value="@imgUrl" />
       <input name="twAccessToken" type="hidden" value="@twAccessToken" />
       <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />

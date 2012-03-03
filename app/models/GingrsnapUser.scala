@@ -18,6 +18,7 @@ case class GingrsnapUser(
   fullname: String,
   slug: String,
   createdAt: Timestamp,
+  twUserId: Option[Long] = None,
   twAccessToken: Option[String] = None,
   twAccessTokenSecret: Option[String] = None
 )
@@ -56,6 +57,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
     emailAddr: String,
     password: String,
     fullname: String,
+    twUserId: Option[Long],
     twToken: Option[String],
     twSecret: Option[String]
   ) = {
@@ -70,6 +72,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
       fullname,
       slug,
       new Timestamp(System.currentTimeMillis()),
+      twUserId,
       twToken,
       twSecret)
   }

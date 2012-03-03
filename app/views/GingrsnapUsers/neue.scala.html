@@ -1,9 +1,10 @@
 @(
-  fullname: String = "",
-  location: String = "",
-  imgUrl: String = "",
-  twAccessToken: String = "",
-  twAccessTokenSecret: String = ""
+  fullname: Option[String] = None,
+  location: Option[String] = None,
+  imgUrl: Option[String] = None,
+  twUserId: Option[Long] = None,
+  twAccessToken: Option[String] = None,
+  twAccessTokenSecret: Option[String] = None
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -18,10 +19,17 @@
     <div class="span8">
       <h1>Create an identity on Gingrsnap</h1>
       <form id="signup-form" class="form-stacked" method="POST">
-        <input name="twAccessToken" type="hidden" value="@twAccessToken" />
-        <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
+        @twUserId.map { twUserId =>
+          <input name="twUserId" type="hidden" value="@twUserId" />
+        }
+        @twAccessToken.map { twAccessToken =>
+          <input name="twAccessToken" type="hidden" value="@twAccessToken" />
+        }
+        @twAccessTokenSecret.map { twAccessTokenSecret =>
+          <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
+        }
 
-        @if(!imgUrl.isEmpty) {
+        @imgUrl.map { imgUrl =>
           <img src="@imgUrl" />
         }
         <label for="fullname">Name</label>

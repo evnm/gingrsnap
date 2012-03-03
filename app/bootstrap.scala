@@ -10,6 +10,7 @@ import play.jobs.{OnApplicationStart, Job}
 import play.libs.Images
 import play.test._
 import s3.S3
+import twitter4j.auth.AccessToken
 
 @OnApplicationStart class Bootstrap extends Job {
   override def doJob {
@@ -96,5 +97,18 @@ import s3.S3
     originalFile.delete()
     tempFile.delete()
     */
+
+    /**
+     * Twitter user id backfill.
+     */
+    Logger.info("Bootstrap task: Backfilling Twitter user ids")
+    GingrsnapUser.find().list() filter { user =>
+      user.twAccessToken.nonEmpty && user.twAccessTokenSecret.nonEmpty
+    } foreach { user =>
+      GingrsnapUser.update(
+        user.copy(twUserId = Some(
+          new AccessToken(user.twAccessToken.get, user.twAccessTokenSecret.get)
+            .getUserId())))
+    }
   }
 }
