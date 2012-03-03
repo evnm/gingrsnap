@@ -79,8 +79,7 @@
             <form id="tips" method="POST" action="/tips/new">
               <input name="userId" type="hidden" value="@connectedUser.id()" />
               <input name="recipeId" type="hidden" value="@recipeId" />
-              <h3>Leave a tip for this recipe</h3>
-              <textarea name="tipBody"></textarea>
+              <textarea name="tipBody" placeholder="Leave a tip for this recipe..."></textarea>
               <a class="btn btn-primary pull-right disabled" href="#">Submit</a>
             </form>
           }

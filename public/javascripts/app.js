@@ -167,6 +167,17 @@ $(document).ready(function() {
     event.preventDefault();
   });
 
+  $("form#tips textarea").focus(function(event) {
+    $(this).animate({ height: "80px" }, 500);
+  });
+
+  $("form#tips textarea").blur(function(event) {
+    var that = $(this);
+    if (that.val().trim().length == 0) {
+      that.animate({ height: "24px" }, 500);
+    }
+  });
+
   // Toggle submit-button disabled state depending on emptiness of textarea.
   $("form#tips textarea").keyup(function(event) {
     var that = $(this);
