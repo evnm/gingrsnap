@@ -21,13 +21,14 @@ object Feature extends Magic[Feature] {
    * Returns false for Invalid ids.
    */
   def apply(id: String): Boolean = {
-    Cache.get[Boolean](cacheKey(id)) getOrElse {
-      val result = Feature.find("id = {id}").on("id" -> id).first() match {
-        case Some(feature) => feature.state
-        case None => false
-      }
-      Cache.add(cacheKey(id), result, "24h")
-      result
+    lazy val fromDb = Feature.find("id = {id}").on("id" -> id).first()
+
+    Cache.get[java.lang.Boolean](cacheKey(id)) match {
+      case Some(cachedState) => cachedState.booleanValue
+      case None => fromDb map { feature =>
+        Cache.add(cacheKey(id), java.lang.Boolean.valueOf(feature.state), "24h")
+        feature.state
+      } getOrElse(false)
     }
   }
 }
