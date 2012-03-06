@@ -941,17 +941,23 @@ div.recipe-tips ol li span.timestamp {
 .signup-sidebar div {
   height: 56px;
   line-height: 56px;
-  margin-bottom: 1em;
+  margin-bottom: 1.4em;
 }
 
 .signup-sidebar div img {
   float: left;
 }
 
-.signup-sidebar div a {
+.signup-sidebar > .btn {
+  margin-bottom: 1.4em;
+}
+
+.signup-sidebar div .btn {
   margin-left: 1em;
 }
 
 .signup-sidebar p {
   font-size: 15px;
+  font-weight: 600;
+  -webkit-font-smoothing: antialiased;
 }
