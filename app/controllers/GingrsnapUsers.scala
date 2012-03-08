@@ -7,7 +7,7 @@ import play.cache.Cache
 import play.mvc.Controller
 import play.data.validation.Validation
 import scala.collection.JavaConversions._
-import secure.{NonSecure, PasswordCredential}
+import secure.{NonSecure, PasswordCredential, TwAuthCredential}
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 
@@ -87,19 +87,30 @@ object GingrsnapUsers extends BaseController with Secure {
     case Some(_) => Action(Application.index)
     case None => {
       if (twUserId > 0 && twAccessToken.nonEmpty && twAccessTokenSecret.nonEmpty) {
-        val twitterIface = new TwitterFactory().getInstance()
-        twitterIface.setOAuthAccessToken(new AccessToken(twAccessToken, twAccessTokenSecret))
-        val twUser = twitterIface.verifyCredentials()
-        val (fullname, location, imgUrl) =
-          (twUser.getName(), twUser.getLocation(), twUser.getProfileImageURL().toString)
+        val accessToken = new AccessToken(twAccessToken, twAccessTokenSecret)
 
-          html.neue(
-            Some(fullname),
-            Some(location),
-            Some(imgUrl),
-            Some(twUserId),
-            Some(twAccessToken),
-            Some(twAccessTokenSecret))
+        // Log user in with a message if they're already registered.
+        GingrsnapUser.getByTwAuth(accessToken) match {
+          case Some(user) =>
+            Authentication.authenticate(user.emailAddr, TwAuthCredential(accessToken))
+            flash.success("You've already registered on Gingrsnap by connecting your Twitter account")
+            Action(Application.index)
+          case None => {
+            val twitterIface = new TwitterFactory().getInstance()
+            twitterIface.setOAuthAccessToken(accessToken)
+            val twUser = twitterIface.verifyCredentials()
+            val (fullname, location, imgUrl) =
+              (twUser.getName(), twUser.getLocation(), twUser.getProfileImageURL().toString)
+
+            html.neue(
+              Some(fullname),
+              Some(location),
+              Some(imgUrl),
+              Some(twUserId),
+              Some(twAccessToken),
+              Some(twAccessTokenSecret))
+          }
+        }
       } else {
         html.neue()
       }
@@ -136,8 +147,9 @@ object GingrsnapUsers extends BaseController with Secure {
         neue()
       } else {
         val twId = if (twUserId > 0) Some(twUserId) else None
-        val twToken = if (twAccessToken.nonEmpty) Some(twAccessToken) else None
-        val twSecret = if (twAccessTokenSecret.nonEmpty) Some(twAccessTokenSecret) else None
+        val twToken = if (twAccessToken.nonEmpty) Some(twAccessToken.split(", ")(0)) else None
+        val twSecret = if (twAccessTokenSecret.nonEmpty) Some(twAccessTokenSecret.split(", ")(0)) else None
+        // TODO: Why the fuck is the .split(", ")(0) necessary??
 
         GingrsnapUser.create(
           GingrsnapUser(emailAddr, password, fullname, twId, twToken, twSecret)
