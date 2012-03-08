@@ -860,6 +860,10 @@ ul#ingredients li:last-child {
   -webkit-font-smoothing: antialiased;
 }
 
+#recipe-body li {
+  margin-bottom: 1em;
+}
+
 div.recipe-actions {
   margin-bottom: 24px;
 }
