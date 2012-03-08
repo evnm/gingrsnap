@@ -143,7 +143,7 @@ object GingrsnapUsers extends BaseController with Secure {
           GingrsnapUser(emailAddr, password, fullname, twId, twToken, twSecret)
         ).toOptionLoggingError map { createdUser =>
           Authentication.authenticate(emailAddr, PasswordCredential(password))
-          flash.success("Successfully created your account! Welcome to Gingrsnap, " + fullname + ".")
+          flash.success("Welcome to Gingrsnap, " + fullname)
           Mails.welcome(createdUser)
           Action(Application.index)
         } getOrElse {
