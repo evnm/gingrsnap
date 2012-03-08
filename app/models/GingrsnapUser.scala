@@ -1,6 +1,9 @@
 package models
 
 import controllers.Constants.{EncryptedEmailToUserIdKey, GingrsnapUserObjKey, SlugToUserIdKey}
+import java.io.{File, FileOutputStream}
+import java.net.URL
+import java.nio.channels.Channels
 import java.sql.Timestamp
 import play.cache.Cache
 import play.db.anorm._
@@ -8,6 +11,7 @@ import play.db.anorm._
 import play.db.anorm.defaults.Magic
 import play.db.anorm.SqlParser._
 import play.libs.Crypto
+import twitter4j.{ProfileImage, TwitterFactory}
 import twitter4j.auth.AccessToken
 
 case class GingrsnapUser(
@@ -78,8 +82,28 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
   }
 
   override def create(user: GingrsnapUser) = {
-    val result = super.create(user)
-    result map { createdUser =>
+    super.create(user) map { createdUser =>
+      if (user.twUserId.nonEmpty) {
+        // Scrape the user's Twitter profile image.
+        // TODO: What if they have a default Twitter avatar?
+        val twitterIface = new TwitterFactory().getInstance()
+        val twUser = twitterIface.showUser(1583331)
+        val twProfileImgUrl =
+          new URL(twitterIface.getProfileImage(twUser.getScreenName(), ProfileImage.ORIGINAL).getURL)
+        val twProfileImgPath = twProfileImgUrl.getFile()
+        val (_, twProfileImgFilename) = twProfileImgPath.splitAt(twProfileImgPath.lastIndexOf("/"))
+        val (filename, extension) = twProfileImgFilename.splitAt(twProfileImgFilename.lastIndexOf("."))
+        val file = File.createTempFile(filename, extension)
+        val byteChannel = Channels.newChannel(twProfileImgUrl.openStream())
+        val outStream = new FileOutputStream(file)
+        outStream.getChannel().transferFrom(byteChannel, 0, 1 << 24)
+        outStream.close()
+
+        Image.create(file) map { createdImage =>
+          GingrsnapUserImage.create(GingrsnapUserImage(createdUser.id(), createdImage.id()))
+        }
+        file.delete()
+      }
       Account.create(Account(NotAssigned, createdUser.id()))
       Cache.set(userIdCacheKey(createdUser.id()), createdUser, "6h")
       createdUser
