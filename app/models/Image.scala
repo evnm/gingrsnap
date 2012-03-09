@@ -25,6 +25,11 @@ case class Image(
 )
 
 object Image extends Magic[Image] {
+  /**
+   * Maximum size of uploaded images, in kilobytes.
+   */
+  val MaxAllowedSize = 500
+
   val SizeMap = Map[String, (Option[Int], Option[Int])](
     "thumbnail" -> (Some(32), Some(32)),
     "portrait" -> (Some(296), None))

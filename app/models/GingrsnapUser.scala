@@ -11,7 +11,7 @@ import play.db.anorm._
 import play.db.anorm.defaults.Magic
 import play.db.anorm.SqlParser._
 import play.libs.Crypto
-import twitter4j.{ProfileImage, TwitterFactory}
+import twitter4j.{ProfileImage, TwitterFactory, User => TwitterUser}
 import twitter4j.auth.AccessToken
 
 case class GingrsnapUser(
@@ -83,11 +83,11 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
 
   override def create(user: GingrsnapUser) = {
     super.create(user) map { createdUser =>
-      if (user.twUserId.nonEmpty) {
+      val twUser: Option[TwitterUser] = user.twUserId map { twUserId =>
         // Scrape the user's Twitter profile image.
         // TODO: What if they have a default Twitter avatar?
         val twitterIface = new TwitterFactory().getInstance()
-        val twUser = twitterIface.showUser(1583331)
+        val twUser = twitterIface.showUser(twUserId)
         val twProfileImgUrl =
           new URL(twitterIface.getProfileImage(twUser.getScreenName(), ProfileImage.ORIGINAL).getURL)
         val twProfileImgPath = twProfileImgUrl.getFile()
@@ -103,8 +103,11 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
           GingrsnapUserImage.create(GingrsnapUserImage(createdUser.id(), createdImage.id()))
         }
         file.delete()
+
+        twUser
       }
-      Account.create(Account(NotAssigned, createdUser.id()))
+
+      Account.create(Account(NotAssigned, createdUser.id(), twUser map { _.getLocation() }))
       Cache.set(userIdCacheKey(createdUser.id()), createdUser, "6h")
       createdUser
     }

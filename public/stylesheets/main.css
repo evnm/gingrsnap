@@ -231,10 +231,13 @@ a.brand:hover {
 /**
  * Flash/alert message bar.
  */
-div.alert {
+.alert {
   margin: 0;
+  padding: 12px 0;
   text-align: center;
   border-radius: 0;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 /**

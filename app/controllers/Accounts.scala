@@ -22,7 +22,8 @@ object Accounts extends BaseController with Secure {
     slug: String,
     url: String,
     oldPassword: String,
-    newPassword: String
+    newPassword: String,
+    image: File
   ) = {
     if (emailAddr.nonEmpty && emailAddr != user.emailAddr) {
       Validation.email("emailAddr", emailAddr).message("Must provide a valid email address")
@@ -51,6 +52,11 @@ object Accounts extends BaseController with Secure {
         "oldPassword",
         GingrsnapUser.validatePassword(user, oldPassword)
       ).message("Old password is incorrect")
+    }
+
+    if (image != null) {
+      Validation.isTrue("image", image.length < Image.MaxAllowedSize * 1024)
+        .message("Uploaded images must be smaller than " + Image.MaxAllowedSize + " KB")
     }
   }
 
@@ -96,9 +102,12 @@ object Accounts extends BaseController with Secure {
   ) = Authentication.getLoggedInUser match {
     case Some(user) => Account.getByGingrsnapUserId(user.id()) match {
       case Some(account) => {
-        validateAccount(user, fullname, emailAddr, slug, url, oldPassword, newPassword)
+        validateAccount(user, fullname, emailAddr, slug, url, oldPassword, newPassword, image)
 
-        if (!Validation.hasErrors) {
+        if (Validation.hasErrors) {
+          flash.error(Validation.errors.get(0).message)
+          edit()
+        } else {
           GingrsnapUser.update(
             user.copy(
               emailAddr = if (emailAddr.isEmpty) user.emailAddr else emailAddr,

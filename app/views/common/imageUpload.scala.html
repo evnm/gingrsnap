@@ -2,6 +2,8 @@
   imageUrlOpt: Option[(String, String)]
 )
 
+@import models.Image
+
 <div class="uploaded-image">
   @imageUrlOpt.map { case (baseUrl, extension) =>
     <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
@@ -14,5 +16,5 @@
   <div class="clearfix">
     <input class="input-file" type="file" name="image" accept="image/gif,image/jpeg,image/jpg,image/png" />
   </div>
-  <span class="help-block">JPEG, GIF, or PNG. Max size 1 MB.</span>
+  <span class="help-block">JPEG, GIF, or PNG. Max size @Image.MaxAllowedSize KB.</span>
 </div>
