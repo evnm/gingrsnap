@@ -477,8 +477,31 @@ ol.event-feed li {
   margin: 0;
 }
 
-div.share-buttons {
+.share-buttons {
   margin-top: 24px;
+  list-style-type: none;
+  height: 20px;
+}
+
+.share-buttons li {
+  display: inline;
+  float: left;
+  height: 20px;
+}
+
+.share-buttons .btn {
+  height: 18px;
+  line-height: 18px;
+  padding: 0 2px;
+  margin: 0;
+  font: normal normal bold 11px/18px 'Helvetica Neue',Arial,sans-serif !important;
+  vertical-align: top;
+}
+
+.share-buttons .btn i {
+  margin-right: 2px;
+  position: relative;
+  top: 0px;
 }
 
 /**
@@ -886,7 +909,7 @@ ul#ingredients li:last-child {
   margin-bottom: 1em;
 }
 
-div.recipe-actions {
+.recipe-actions, .recipe-stats {
   margin-bottom: 24px;
 }
 

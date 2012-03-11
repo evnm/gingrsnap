@@ -1,5 +1,6 @@
 @(
   recipeId: Long,
+  recipeUrl: String,
   title: String,
   author: models.GingrsnapUser,
   ingredients: Seq[String],
@@ -126,9 +127,8 @@
               <dd id="user-make-count">@userMakeCount</dd>
             }
           </dl>
-        </div>
 
-        @connectedUserOpt.map { connectedUser =>
+          @connectedUserOpt.map { connectedUser =>
           <span id="user-id" style="display: none;">@connectedUser.id()</span>
           <div>
             @if(isMakable) {
@@ -138,16 +138,19 @@
             }
           </div>
         }
+        </div>
 
-        @if(Feature(Constants.TweetButtons) || Feature(Constants.FbLikeButtons)) {
-          <div class="share-buttons">
-            <h2>Share this recipe</h2>
-            @if(Feature(Constants.TweetButtons)) {
+        <h2>Share this recipe</h2>
+        <ul class="share-buttons">
+          @if(Feature(Constants.TweetButtons)) {
+            <li>
               <a href="https://twitter.com/share" class="twitter-share-button" data-text="@title:" data-via="gingrsnap">Tweet this recipe</a>
               <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-            }
+            </li>
+          }
 
-            @if(Feature(Constants.FbLikeButtons)) {
+          @if(Feature(Constants.FbLikeButtons)) {
+            <li>
               <div id="fb-root"></div>
               <script>
                 (function(d, s, id) {
@@ -158,12 +161,16 @@
                   fjs.parentNode.insertBefore(js, fjs);
                 }(document, 'script', 'facebook-jssdk'));
               </script>
-              <div class="fb-like" data-send="false" data-width="160" data-show-faces="false" data-layout="button_count"></div>
-            }
-          </div>
-        }
+              <div class="fb-like" data-send="false" data-width="10" data-show-faces="false" data-layout="button_count"></div>
+            </li>
+          }
+          <li>
+            <a class="btn" href="mailto:?subject=@title on Gingrsnap&body=@recipeUrl." target="_blank">
+              <i class="icon-envelope"></i>Email
+            </a>
+          </li>
+        </div>
       </div>
     </div>
   </div>
-
 }

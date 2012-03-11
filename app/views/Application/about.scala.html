@@ -32,13 +32,17 @@
     </div>
     <div class="span4 pull-right">
       <div class="well">
-        <h2>Sign up for today!</h2>
-        <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Create an account</a>
-        <p>Gingrsnap is a free service and signup is quick.</p>
-        <a class="btn btn-primary btn-large btn-twitter" href="@action(OAuth.connect("twitter"))">
-          <i class="icon-twitter-large"></i>Connect with Twitter
-        </a>
-        <p>Streamline the signup process by connecting with your Twitter account.</p>
+        @if(userIsConnected) {
+
+        } else {
+          <h2>Sign up for today!</h2>
+          <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Create an account</a>
+          <p>Gingrsnap is a free service and signup is quick.</p>
+          <a class="btn btn-primary btn-large btn-twitter" href="@action(OAuth.connect("twitter"))">
+            <i class="icon-twitter-large"></i>Connect with Twitter
+          </a>
+          <p>Streamline the signup process by connecting with your Twitter account.</p>
+        }
       </div>
     </div>
   </div>

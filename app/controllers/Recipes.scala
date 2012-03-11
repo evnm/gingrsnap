@@ -3,6 +3,7 @@ package controllers
 import collection.JavaConversions._
 import Constants.{GingrsnapUserObjKey, RecipeTips}
 import java.io.File
+import java.net.URLEncoder
 import java.sql.Timestamp
 import models._
 import play._
@@ -319,6 +320,9 @@ object Recipes extends BaseController with Secure {
         // Only show recipe if it's published.
         recipe.publishedAt match {
           case Some(_) => {
+            val recipeUrl = play.configuration("application.baseUrl") +
+              URLEncoder.encode(author.slug, "utf8") + "/" +
+              URLEncoder.encode(recipe.slug, "utf8")
             val tips = if (Feature(RecipeTips)) {
               Some(Tip.getByRecipeId(recipe.id()) map { Tip.hydrate(_) })
             } else {
@@ -334,6 +338,7 @@ object Recipes extends BaseController with Secure {
 )
             html.show(
               recipe.id(),
+              recipeUrl,
               recipe.title,
               author,
               ingredients map { _.name },
