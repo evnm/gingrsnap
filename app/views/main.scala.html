@@ -37,8 +37,8 @@
     <script type="text/javascript" src="@asset("public/javascripts/jquery.wysiwyg.js")"></script>
     <script type="text/javascript" src="@asset("public/javascripts/wysiwyg.link.js")"></script>
     <script type="text/javascript" src="@asset("public/javascripts/bootstrap-buttons.js")"></script>
-    <script type="text/javascript" src="@asset("public/javascripts/bootstrap-twipsy.js")"></script>
     <script type="text/javascript" src="@asset("public/javascripts/bootstrap-modal.js")"></script>
+    <script type="text/javascript" src="@asset("public/javascripts/bootstrap-tooltip.js")"></script>
 
     <script type="text/javascript" src="@asset("public/javascripts/app.js")"></script>
   </head>
@@ -60,6 +60,9 @@
               <input name="username" type="text" placeholder="Email" tabindex="1" />
               <input name="password" type="password" placeholder="Password" tabindex="2" />
               <button type="submit" class="btn btn-primary" tabindex="3">Sign in</button>
+              <a class="btn btn-twitter" href="/oauth/twitter" title="Sign in with Twitter" tabindex="4">
+                <i class="icon-twitter-small"></i>
+              </a>
             </form>
           }
           @if(renderArgs != null) {

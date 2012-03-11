@@ -132,6 +132,12 @@ $(document).ready(function() {
  * Recipe show page logic.
  */
 $(document).ready(function() {
+  // Twitter login button tooltip.
+  $("header .btn-twitter").tooltip({
+    animation: true,
+    placement: "bottom"
+  });
+
   // Delete recipe button.
   $("a#delete-recipe").click(function(event) {
     if (confirm("Are you sure you want to delete this recipe?")) {

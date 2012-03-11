@@ -169,7 +169,6 @@ img {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.26);
   font-weight: 600;
   text-shadow: 0 -1px 3px rgba(0, 0, 0, .33);
-  padding: 8px 10px;
 }
 
 .oauth-connection-badge {
@@ -235,9 +234,13 @@ a.brand:hover {
 
 header input {
   margin-right: 12px;
-  padding: 4px 6px;
+  padding: 3px 5px;
   width: 180px;
   font-size: 13px;
+}
+
+header .btn-twitter i {
+  margin: 0;
 }
 
 /**
