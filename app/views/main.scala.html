@@ -55,16 +55,20 @@
               <li><a href="@action(Authentication.logout)">Logout</a></li>
             </ul>
           }
-          @loginLink = {
-            <a class="btn pull-right" href="@action(Authentication.login)">Sign in</a>
+          @loginForm = {
+            <form id="LoginForm" class="form-inline pull-right" name="LoginForm" method="POST" action="@action(Authentication.authenticate)">
+              <input name="username" type="text" placeholder="Email" tabindex="1" />
+              <input name="password" type="password" placeholder="Password" tabindex="2" />
+              <button type="submit" class="btn btn-primary" tabindex="3">Sign in</button>
+            </form>
           }
           @if(renderArgs != null) {
             @(renderArgs.get(Constants.GingrsnapUserObjKey) match {
               case Some(user: models.GingrsnapUser) => accountLinks(user)
-              case None => loginLink
+              case None => loginForm
             })
           } else {
-            @loginLink
+            @loginForm
           }
         </div>
       </div>
