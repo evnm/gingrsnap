@@ -15,7 +15,7 @@ body, p, input, button, select, textarea {
 }
 
 section {
-  margin-bottom: 5em;
+  margin-bottom: 4em;
 }
 
 a {
@@ -35,7 +35,7 @@ a.close {
 p {
   line-height: 185%;
   font-size: inherit;
-  margin-bottom: 22px;
+  margin-bottom: 1.6em;
 }
 
 .help-block {
@@ -64,7 +64,7 @@ h1, h2, legend {
 h1 {
   font-size: 28px;
   font-weight: 400;
-  margin-bottom: .8em;
+  margin-bottom: .5em;
 }
 
 h2, legend {
@@ -75,6 +75,7 @@ h2, legend {
 }
 
 h3 {
+  margin-bottom: .8em;
   font-size: 15px;
   color: #666;
 }
@@ -860,6 +861,7 @@ ul#ingredients li:last-child {
 #recipe-body {
   width: 94%;
   font-size: 14px;
+  line-height: 26px;
   -webkit-font-smoothing: antialiased;
 }
 

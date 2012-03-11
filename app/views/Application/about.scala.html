@@ -7,44 +7,33 @@
   errors: Map[String, play.data.validation.Error]
 )
 
-@import controllers.GingrsnapUsers
-
-@heroContent = {
-  <h1>Upgrade your recipe collection.</h1>
-  <p><strong>Gingrsnap</strong> is a simple service that allows you to publish recipes and keep track of what you've been making.</p>
-}
+@import controllers.{GingrsnapUsers, OAuth}
 
 @main("About") {
-  <div class="hero-unit">
-    @if(!userIsConnected) {
-      <div class="row">
-        <div class="span7">
-          @heroContent
-        </div>
-
-        <div class="span3 pull-right">
-          <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Create an account &raquo;</a>
-          <p>Signup is a snap. Try Gingrsnap for free today!</p>
-        </div>
-      </div>
-    } else {
-      @heroContent
-    }
-  </div>
-
   <div class="row">
-    <div class="span4">
-      <h2>Publish your recipes.</h2>
-      <p>After getting creative in the kitchen, don't just write up what you made on paper or settle for a text file somewhere on your computer.</p>
-      <p>Publishing on Gingrsnap allows you to easily share what you've created. The next time a friend asks you for a recipe, you can send them a link instead of transcribing a piece of paper into an email.</p>
+    <div class="span7">
+      <h1>A simple tool for cataloguing recipes.</h1>
+      <h3>The process of collecting and storing recipes hasn't kept up with how people interact with information these days.</h3>
+      <p>Traditionally, people keep recipes in a paper filing system. More tech-savvy folks might write them in text files. These solutions are effective for <em>storing</em> the recipes, but break down when you want to share what you're been cooking.</p>
+        <p><strong>Instead of handwriting someone a recipe on an index card or transcribing it into an email, the goal of Gingrsnap is to make recipes linkable.</strong</p>
+
+      <h3>Aggregation and discovery is a solved problem.</h3>
+      <p>The internet is already a great place to look for ideas on things to cook. There are numerous websites and apps that list recipes from professional cooks and food bloggers. However, if you're someone who likes to fiddle with recipes or come up with new culinary creations, the current set of applications don't suit your needs.</p>
+      <p><strong>Gingrsnap is the recipe-collecting tool that creative cooks need.</strong> Now you don't have to be a dedicated food blogger to have a simple outlet for your cooking.</p>
+
+      <h3>Bring recipe-collecting into the 21st century.</h3>
+      <p>The next time you cook for friends or family members and someone requests the recipe for the delicious baked salmon you prepared or the pumpkin bread you baked, send them a link to your recipe on Gingrsnap.</p>
     </div>
-    <div class="span4">
-      <h2>Share what you've been making.</h2>
-      <p>Keep track of what you cook by recording "makes" on Gingrsnap. Recipes accumulate makes, giving an organic measurement of a dish's popularity.</p>
-    </div>
-    <div class="span4">
-      <h2>Collaborate on recipes by leaving tips.</h2>
-      <p>Find a new twist to a dish on Gingrsnap? Leave a tip on the recipe so others can try out your creation.</p>
+    <div class="span4 pull-right">
+      <div class="well">
+        <h2>Sign up for today!</h2>
+        <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Create an account</a>
+        <p>Gingrsnap is a free service and signup is quick.</p>
+        <a class="btn btn-primary btn-large btn-twitter" href="@action(OAuth.connect("twitter"))">
+          <i class="icon-twitter-large"></i>Connect with Twitter
+        </a>
+        <p>Streamline the signup process by connecting with your Twitter account.</p>
+      </div>
     </div>
   </div>
 }
