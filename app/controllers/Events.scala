@@ -23,7 +23,8 @@ object Events extends Controller {
       Json("{\"error\": \"" + Validation.errors()(0) + "\"}")
     } else {
       val events = (EventFeedType(eventFeedType) match {
-        case EventFeedType.SingleUser => Event.getNextSingleUserPage(userId, lastTimestamp, n)
+        case EventFeedType.SingleUser =>
+          Event.getNextSingleUserPage(userId, lastTimestamp, n)
         case EventFeedType.GingrsnapFollowing if Feature(Constants.UserFollowing) =>
           Event.getNextFollowedPage(userId, lastTimestamp, n)
         case _ => Event.getNextGlobalPage(lastTimestamp, n)

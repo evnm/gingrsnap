@@ -192,7 +192,7 @@ object Event extends Magic[Event] with Timestamped[Event] {
    */
   def getNextGlobalPage(lastTimestamp: String, n: Int): Seq[Event] = {
     SQL("""
-        select * from Event
+        select * from Event e
         where createdAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS') and e.eventType != 5
         order by createdAt desc
         limit {n}
