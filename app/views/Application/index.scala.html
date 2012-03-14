@@ -11,19 +11,18 @@
 @import models.EventFeedType
 
 @main("") {
-  <section>
-    <div class="hero-unit">
-      <div class="row">
-        <div class="span7">
-          <h1>Upgrade your recipe collection.</h1>
-          <p><strong>Gingrsnap</strong> is a simple service that allows you to publish recipes and keep track of what you've been making.</p>
-        </div>
-        <div class="span3 pull-right">
-          <a class="btn btn-primary btn-large" href="@action(Application.about)">Learn more &raquo;</a>
-        </div>
+  <div class="hero-unit">
+    <div class="row">
+      <div class="span7">
+        <h1>Upgrade your recipe collection.</h1>
+        <p><strong>Gingrsnap</strong> is a simple service that allows you to publish recipes and keep track of what you've been making.</p>
+        <a class="btn btn-primary btn-large" href="@action(Application.about)">Learn more &raquo;</a>
       </div>
+      <img src="https://s3.amazonaws.com/gingrsnap.prod/public/img/redpepper.png" class="pull-right" />
     </div>
+  </div>
 
+  <section>
     <div class="row">
       <div class="span4">
         <h2>Publish your recipes.</h2>
@@ -40,6 +39,20 @@
     </div>
   </section>
 
+  <section>
+    <div class="well well-promo">
+      <div class="row">
+        <div class="span8">
+          <h2>Try it today!</h2>
+          <p>Gingrsnap is a free service and Signup is a snap. There's seriously no reason not to give it a shot!</p>
+        </div>
+        <div class="span3 pull-right">
+          <a class="btn btn-primary btn-large pull-right" href="@action(GingrsnapUsers.neue())">Create an account</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <div class="row">
     <div class="span8">
       <div class="header-with-subtitle">
@@ -50,13 +63,8 @@
     </div>
     <div class="span4">
       <div class="well">
-        <h2>Sign up for today!</h2>
-        <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Create an account</a>
-        <p>Gingrsnap is a free service and signup is quick.</p>
-        <a class="btn btn-primary btn-large btn-twitter" href="@action(OAuth.connect("twitter"))">
-          <i class="icon-twitter-large"></i>Connect with Twitter
-        </a>
-        <p>Streamline the signup process by connecting with your Twitter account.</p>
+        <h2>Recent blog posts</h2>
+        <p>Coming soon.</p>
       </div>
     </div>
   </div>
