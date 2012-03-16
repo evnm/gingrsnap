@@ -31,7 +31,7 @@ object Image extends Magic[Image] {
   val MaxAllowedSize = 500
 
   val SizeMap = Map[String, (Option[Int], Option[Int])](
-    "thumbnail" -> (Some(32), Some(32)),
+    "thumbnail" -> (Some(48), Some(48)),
     "portrait" -> (Some(296), None))
 
   protected[this] def mimetypeToExtension(mimetype: String) = mimetype match {

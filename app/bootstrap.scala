@@ -64,7 +64,7 @@ import twitter4j.auth.AccessToken
 
     /**
      * S3 image backfill.
-
+     */
     Logger.info("Bootstrap task: Backfilling new image sizes on S3")
     val originalFile = File.createTempFile("original", null)
     val tempFile = File.createTempFile("temp", null)
@@ -81,7 +81,7 @@ import twitter4j.auth.AccessToken
       S3.client.deleteObject(S3.bucket, image.s3Key + "_thumbnail." + image.extension)
 
       // Generate and upload new cropped/resized versions.
-      Image.SizeMap.keySet foreach { sizeKey =>
+      Seq("thumbnail") foreach { sizeKey =>
         Image.SizeMap(sizeKey) match {
           case (Some(x), Some(y)) if x == y => Image.cropSquare(originalFile, tempFile, x)
           case (Some(x), Some(y)) => Images.resize(originalFile, tempFile, x, y)
@@ -97,7 +97,6 @@ import twitter4j.auth.AccessToken
 
     originalFile.delete()
     tempFile.delete()
-    */
 
     /**
      * Twitter user id backfill.
