@@ -1,6 +1,6 @@
 @(
   connectedUser: models.GingrsnapUser,
-  recipes: Seq[models.Recipe],
+  recipes: Seq[(models.Recipe, Option[(String, String)])],
   eventFeedType: Int,
   eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
 )(

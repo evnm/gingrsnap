@@ -172,7 +172,7 @@ object OAuth extends BaseController with Secure {
     val imgUrl = twUser.getProfileImageURL().toString
     html.linkTwitter(twUsername, twUserId, twAccessToken, twAccessTokenSecret, imgUrl)
   } catch { case e: Throwable =>
-    flash.error("Login failed")
+    Logger.error("Exception thrown in OAuth.linkTwitterPrompt: " + e.getMessage)
     Action(Authentication.login)
   }
 

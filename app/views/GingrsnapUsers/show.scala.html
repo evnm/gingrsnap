@@ -4,7 +4,7 @@
   isFollowedByConnectedUser: Boolean,
   account: models.Account,
   profileImageUrlOpt: Option[(String, String)],
-  recipes: Seq[models.Recipe],
+  recipes: Seq[(models.Recipe, Option[(String, String)])],
   totalMakeCount: Long,
   eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
 )(
@@ -23,6 +23,11 @@
     <div class="span8">
       <div class="user-info">
         <div class="user-header">
+          @profileImageUrlOpt.map { case (baseUrl, extension) =>
+            <a href="@(baseUrl + "_original." + extension)">
+              <img src="@(baseUrl + "_thumbnail." + extension)" />
+            </a>
+          }
           <h1>@user.fullname</h1>
           @connectedUserOpt.map { connectedUser =>
             @if(connectedUser.id() != user.id()) {
@@ -58,12 +63,6 @@
 
     <div class="span4">
       <div class="well">
-        @profileImageUrlOpt.map { case (baseUrl, extension) =>
-          <a class="well-image" href="@(baseUrl + "_original." + extension)">
-            <img src="@(baseUrl + "_portrait." + extension)" />
-          </a>
-        }
-
         @views.common.html.recipeList(connectedUserOpt, user, recipes)
       </div>
     </div>

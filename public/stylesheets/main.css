@@ -486,7 +486,6 @@ ol.event-feed li {
   display: block;
   margin-bottom: 1em;
   margin-left: -8px;
-  text-align: center;
 }
 
 .well {
@@ -499,15 +498,43 @@ ol.event-feed li {
   position: relative;
 }
 
+.well .recipe-list ul {
+  margin-left: -8px;
+  width: 266px;
+}
+
 .recipe-list li {
   margin-bottom: .4em;
-  padding: 4px 6px;
-  background-color: #F7F5F3;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.recipe-card {
+  padding: 8px;
+  background-color: #fcfcfc;
+  outline: 1px solid #f7f6f5;
+  border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: 3px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
   -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
   -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.recipe-card img {
+  outline: none;
+  padding-bottom: 10px;
+  border: none;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.07);
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
+
+.recipe-card p {
+  margin: 0;
+}
+
+.recipe-card p label {
+  display: inline-block;
+  margin-right: 6px;
 }
 
 .well a.new-recipe {

@@ -24,13 +24,16 @@ object GingrsnapUsers extends BaseController with Secure {
   def homeFollowing: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.UserFollowing)) {
+        val recipesWithImages = Recipe.getByUserId(user.id()) map { recipe =>
+          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+        }
         val events = Event.getMostRecentFollowed(user.id(), 20) map {
           Event.hydrate(_)
         }
 
         views.GingrsnapUsers.html.home(
           user,
-          Recipe.getByUserId(user.id()),
+          recipesWithImages,
           EventFeedType.GingrsnapFollowing.id,
           events
         )
@@ -45,10 +48,13 @@ object GingrsnapUsers extends BaseController with Secure {
    */
   def homeGlobal: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
+      val recipesWithImages = Recipe.getByUserId(user.id()) map { recipe =>
+        (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+      }
       val events = Event.getMostRecent(20).map(Event.hydrate)
       views.GingrsnapUsers.html.home(
         user,
-        Recipe.getByUserId(user.id()),
+        recipesWithImages,
         EventFeedType.Global.id,
         events)
     case None => Application.index
@@ -60,13 +66,16 @@ object GingrsnapUsers extends BaseController with Secure {
   def homeTwitter: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.TwitterEventFeeds)) {
+        val recipesWithImages = Recipe.getByUserId(user.id()) map { recipe =>
+          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+        }
         val events = Event.getMostRecentFollowed(user.id(), 20) map {
           Event.hydrate(_)
         }
 
         views.GingrsnapUsers.html.home(
           user,
-          Recipe.getByUserId(user.id()),
+          recipesWithImages,
           EventFeedType.GingrsnapFollowing.id,
           events
         )
@@ -177,13 +186,16 @@ object GingrsnapUsers extends BaseController with Secure {
     val isFollowedByConnectedUser = (connectedUser map { connectedUser =>
       Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
     }).getOrElse(false)
+    val recipesWithImages = Recipe.getByUserId(user.id()) map { recipe =>
+      (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+    }
     html.show(
       user,
       connectedUser,
       isFollowedByConnectedUser,
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
-      Recipe.getByUserId(user.id()),
+      recipesWithImages,
       Make.getCountByUserId(user.id()),
       eventFeed)
   } getOrElse {
