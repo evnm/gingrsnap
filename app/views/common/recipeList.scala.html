@@ -24,12 +24,14 @@
         <li>
           <div class="recipe-card">
             @imageUrlOpt.map { case (baseUrl, extension) =>
-              <img src="@(baseUrl + "_portrait." + extension)" />
+              <a href="@action(Recipes.show(user.slug, recipe.slug))">
+                <img src="@(baseUrl + "_portrait." + extension)" />
+              </a>
             }
             <p>
               @if(recipe.publishedAt.isEmpty) {
                 <label>
-                  <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
+                  <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
                 </label>
                 <span class="label">Draft</span>
               } else {
