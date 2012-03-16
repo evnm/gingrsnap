@@ -215,10 +215,31 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   /**
    * Get all of a user's recipes.
    */
-  def getByUserId(userId: Long): Seq[Recipe] = {
-    Recipe.find("authorId = {userId}").on("userId" -> userId).list() filter { recipe =>
-      recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
-    }
+  def getAllByUserId(userId: Long): Seq[Recipe] = {
+    SQL("""
+        select * from Recipe
+        where authorId = {userId}
+        order by modifiedAt desc
+        """)
+      .on("userId" -> userId)
+      .as(Recipe *) filter { recipe =>
+        recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
+      }
+  }
+
+  /**
+   * Get all of a user's published recipes.
+   */
+  def getPublishedByUserId(userId: Long): Seq[Recipe] = {
+    SQL("""
+        select * from Recipe
+        where authorId = {userId} and publishedAt is not null
+        order by modifiedAt desc
+        """)
+      .on("userId" -> userId)
+      .as(Recipe *) filter { recipe =>
+        recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
+      }
   }
 
   /**

@@ -45,7 +45,7 @@ class RecipeSpec extends UnitFlatSpec with ShouldMatchers with BeforeAndAfterEac
   it should "lookup by user id" in {
     Recipe.create(Recipe(Id(1), "Fish sticks", "fish-sticks", 0, timestamp, timestamp, None, "dems tasty"))
     Recipe.create(Recipe(Id(2), "Cow pies", "cow-pies", 0, timestamp, timestamp, None, "Buy a cow."))
-    val recipes = Recipe.getByUserId(0)
+    val recipes = Recipe.getAllByUserId(0)
 
     recipes should not be (Seq.empty)
     recipes(0).title should be ("Fish sticks")

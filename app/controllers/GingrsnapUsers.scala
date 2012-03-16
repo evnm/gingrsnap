@@ -24,7 +24,7 @@ object GingrsnapUsers extends BaseController with Secure {
   def homeFollowing: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.UserFollowing)) {
-        val recipesWithImages = Recipe.getByUserId(user.id()) map { recipe =>
+        val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
           (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
         }
         val events = Event.getMostRecentFollowed(user.id(), 20) map {
@@ -48,7 +48,7 @@ object GingrsnapUsers extends BaseController with Secure {
    */
   def homeGlobal: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
-      val recipesWithImages = Recipe.getByUserId(user.id()) map { recipe =>
+      val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
         (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
       }
       val events = Event.getMostRecent(20).map(Event.hydrate)
@@ -66,7 +66,7 @@ object GingrsnapUsers extends BaseController with Secure {
   def homeTwitter: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.TwitterEventFeeds)) {
-        val recipesWithImages = Recipe.getByUserId(user.id()) map { recipe =>
+        val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
           (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
         }
         val events = Event.getMostRecentFollowed(user.id(), 20) map {
@@ -186,9 +186,15 @@ object GingrsnapUsers extends BaseController with Secure {
     val isFollowedByConnectedUser = (connectedUser map { connectedUser =>
       Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
     }).getOrElse(false)
-    val recipesWithImages = Recipe.getByUserId(user.id()) map { recipe =>
-      (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
-    }
+    val recipesWithImages: Seq[(Recipe, Option[(String, String)])] =
+      (if (connectedUser.nonEmpty && user.id() == connectedUser.get.id()) {
+        Recipe.getAllByUserId(user.id())
+      } else {
+        Recipe.getPublishedByUserId(user.id())
+      }) map { recipe =>
+        (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+      }
+
     html.show(
       user,
       connectedUser,
