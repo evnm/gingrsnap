@@ -64,7 +64,7 @@ import twitter4j.auth.AccessToken
 
     /**
      * S3 image backfill.
-     */
+
     Logger.info("Bootstrap task: Backfilling new image sizes on S3")
     val originalFile = File.createTempFile("original", null)
     val tempFile = File.createTempFile("temp", null)
@@ -97,7 +97,7 @@ import twitter4j.auth.AccessToken
 
     originalFile.delete()
     tempFile.delete()
-
+*/
     /**
      * Twitter user id backfill.
 
