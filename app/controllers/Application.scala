@@ -21,7 +21,7 @@ object Application extends BaseController {
       }
     case None => {
       html.index(
-        Event.getMostRecent(8) map { Event.hydrate(_) }
+        Recipe.getMostRecent(8) map { Recipe.hydrate(_) }
       )
     }
   }

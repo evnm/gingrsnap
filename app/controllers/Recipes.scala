@@ -360,7 +360,7 @@ object Recipes extends BaseController with Secure {
   /**
    * Fetches the next n recipes for a given recipe feed type.
    */
-  def getNextPage(recipeFeedType: Int, lastTimestamp: String, userId: Long, n: Int) = {
+  @NonSecure def getNextPage(recipeFeedType: Int, lastTimestamp: String, userId: Long, n: Int) = {
     Validation.required("recipeFeedType", recipeFeedType)
     Validation.required("lastTimestamp", lastTimestamp)
     Validation.required("n", n)

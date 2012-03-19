@@ -477,6 +477,13 @@ ul.nav-feed li a:hover {
   margin: 0;
 }
 
+.feed li#pagination-control {
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+
 ol.feed-event li {
   min-height: 36px;
   line-height: 36px;

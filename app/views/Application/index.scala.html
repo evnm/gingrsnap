@@ -1,5 +1,5 @@
 @(
-  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
+  recipeFeed: Seq[(models.Recipe, models.GingrsnapUser, Option[(String, String)])]
 )(
   implicit
   renderArgs: play.mvc.Scope.RenderArgs = null, // This is a hack
@@ -8,7 +8,7 @@
 )
 
 @import controllers.{Application, GingrsnapUsers, OAuth}
-@import models.EventFeedType
+@import models.RecipeFeedType
 
 @main("") {
   <div class="hero-unit">
@@ -55,11 +55,8 @@
 
   <div class="row">
     <div class="span8">
-      <div class="header-with-subtitle">
-        <h1>Activity</h1>
-        <span>Recent events from people using Gingrsnap</span>
-      </div>
-      @views.common.html.eventFeed(EventFeedType.Global.id, eventFeed)
+      <h2>Recent recipes from people using Gingrsnap</h2>
+      @views.common.html.recipeFeed(RecipeFeedType.Global.id, recipeFeed)
     </div>
     <div class="span4">
       <div class="well">
