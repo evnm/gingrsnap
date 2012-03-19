@@ -19,12 +19,12 @@
     <div class="span8">
       <div class="header-with-subtitle">
         <h1>Recipes</h1>
-        <h2>/ <a href="/events/following" title="Latest activity on Gingrsnap">Activity</a></h2>
+        <h2>/ <a href="/activity/following" title="Latest activity on Gingrsnap">Activity</a></h2>
         <div class="subnav">
 	        <ul class="nav nav-pills nav-feed">
           @if(Feature(Constants.UserFollowing)) {
             <li @if(recipeFeedType == RecipeFeedType.GingrsnapFollowing.id) { class="active" }>
-              <a data-feed-type="@RecipeFeedType.GingrsnapFollowing.id" href="/">Following on Gingrsnap</a>
+              <a data-feed-type="@RecipeFeedType.GingrsnapFollowing.id" href="/recipes/following">Following on Gingrsnap</a>
             </li>
             @if(connectedUser.twUserId.nonEmpty && Feature(Constants.TwitterRecipeFeeds)) {
               <li @if(recipeFeedType == RecipeFeedType.TwitterFollowing.id) { class="active" }>
@@ -47,7 +47,15 @@
         </div>
       </div>
 
-      @views.common.html.recipeFeed(recipeFeedType, recipeFeed, Some(connectedUser.id()))
+      @if(recipeFeed.isEmpty) {
+        <h3>There are no recipes to display.</h3>
+
+        @if(recipeFeedType == RecipeFeedType.GingrsnapFollowing.id) {
+          <h3>Find some people to follow to add recipes to your feed!</h3>
+        }
+      } else {
+        @views.common.html.recipeFeed(recipeFeedType, recipeFeed, Some(connectedUser.id()))
+      }
     </div>
 
     <div class="span4">

@@ -32,30 +32,38 @@
 	        <ul class="nav nav-pills nav-feed">
           @if(Feature(Constants.UserFollowing)) {
             <li @if(eventFeedType == EventFeedType.GingrsnapFollowing.id) { class="active" }>
-              <a data-feed-type="@EventFeedType.GingrsnapFollowing.id" href="/events/following">Following on Gingrsnap</a>
+              <a data-feed-type="@EventFeedType.GingrsnapFollowing.id" href="/activity/following">Following on Gingrsnap</a>
             </li>
             @if(connectedUser.twUserId.nonEmpty && Feature(Constants.TwitterEventFeeds)) {
               <li @if(eventFeedType == EventFeedType.TwitterFollowing.id) { class="active" }>
-                <a data-feed-type="@EventFeedType.TwitterFollowing.id" href="/events/twitter">Follow on Twitter</a>
+                <a data-feed-type="@EventFeedType.TwitterFollowing.id" href="/activity/twitter">Follow on Twitter</a>
               </li>
             }
             <li @if(eventFeedType == EventFeedType.Global.id) { class="active" }>
-              <a data-feed-type="@EventFeedType.Global.id" href="/events/global">Everyone on Gingrsnap</a>
+              <a data-feed-type="@EventFeedType.Global.id" href="/activity/global">Everyone on Gingrsnap</a>
             </li>
           } else {
             @if(connectedUser.twUserId.nonEmpty && Feature(Constants.TwitterEventFeeds)) {
               <li @if(eventFeedType == EventFeedType.TwitterFollowing.id) { class="active" }>
-                <a data-feed-type="@EventFeedType.TwitterFollowing.id" href="/events/twitter">Follow on Twitter</a>
+                <a data-feed-type="@EventFeedType.TwitterFollowing.id" href="/activity/twitter">Follow on Twitter</a>
               </li>
             }
-            <li @if(eventFeedType == EventFeedType.Global.id) { class="active" }><a data-feed-type="@EventFeedType.Global.id" href="/events/global">Everyone on Gingrsnap</a>
+            <li @if(eventFeedType == EventFeedType.Global.id) { class="active" }><a data-feed-type="@EventFeedType.Global.id" href="/activity/global">Everyone on Gingrsnap</a>
             </li>
           }
 	        </ul>
         </div>
       </div>
 
-      @views.common.html.eventFeed(eventFeedType, eventFeed, Some(connectedUser.id()))
+      @if(eventFeed.isEmpty) {
+        <h3>There are no events to display.</h3>
+
+        @if(eventFeedType == EventFeedType.GingrsnapFollowing.id) {
+          <h3>Find some people to follow to add events to your activity feed!</h3>
+        }
+      } else {
+        @views.common.html.eventFeed(eventFeedType, eventFeed, Some(connectedUser.id()))
+      }
     </div>
 
     <div class="span4">

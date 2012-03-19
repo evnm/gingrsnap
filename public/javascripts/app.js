@@ -380,9 +380,10 @@ $(document).ready(function() {
 
   $(".nav-feed a").click(function(event) {
     var that = $(this);
-    var feedType = that.data("feed-type");
+    var targetFeedType = that.data("feed-type");
+    var currentFeedType = $("ol.feed #feed-type").text();
 
-    if (feedType == $("ol.feed #feed-type").text()) {
+    if (currentFeedType != "" && currentFeedType == targetFeedType) {
       event.preventDefault();
     }
   });
@@ -398,7 +399,7 @@ $(document).ready(function() {
     $.ajax({
       type: "POST",
       dataType: "text json",
-      url: "/events/getNextPage",
+      url: "/activity/getNextPage",
       data: {
         eventFeedType: $("#feed-type", ol).text(),
         lastTimestamp: $("#event-timestamp", lastLi.prev()).text(),

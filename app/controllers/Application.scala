@@ -14,7 +14,8 @@ object Application extends BaseController {
    */
   def index: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
-      if (Feature(Constants.UserFollowing)) {
+      // Only show /recipes/following if results are non-empty.
+      if (Feature(Constants.UserFollowing) && Recipe.getMostRecentFollowed(user.id(), 1).nonEmpty) {
         GingrsnapUsers.followingRecipes
       } else {
         GingrsnapUsers.globalRecipes
