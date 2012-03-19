@@ -31,7 +31,7 @@
             <div>
               @if(recipe.publishedAt.isEmpty) {
                 <label>
-                  <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
+                  <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
                 </label>
                 <span class="label">Draft</span>
               } else {
