@@ -356,4 +356,36 @@ object Recipes extends BaseController with Secure {
       }
     } getOrElse(NotFound("No such recipe"))
   }
+
+  /**
+   * Fetches the next n recipes for a given recipe feed type.
+   */
+  def getNextPage(recipeFeedType: Int, lastTimestamp: String, userId: Long, n: Int) = {
+    Validation.required("recipeFeedType", recipeFeedType)
+    Validation.required("lastTimestamp", lastTimestamp)
+    Validation.required("n", n)
+    Validation.isTrue(
+      "userId",
+      !((recipeFeedType == 1 || recipeFeedType == 2) && userId == -1)
+    ).message("User id required for that feed type")
+
+    if (Validation.hasErrors) {
+      // Just return the text of the first error.
+      Json("{\"error\": \"" + Validation.errors()(0) + "\"}")
+    } else {
+      val recipes = (RecipeFeedType(recipeFeedType) match {
+        case RecipeFeedType.GingrsnapFollowing if Feature(Constants.UserFollowing) =>
+          Recipe.getNextFollowedPage(userId, lastTimestamp, n)
+        case _ => Recipe.getNextGlobalPage(lastTimestamp, n)
+      }).map {
+        Recipe.toJson(_)
+      }
+
+      if (recipes.isEmpty) {
+        Json("{\"recipes\": []}")
+      } else {
+        Json("{\"recipes\": [" + recipes.mkString(", ") + "]}")
+      }
+    }
+  }
 }

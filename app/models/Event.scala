@@ -192,8 +192,8 @@ object Event extends Magic[Event] with Timestamped[Event] {
    */
   def getNextGlobalPage(lastTimestamp: String, n: Int): Seq[Event] = {
     SQL("""
-        select * from Event e
-        where createdAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS') and e.eventType != 5
+        select * from Event
+        where createdAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS') and eventType != 5
         order by createdAt desc
         limit {n}
         """)
@@ -207,7 +207,8 @@ object Event extends Magic[Event] with Timestamped[Event] {
   }
 
   /**
-   * Gets the next page of events related to entities that a given user follows.
+   * Gets the next page of events related to entities that a given user follows
+   * on Gingrsnap.
    */
   def getNextFollowedPage(userId: Long, lastTimestamp: String, n: Int): Seq[Event] = {
     SQL("""

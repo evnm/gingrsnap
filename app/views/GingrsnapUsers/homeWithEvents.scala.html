@@ -19,6 +19,7 @@
     <div class="span8">
       <div class="header-with-subtitle">
         <h1>Activity</h1>
+        <h2>/ <a href="/recipes/following" title="Latest recipes on Gingrsnap">Recipes</a></h2>
 <!--        <span>
           @eventFeedType match {
             case 0 => { Recent events from people using Gingrsnap }
@@ -28,26 +29,26 @@
           }
         </span>-->
         <div class="subnav">
-	        <ul class="nav nav-pills nav-event-feed">
+	        <ul class="nav nav-pills nav-feed">
           @if(Feature(Constants.UserFollowing)) {
             <li @if(eventFeedType == EventFeedType.GingrsnapFollowing.id) { class="active" }>
-              <a data-event-feed-type="@EventFeedType.GingrsnapFollowing.id" href="/">Following on Gingrsnap</a>
+              <a data-feed-type="@EventFeedType.GingrsnapFollowing.id" href="/events/following">Following on Gingrsnap</a>
             </li>
             @if(connectedUser.twUserId.nonEmpty && Feature(Constants.TwitterEventFeeds)) {
               <li @if(eventFeedType == EventFeedType.TwitterFollowing.id) { class="active" }>
-                <a data-event-feed-type="@EventFeedType.TwitterFollowing.id" href="/home/twitter">Follow on Twitter</a>
+                <a data-feed-type="@EventFeedType.TwitterFollowing.id" href="/events/twitter">Follow on Twitter</a>
               </li>
             }
             <li @if(eventFeedType == EventFeedType.Global.id) { class="active" }>
-              <a data-event-feed-type="@EventFeedType.Global.id" href="/home/global">Everyone on Gingrsnap</a>
+              <a data-feed-type="@EventFeedType.Global.id" href="/events/global">Everyone on Gingrsnap</a>
             </li>
           } else {
             @if(connectedUser.twUserId.nonEmpty && Feature(Constants.TwitterEventFeeds)) {
               <li @if(eventFeedType == EventFeedType.TwitterFollowing.id) { class="active" }>
-                <a data-event-feed-type="@EventFeedType.TwitterFollowing.id" href="/home/twitter">Follow on Twitter</a>
+                <a data-feed-type="@EventFeedType.TwitterFollowing.id" href="/events/twitter">Follow on Twitter</a>
               </li>
             }
-            <li @if(eventFeedType == EventFeedType.Global.id) { class="active" }><a data-event-feed-type="@EventFeedType.Global.id" href="/home/global">Everyone on Gingrsnap</a>
+            <li @if(eventFeedType == EventFeedType.Global.id) { class="active" }><a data-feed-type="@EventFeedType.Global.id" href="/events/global">Everyone on Gingrsnap</a>
             </li>
           }
 	        </ul>
@@ -59,7 +60,7 @@
 
     <div class="span4">
       <div class="well">
-        @views.common.html.recipeList(Some(connectedUser), connectedUser, recipes)
+        @views.common.html.wellRecipeList(Some(connectedUser), connectedUser, recipes)
       </div>
     </div>
   </div>

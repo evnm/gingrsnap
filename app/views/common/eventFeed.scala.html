@@ -6,9 +6,9 @@
 
 @import models._
 
-<ol class="event-feed">
+<ol class="feed feed-event">
   <span id="user-id" style="display: none;">@userId.getOrElse("-1")</span>
-  <span id="event-feed-type" style="display: none;">@eventFeedTypeId</span>
+  <span id="feed-type" style="display: none;">@eventFeedTypeId</span>
   <span id="page-size" style="display: none;">@eventFeed.size</span>
   @eventFeed.map { eventTuple =>
     <li>

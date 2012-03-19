@@ -360,6 +360,16 @@ $(document).ready(function() {
 });
 
 /**
+ * Tooltips.
+ */
+$(document).ready(function() {
+  $(".header-with-subtitle h2 a").tooltip({
+    animation: true,
+    placement: "bottom"
+  });
+});
+
+/**
  * Event feeds.
  */
 $(document).ready(function() {
@@ -368,17 +378,17 @@ $(document).ready(function() {
     $(el).timeago();
   });
 
-  $(".nav-event-feed a").click(function(event) {
+  $(".nav-feed a").click(function(event) {
     var that = $(this);
-    var eventFeedType = that.data("event-feed-type");
+    var feedType = that.data("feed-type");
 
-    if (eventFeedType == $("ol.event-feed #event-feed-type").text()) {
+    if (feedType == $("ol.feed #feed-type").text()) {
       event.preventDefault();
     }
   });
 
   // Pagination.
-  $("ol.event-feed li#pagination-control button").click(function(event) {
+  $("ol.feed-event li#pagination-control button").click(function(event) {
     var that = $(this);
     that.button("loading");
 
@@ -390,7 +400,7 @@ $(document).ready(function() {
       dataType: "text json",
       url: "/events/getNextPage",
       data: {
-        eventFeedType: $("#event-feed-type", ol).text(),
+        eventFeedType: $("#feed-type", ol).text(),
         lastTimestamp: $("#event-timestamp", lastLi.prev()).text(),
         userId: $("#user-id", ol).text(),
         n: $("#page-size", ol).text()
@@ -452,6 +462,62 @@ $(document).ready(function() {
               $.timeago(event.createdAt) + '</span>' +
               '<span id="event-timestamp" style="display: none;">' +
               event.createdAt + '</span></li>';
+            $(lastLi).before(result)
+          });
+
+          that.button("complete");
+        }
+      }
+    });
+    event.preventDefault();
+  });
+});
+
+/**
+ * Recipe feeds.
+ */
+$(document).ready(function() {
+  // Pagination.
+  $("ol.feed-recipe li#pagination-control button").click(function(event) {
+    var that = $(this);
+    that.button("loading");
+
+    var lastLi = that.parent();
+    var ol = lastLi.parent("ol")
+    // TODO: Couldn't get GET requests to work here. Issue with Play?
+    $.ajax({
+      type: "POST",
+      dataType: "text json",
+      url: "/recipes/getNextPage",
+      data: {
+        recipeFeedType: $("#feed-type", ol).text(),
+        lastTimestamp: $("#recipe-timestamp", lastLi.prev()).text(),
+        userId: $("#user-id", ol).text(),
+        n: $("#page-size", ol).text()
+      },
+      success: function(response) {
+        if (response.error) {
+          // TODO
+        } else if (response.recipes.length == 0) {
+          // Delete the "load more" button.
+          $(lastLi).remove();
+        } else {
+          $.each(response.recipes, function(i, recipe) {
+            var recipeImgStr = (recipe.recipeImgBaseUrl && recipe.recipeImgExtension) ?
+              '<a class="recipe-card-image" href="/' + recipe.authorSlug + '/' +
+              recipe.recipeSlug + '"><img src="' + recipe.recipeImgBaseUrl +
+              '_portrait.' + recipe.recipeImgExtension + '" /></a>'
+            :
+              "";
+            var h3Str = '<h3><a href="/' +
+              recipe.authorSlug + '/' + recipe.recipeSlug + '">' +
+              recipe.recipeTitle + '</a></h3>'
+            var citeStr = '<cite>Published by <a href="/' + recipe.authorSlug + '">' +
+              recipe.authorFullname + '</a></cite>'
+            var result = '<li class="recipe-card"><span id="recipe-timestamp" style="display: none;">' +
+              recipe.modifiedAt + '</span>' + recipeImgStr + h3Str + citeStr +
+              '<div style="clear:left;"></div></li>';
+
             $(lastLi).before(result)
           });
 

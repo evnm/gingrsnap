@@ -16,29 +16,28 @@ object GingrsnapUsers extends BaseController with Secure {
   import views.GingrsnapUsers.html
 
   /**
-   * User home page with feed of events related to users followed on Gingrsnap.
+   * User home page with feed of recipes by users followed on Gingrsnap.
    *
    * Invoking Application.index directly because Application.index and
    * GingrsnapUsers.home are mutually recursive.
    */
-  def homeFollowing: templates.Html = Authentication.getLoggedInUser match {
+  def followingRecipes: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.UserFollowing)) {
-        val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
+        val connectedUserRecipes = Recipe.getAllByUserId(user.id()) map { recipe =>
           (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
         }
-        val events = Event.getMostRecentFollowed(user.id(), 20) map {
-          Event.hydrate(_)
+        val recipeFeed = Recipe.getMostRecentFollowed(user.id(), 20) map {
+          Recipe.hydrate(_)
         }
 
-        views.GingrsnapUsers.html.home(
+        views.GingrsnapUsers.html.homeWithRecipes(
           user,
-          recipesWithImages,
-          EventFeedType.GingrsnapFollowing.id,
-          events
-        )
+          connectedUserRecipes,
+          RecipeFeedType.GingrsnapFollowing.id,
+          recipeFeed)
       } else {
-        GingrsnapUsers.homeGlobal
+        GingrsnapUsers.globalRecipes
       }
     case None => Application.index
   }
@@ -46,13 +45,84 @@ object GingrsnapUsers extends BaseController with Secure {
   /**
    * User home page with feed of events related to all users.
    */
-  def homeGlobal: templates.Html = Authentication.getLoggedInUser match {
+  def globalRecipes: templates.Html = Authentication.getLoggedInUser match {
+    case Some(user) =>
+      val connectedUserRecipes = Recipe.getAllByUserId(user.id()) map { recipe =>
+        (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+      }
+      val recipeFeed = Recipe.getMostRecent(20) map {
+        Recipe.hydrate(_)
+      }
+      views.GingrsnapUsers.html.homeWithRecipes(
+        user,
+        connectedUserRecipes,
+        RecipeFeedType.Global.id,
+        recipeFeed)
+    case None => Application.index
+  }
+
+  /**
+   * User home page with feed of events related to users followed on Twitter.
+   */
+  def twitterRecipes: templates.Html = Authentication.getLoggedInUser match {
+    case Some(user) =>
+      if (Feature(Constants.TwitterEventFeeds)) {
+        val connectedUserRecipes = Recipe.getAllByUserId(user.id()) map { recipe =>
+          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+        }
+        val recipeFeed = Recipe.getMostRecentFollowed(user.id(), 20) map {
+          Recipe.hydrate(_)
+        }
+
+        views.GingrsnapUsers.html.homeWithRecipes(
+          user,
+          connectedUserRecipes,
+          RecipeFeedType.GingrsnapFollowing.id,
+          recipeFeed)
+      } else {
+        GingrsnapUsers.globalRecipes
+      }
+    case None => Application.index
+  }
+
+  /**
+   * User home page with feed of events related to users followed on Gingrsnap.
+   *
+   * Invoking Application.index directly because Application.index and
+   * GingrsnapUsers.home are mutually recursive.
+   */
+  def followingEvents: templates.Html = Authentication.getLoggedInUser match {
+    case Some(user) =>
+      if (Feature(Constants.UserFollowing)) {
+        val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
+          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+       }
+        val events = Event.getMostRecentFollowed(user.id(), 20) map {
+          Event.hydrate(_)
+        }
+
+        views.GingrsnapUsers.html.homeWithEvents(
+          user,
+          recipesWithImages,
+          EventFeedType.GingrsnapFollowing.id,
+          events
+        )
+      } else {
+        GingrsnapUsers.globalEvents
+      }
+    case None => Application.index
+  }
+
+  /**
+   * User home page with feed of events related to all users.
+   */
+  def globalEvents: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
         (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
       }
       val events = Event.getMostRecent(20).map(Event.hydrate)
-      views.GingrsnapUsers.html.home(
+      views.GingrsnapUsers.html.homeWithEvents(
         user,
         recipesWithImages,
         EventFeedType.Global.id,
@@ -63,7 +133,7 @@ object GingrsnapUsers extends BaseController with Secure {
   /**
    * User home page with feed of events related to users followed on Twitter.
    */
-  def homeTwitter: templates.Html = Authentication.getLoggedInUser match {
+  def twitterEvents: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.TwitterEventFeeds)) {
         val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
@@ -73,14 +143,14 @@ object GingrsnapUsers extends BaseController with Secure {
           Event.hydrate(_)
         }
 
-        views.GingrsnapUsers.html.home(
+        views.GingrsnapUsers.html.homeWithEvents(
           user,
           recipesWithImages,
           EventFeedType.GingrsnapFollowing.id,
           events
         )
       } else {
-        GingrsnapUsers.homeGlobal
+        GingrsnapUsers.globalEvents
       }
     case None => Application.index
   }

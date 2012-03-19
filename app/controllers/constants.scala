@@ -34,6 +34,9 @@ object Constants {
   // Ability to follow other Gingrsnap users.
   val UserFollowing = "user-following"
 
+  // Recipe feeds of people you follow on Twitter.
+  val TwitterRecipeFeeds = "twitter-recipe-feeds"
+
   // Event feeds of people you follow on Twitter.
   val TwitterEventFeeds = "twitter-event-feeds"
 }

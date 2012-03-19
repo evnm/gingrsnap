@@ -15,9 +15,9 @@ object Application extends BaseController {
   def index: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.UserFollowing)) {
-        GingrsnapUsers.homeFollowing
+        GingrsnapUsers.followingRecipes
       } else {
-        GingrsnapUsers.homeGlobal
+        GingrsnapUsers.globalRecipes
       }
     case None => {
       html.index(

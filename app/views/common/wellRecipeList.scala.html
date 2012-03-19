@@ -28,7 +28,7 @@
                 <img src="@(baseUrl + "_portrait." + extension)" />
               </a>
             }
-            <p>
+            <div>
               @if(recipe.publishedAt.isEmpty) {
                 <label>
                   <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
@@ -39,7 +39,7 @@
                   <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
                 </label>
               }
-            </p>
+            </div>
           </div>
         </li>
       }

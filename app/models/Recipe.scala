@@ -21,6 +21,16 @@ case class Recipe(
   parentRecipe: Option[Long] = None
 )
 
+/**
+ * Used by ajax-pagination to keep track of recipe feed type.
+ */
+object RecipeFeedType extends Enumeration {
+  type RecipeFeedType = Value
+  val Global = Value(0)
+  val GingrsnapFollowing = Value(1)
+  val TwitterFollowing = Value(2)
+}
+
 object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   protected[this] def recipeIdCacheKey(recipeId: Long) =
     Constants.RecipeObjKey + ":" + recipeId
@@ -72,9 +82,14 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   }
 
   /**
-   * Hydrates a recipe into a tuple of (recipe, author).
+   * Hydrates a recipe into a tuple of
+   * (modifiedAt, author, Option[(image baseUrl, image extension)]).
    */
-  def hydrate(recipe: Recipe) = (recipe, GingrsnapUser.getById(recipe.authorId))
+  def hydrate(recipe: Recipe): (Recipe, GingrsnapUser, Option[(String, String)]) = {
+    val author = GingrsnapUser.getById(recipe.authorId).get
+    val imagePair = Image.getBaseUrlByRecipeId(recipe.id())
+    (recipe, author, imagePair)
+  }
 
   /**
    * Fork a recipe (i.e. make a copy with a different authorId).
@@ -180,15 +195,89 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
    */
   def getMostRecent(n: Int): Seq[Recipe] = {
     SQL("""
-        select * from Recipe r
-        where r.publishedAt is not null
-        order by r.modifiedAt desc
+        select * from Recipe
+        where publishedAt is not null
+        order by modifiedAt desc
         limit {n}
         """)
       .on("n" -> n)
       .as(Recipe *) filter { recipe =>
         recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
       }
+  }
+
+  /**
+   * Get the n most-recently published recipes.
+   */
+  def getMostRecentFollowed(userId: Long, n: Int): Seq[Recipe] = {
+    SQL("""
+        select distinct r.* from Recipe r
+        left outer join Follow f on f.objectid = r.authorId
+        where (r.authorId = {userId} or f.subjectid = {userId})
+          and f.followType = {followType} and r.publishedAt IS NOT NULL
+        order by r.modifiedAt desc
+        limit {n}
+        """)
+      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id, "n" -> n)
+      .as(Recipe *) filter { recipe =>
+        recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
+      }
+  }
+
+  /**
+   * Renders a JSON representation of a hydrated recipe.
+   */
+  def toJson(recipe: Recipe): String = {
+    val (_, author, imageUrlOpt) = Recipe.hydrate(recipe)
+
+    val resultBase =
+      "\"authorFullname\": \"" + author.fullname + "\", \"authorSlug\": \"" + author.slug +
+      "\", \"recipeSlug\": \"" + recipe.slug + "\", \"recipeTitle\": \"" + recipe.title + "\""
+
+    val urlPair = imageUrlOpt.map { case (baseUrl, extension) =>
+      ", \"recipeImgBaseUrl\": \"" + baseUrl + "\", \"recipeImgExtension\": \"" + extension + "\""
+    } getOrElse("")
+
+    "{\"modifiedAt\": \"" + recipe.modifiedAt + "\", " + resultBase + urlPair + "}"
+  }
+
+  /**
+   * Gets the next page of global results after a given timestamp.
+   */
+  def getNextGlobalPage(lastTimestamp: String, n: Int): Seq[Recipe] = {
+    SQL("""
+        select * from Recipe
+        where modifiedAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS')
+        order by modifiedAt desc
+        limit {n}
+        """)
+      .on("lastTimestamp" -> lastTimestamp, "n" -> n)
+      .as(Recipe *) filter { recipe =>
+        recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
+      }
+  }
+
+  /**
+   * Gets the next page of recipes published by people that a given user
+   * follows on Gingrsnap.
+   */
+  def getNextFollowedPage(userId: Long, lastTimestamp: String, n: Int): Seq[Recipe] = {
+    SQL("""
+      select distinct r.* from Recipe r
+      left outer join Follow f on f.objectId = r.authorId
+      where r.modifiedAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS')
+        and (r.authorId = {userId} or f.subjectid = {userId})
+        and f.followType = {followType} and r.publishedAt IS NOT NULL
+      order by r.modifiedAt desc
+      limit {n}"""
+    ).on(
+      "userId" -> userId,
+      "lastTimestamp" -> lastTimestamp,
+      "followType" -> FollowType.GingrsnapUser.id,
+      "n" -> n
+    ).as(Recipe *) filter { recipe =>
+      recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
+    }
   }
 
   /**
