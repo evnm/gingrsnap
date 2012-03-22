@@ -76,7 +76,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
         Event.create(Event(EventType.RecipePublish.id, createdRecipe.authorId, createdRecipe.id()))
       }
 
-      Cache.set(recipeIdCacheKey(createdRecipe.id()), createdRecipe, "6h")
+      //Cache.set(recipeIdCacheKey(createdRecipe.id()), createdRecipe, "6h")
       MayErr(Right(createdRecipe))
     }
   }
@@ -148,7 +148,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     val now = System.currentTimeMillis
     val newRecipe = recipe.copy(modifiedAt = new Timestamp(now))
     Recipe.update(newRecipe)
-    Cache.set(recipeIdCacheKey(newRecipe.id()), newRecipe, "6h")
+    //Cache.set(recipeIdCacheKey(newRecipe.id()), newRecipe, "6h")
 
     // Create a RecipeUpdate event if:
     // * This is a draft being published, or
@@ -292,12 +292,12 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   }
 
   def getById(recipeId: Long): Option[Recipe] = {
-    Cache.get[Recipe](recipeIdCacheKey(recipeId)) orElse {
-      Recipe.find("id = {recipeId}").on("recipeId" -> recipeId).first() map { recipe =>
-        Cache.add(recipeIdCacheKey(recipeId), recipe, "6h")
-        recipe
-      }
-    }
+    //Cache.get[Recipe](recipeIdCacheKey(recipeId)) orElse {
+      Recipe.find("id = {recipeId}").on("recipeId" -> recipeId).first()// map { recipe =>
+        //Cache.add(recipeIdCacheKey(recipeId), recipe, "6h")
+        //recipe
+      //}
+    //}
 
   }
 
@@ -353,7 +353,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
    * TODO: Delete from cache, once recipes are cached.
    */
   def delete(recipeId: Long): Boolean = {
-    Cache.delete(recipeIdCacheKey(recipeId))
+    //Cache.delete(recipeIdCacheKey(recipeId))
     SQL("delete from Event where objectId = {recipeId}")
       .on("recipeId" -> recipeId)
       .execute()
