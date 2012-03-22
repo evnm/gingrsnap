@@ -1,7 +1,7 @@
 package models
 
 import com.amazonaws.services.s3.model.{
-  CannedAccessControlList, DeleteObjectRequest, PutObjectRequest}
+  CannedAccessControlList, DeleteObjectRequest, ObjectMetadata, PutObjectRequest}
 import java.awt.{Color, Image => AwtImage}
 import java.awt.image.BufferedImage
 import java.io.File
@@ -84,12 +84,15 @@ object Image extends Magic[Image] {
     val imgPathPrefix = "image/" + UUID.randomUUID().toString()
     val mimetype = URLConnection.guessContentTypeFromName(file.getName())
     val extension = mimetypeToExtension(mimetype)
+    val s3ObjectMetadata = new ObjectMetadata
+    s3ObjectMetadata.setContentType(mimetype)
 
     // First, upload the original file.
     val tempFile = File.createTempFile("original", null)
     S3.client.putObject(
       new PutObjectRequest(S3.bucket, imgPathPrefix + "_original." + extension, file)
-        .withCannedAcl(CannedAccessControlList.PublicRead))
+        .withCannedAcl(CannedAccessControlList.PublicRead)
+        .withMetadata(s3ObjectMetadata))
 
     // Then generate and upload all cropped/resized versions.
     Image.SizeMap.keySet foreach { sizeKey =>
@@ -100,9 +103,11 @@ object Image extends Magic[Image] {
         case (None, Some(y)) => Images.resize(file, tempFile, -1, y)
         case invalid => Logger.error("Invalid Image.SizeMap entry: %s".format(invalid))
       }
+
       S3.client.putObject(
         new PutObjectRequest(S3.bucket, imgPathPrefix + "_" + sizeKey + "." + extension, tempFile)
-          .withCannedAcl(CannedAccessControlList.PublicRead))
+          .withCannedAcl(CannedAccessControlList.PublicRead)
+          .withMetadata(s3ObjectMetadata))
     }
     tempFile.delete()
 
@@ -144,7 +149,7 @@ object Image extends Magic[Image] {
     getByUserId(userId) map { image =>
       ("https://s3.amazonaws.com/%s.%s/%s".format(
         play.configuration("application.name"),
-        "prod",//play.configuration("application.mode"),
+        play.configuration("application.mode"),
         image.s3Key), image.extension)
     }
   }
@@ -170,7 +175,7 @@ object Image extends Magic[Image] {
     getByRecipeId(recipeId) map { image =>
       ("https://s3.amazonaws.com/%s.%s/%s".format(
         play.configuration("application.name"),
-        "prod",//play.configuration("application.mode"),
+        play.configuration("application.mode"),
         image.s3Key), image.extension)
     }
   }

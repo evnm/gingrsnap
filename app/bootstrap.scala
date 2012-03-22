@@ -1,5 +1,5 @@
 import com.amazonaws.services.s3.model.{
-  CannedAccessControlList, DeleteObjectRequest, PutObjectRequest}
+  CannedAccessControlList, DeleteObjectRequest, ObjectMetadata, PutObjectRequest}
 import java.io.{File, FileOutputStream}
 import java.sql.Timestamp
 import models._
@@ -64,12 +64,20 @@ import twitter4j.auth.AccessToken
 
     /**
      * S3 image backfill.
-
+     */
     Logger.info("Bootstrap task: Backfilling new image sizes on S3")
     val originalFile = File.createTempFile("original", null)
     val tempFile = File.createTempFile("temp", null)
 
     Image.find().list() foreach { image =>
+      val mimetype = image.extension match {
+        case "jpg" => "image/jpeg"
+        case "gif" => "image/gif"
+        case "png" => "image/png"
+      }
+      val s3ObjectMetadata = new ObjectMetadata
+      s3ObjectMetadata.setContentType(mimetype)
+
       // Get original file from S3.
       val s3InStream = S3.client.getObject(S3.bucket, image.s3Key + "_original." + image.extension)
         .getObjectContent()
@@ -78,10 +86,10 @@ import twitter4j.auth.AccessToken
       s3InStream.close()
       fileOutStream.close()
 
-      S3.client.deleteObject(S3.bucket, image.s3Key + "_thumbnail." + image.extension)
+      Image.SizeMap.keySet foreach { sizeKey =>
+        S3.client.deleteObject(S3.bucket, image.s3Key + "_" + sizeKey + "." + image.extension)
 
-      // Generate and upload new cropped/resized versions.
-      Seq("thumbnail") foreach { sizeKey =>
+        // Generate and upload new cropped/resized versions.
         Image.SizeMap(sizeKey) match {
           case (Some(x), Some(y)) if x == y => Image.cropSquare(originalFile, tempFile, x)
           case (Some(x), Some(y)) => Images.resize(originalFile, tempFile, x, y)
@@ -91,13 +99,19 @@ import twitter4j.auth.AccessToken
         }
         S3.client.putObject(
           new PutObjectRequest(S3.bucket, image.s3Key + "_" + sizeKey + "." + image.extension, tempFile)
-            .withCannedAcl(CannedAccessControlList.PublicRead))
+            .withCannedAcl(CannedAccessControlList.PublicRead)
+            .withMetadata(s3ObjectMetadata))
       }
+      S3.client.deleteObject(S3.bucket, image.s3Key + "_original." + image.extension)
+      S3.client.putObject(
+          new PutObjectRequest(S3.bucket, image.s3Key + "_original." + image.extension, originalFile)
+            .withCannedAcl(CannedAccessControlList.PublicRead)
+            .withMetadata(s3ObjectMetadata))
     }
 
     originalFile.delete()
     tempFile.delete()
-*/
+
     /**
      * Twitter user id backfill.
 
