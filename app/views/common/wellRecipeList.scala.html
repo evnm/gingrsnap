@@ -1,7 +1,8 @@
 @(
   viewerOpt: Option[models.GingrsnapUser],
   user: models.GingrsnapUser,
-  recipes: Seq[(models.Recipe, Option[(String, String)])]
+  recipes: Seq[(models.Recipe, Option[(String, String)])],
+  isDraftList: Boolean
 )
 
 @import controllers.Recipes
@@ -9,13 +10,19 @@
 <div class="recipe-list">
   @viewerOpt match {
     case Some(viewer) if user.id() == viewer.id() => {
-      <h2>Your recipes</h2>
+      @if(isDraftList) {
+        <h2>Your drafts</h2>
+      } else {
+        <h2>Your recipes</h2>
+      }
       <a class="btn btn-primary new-recipe" href="@action(Recipes.neue())">
         <i class="icon-plus icon-white"></i>New recipe
       </a>
     }
     case _ => {
-      <h2>@user.fullname's recipes</h2>
+      @if(!isDraftList) {
+        <h2>@user.fullname's recipes</h2>
+      }
     }
   }
   @if(recipes.nonEmpty) {
@@ -47,10 +54,16 @@
   } else {
     @viewerOpt match {
       case Some(viewer) if user.id() == viewer.id() => {
-        <p>You haven't published any recipes yet.</p>
+        @if(isDraftList) {
+          <p>You don't have any drafts at the moment.</p>
+        } else {
+          <p>You haven't published any recipes yet.</p>
+        }
       }
       case _ => {
-        <p>@user.fullname hasn't published any recipes yet.</p>
+        @if(!isDraftList) {
+          <p>@user.fullname hasn't published any recipes yet.</p>
+        }
       }
     }
   }

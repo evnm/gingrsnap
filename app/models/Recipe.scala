@@ -28,7 +28,8 @@ object RecipeFeedType extends Enumeration {
   type RecipeFeedType = Value
   val Global = Value(0)
   val GingrsnapFollowing = Value(1)
-  val TwitterFollowing = Value(2)
+  val SingleUser = Value(2)
+  val TwitterFollowing = Value(3)
 }
 
 object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
@@ -281,6 +282,23 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   }
 
   /**
+   * Gets the next page of recipes related to a given user.
+   */
+  def getNextSingleUserPage(userId: Long, lastTimestamp: String, n: Int): Seq[Recipe] = {
+    SQL("""
+        select * from Recipe r
+        where r.modifiedAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS')
+        and r.authorId = {userId}
+        order by r.modifiedAt desc
+        limit {n}
+        """)
+      .on("userId" -> userId, "lastTimestamp" -> lastTimestamp, "n" -> n)
+      .as(Recipe *) filter { recipe =>
+        recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
+      }
+  }
+
+  /**
    * For a given recipe id, returns an optional hydrated tuple of (recipe, author).
    */
   def getHydratedById(recipeId: Long): Option[(Recipe, GingrsnapUser)] = {
@@ -323,6 +341,21 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     SQL("""
         select * from Recipe
         where authorId = {userId} and publishedAt is not null
+        order by modifiedAt desc
+        """)
+      .on("userId" -> userId)
+      .as(Recipe *) filter { recipe =>
+        recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
+      }
+  }
+
+  /**
+   * Get all of a user's drafts.
+   */
+  def getDraftsByUserId(userId: Long): Seq[Recipe] = {
+    SQL("""
+        select * from Recipe
+        where authorId = {userId} and publishedAt is null
         order by modifiedAt desc
         """)
       .on("userId" -> userId)

@@ -376,6 +376,8 @@ object Recipes extends BaseController with Secure {
       val recipes = (RecipeFeedType(recipeFeedType) match {
         case RecipeFeedType.GingrsnapFollowing if Feature(Constants.UserFollowing) =>
           Recipe.getNextFollowedPage(userId, lastTimestamp, n)
+        case RecipeFeedType.SingleUser =>
+          Recipe.getNextSingleUserPage(userId, lastTimestamp, n)
         case _ => Recipe.getNextGlobalPage(lastTimestamp, n)
       }).map {
         Recipe.toJson(_)

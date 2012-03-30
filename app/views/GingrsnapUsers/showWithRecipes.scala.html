@@ -1,0 +1,74 @@
+@(
+  user: models.GingrsnapUser,
+  connectedUserOpt: Option[models.GingrsnapUser],
+  isFollowedByConnectedUser: Boolean,
+  account: models.Account,
+  profileImageUrlOpt: Option[(String, String)],
+  draftsWithImages: Seq[(models.Recipe, Option[(String, String)])],
+  totalMakeCount: Long,
+  recipeFeed: Seq[(models.Recipe, models.GingrsnapUser, Option[(String, String)])]
+)(
+  implicit
+  params: play.mvc.Scope.Params,
+  flash: play.mvc.Scope.Flash,
+  errors: Map[String, play.data.validation.Error],
+  renderArgs: play.mvc.Scope.RenderArgs
+)
+
+@import controllers.GingrsnapUsers
+@import java.text.DateFormat
+@import models.RecipeFeedType
+
+@main(title = user.fullname) {
+  <div class="row">
+    <div class="span8">
+      <div class="user-info">
+        <div class="user-header">
+          @profileImageUrlOpt.map { case (baseUrl, extension) =>
+            <a href="@(baseUrl + "_original." + extension)">
+              <img src="@(baseUrl + "_thumbnail." + extension)" />
+            </a>
+          }
+          <h1>@user.fullname</h1>
+          @connectedUserOpt.map { connectedUser =>
+            @if(connectedUser.id() != user.id()) {
+              <span id="user-id" style="display: none;">@user.id()</span>
+              @if(isFollowedByConnectedUser) {
+                <button class="btn unfollow-user btn-danger" href="#">Unfollow</button>
+              } else {
+                <button class="btn follow-user" href="#">Follow</button>
+              }
+            }
+          }
+        </div>
+
+        <dl>
+          @account.location.map { location =>
+            <dt>Location</dt>
+            <dd>@location</dd>
+          }
+          @account.url.map { url =>
+            <dt>Website</dt>
+            <dd><a href="@url">@url</a></dd>
+          }
+          <dt>Member since</dt>
+          <dd>@DateFormat.getDateInstance.format(user.createdAt)</dd>
+          <dt>Total recipes made</dt>
+          <dd>@totalMakeCount</dd>
+        </dl>
+      </div>
+
+      <div class="header-with-subtitle">
+        <h2>Recipes</h2>
+        <h3>/ <a href="@action(GingrsnapUsers.showWithEvents(user.slug))" title="@user.fullname's latest activity">Activity</a></h3>
+      </div>
+      @views.common.html.recipeFeed(RecipeFeedType.SingleUser.id, recipeFeed, Some(user.id()))
+    </div>
+
+    <div class="span4">
+      <div class="well">
+        @views.common.html.wellRecipeList(connectedUserOpt, user, draftsWithImages, true)
+      </div>
+    </div>
+  </div>
+}

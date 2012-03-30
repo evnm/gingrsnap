@@ -6,7 +6,7 @@
 
 <div class="uploaded-image">
   @imageUrlOpt.map { case (baseUrl, extension) =>
-    <a class="sidebar-image" href="@(baseUrl + "_original." + extension)">
+    <a href="@(baseUrl + "_original." + extension)">
       <img src="@(baseUrl + "_portrait." + extension)" />
     </a>
     <label>Upload a different image</label>

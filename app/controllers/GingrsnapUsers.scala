@@ -246,9 +246,47 @@ object GingrsnapUsers extends BaseController with Secure {
   }
 
   /**
-   * Show a user's profile
+   * Default show method is showWithRecipes.
    */
-  @NonSecure def show(userSlug: String) = GingrsnapUser.getBySlug(userSlug) map { user =>
+  @NonSecure def show(userSlug: String) = showWithRecipes(userSlug)
+
+  /**
+   * Show a user's profile with a feed of their recipes.
+   */
+  @NonSecure def showWithRecipes(userSlug: String) = GingrsnapUser.getBySlug(userSlug) map { user =>
+    val recipeFeed = Recipe.getPublishedByUserId(user.id()) map {
+      Recipe.hydrate(_)
+    }
+    val connectedUser = Authentication.getLoggedInUser
+    val isFollowedByConnectedUser = (connectedUser map { connectedUser =>
+      Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
+    }).getOrElse(false)
+    val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
+      (if (connectedUser.nonEmpty && user.id() == connectedUser.get.id()) {
+        Recipe.getDraftsByUserId(user.id())
+      } else {
+        Seq.empty
+      }) map { recipe =>
+        (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+      }
+
+    html.showWithRecipes(
+      user,
+      connectedUser,
+      isFollowedByConnectedUser,
+      Account.getByGingrsnapUserId(user.id()).get,
+      Image.getBaseUrlByUserId(user.id()),
+      draftsWithImages,
+      Make.getCountByUserId(user.id()),
+      recipeFeed)
+  } getOrElse {
+    NotFound("No such user")
+  }
+
+  /**
+   * Show a user's profile with a feed of their events.
+   */
+  @NonSecure def showWithEvents(userSlug: String) = GingrsnapUser.getBySlug(userSlug) map { user =>
     val eventFeed = Event.getMostRecentByUserId(user.id(), 10) map { e =>
       Event.hydrate(e)
     }
@@ -256,22 +294,22 @@ object GingrsnapUsers extends BaseController with Secure {
     val isFollowedByConnectedUser = (connectedUser map { connectedUser =>
       Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
     }).getOrElse(false)
-    val recipesWithImages: Seq[(Recipe, Option[(String, String)])] =
+    val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
       (if (connectedUser.nonEmpty && user.id() == connectedUser.get.id()) {
-        Recipe.getAllByUserId(user.id())
+        Recipe.getDraftsByUserId(user.id())
       } else {
-        Recipe.getPublishedByUserId(user.id())
+        Seq.empty
       }) map { recipe =>
         (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
       }
 
-    html.show(
+    html.showWithEvents(
       user,
       connectedUser,
       isFollowedByConnectedUser,
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
-      recipesWithImages,
+      draftsWithImages,
       Make.getCountByUserId(user.id()),
       eventFeed)
   } getOrElse {

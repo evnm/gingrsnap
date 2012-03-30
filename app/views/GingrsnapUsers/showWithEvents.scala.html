@@ -4,7 +4,7 @@
   isFollowedByConnectedUser: Boolean,
   account: models.Account,
   profileImageUrlOpt: Option[(String, String)],
-  recipes: Seq[(models.Recipe, Option[(String, String)])],
+  draftsWithImages: Seq[(models.Recipe, Option[(String, String)])],
   totalMakeCount: Long,
   eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
 )(
@@ -15,6 +15,7 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
+@import controllers.GingrsnapUsers
 @import java.text.DateFormat
 @import models.EventFeedType
 
@@ -57,13 +58,16 @@
         </dl>
       </div>
 
-      <h2>Activity</h2>
+      <div class="header-with-subtitle">
+        <h2>Activity</h2>
+        <h3>/ <a href="@action(GingrsnapUsers.showWithRecipes(user.slug))" title="@user.fullname's recipes">Recipes</a></h3>
+      </div>
       @views.common.html.eventFeed(EventFeedType.SingleUser.id, eventFeed, Some(user.id()))
     </div>
 
     <div class="span4">
       <div class="well">
-        @views.common.html.wellRecipeList(connectedUserOpt, user, recipes)
+        @views.common.html.wellRecipeList(connectedUserOpt, user, draftsWithImages, true)
       </div>
     </div>
   </div>
