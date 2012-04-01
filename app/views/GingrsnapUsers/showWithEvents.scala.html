@@ -6,6 +6,8 @@
   profileImageUrlOpt: Option[(String, String)],
   draftsWithImages: Seq[(models.Recipe, Option[(String, String)])],
   totalMakeCount: Long,
+  followingCount: Long,
+  followerCount: Long,
   eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
 )(
   implicit
@@ -58,17 +60,33 @@
         </dl>
       </div>
 
+      <ul class="nav nav-tabs">
+        <li><a href="@action(GingrsnapUsers.showWithRecipes(user.slug))" title="@user.fullname's recipes">Recipes</a></li>
+        <li class="spacer"></li>
+        <li class="active">
+          <a href="@action(GingrsnapUsers.showWithEvents(user.slug))" title="@user.fullname's latest activity">Activity</a>
+        </li>
+        <li class="spacer"></li>
+        <li><a href="@action(GingrsnapUsers.showWithFollowing(user.slug))">@followingCount following</a></li>
+        <li class="spacer"></li>
+        <li><a href="@action(GingrsnapUsers.showWithFollowers(user.slug))">@followerCount followers</a></li>
+      </ul>
+
       <div class="header-with-subtitle">
         <h2>Activity</h2>
-        <h3>/ <a href="@action(GingrsnapUsers.showWithRecipes(user.slug))" title="@user.fullname's recipes">Recipes</a></h3>
+        <span>@user.fullname's recent actions on Gingrsnap</span>
       </div>
       @views.common.html.eventFeed(EventFeedType.SingleUser.id, eventFeed, Some(user.id()))
     </div>
 
-    <div class="span4">
-      <div class="well">
-        @views.common.html.wellRecipeList(connectedUserOpt, user, draftsWithImages, true)
-      </div>
-    </div>
+    @connectedUserOpt.map { connectedUser =>
+      @if(connectedUser.id() == user.id()) {
+        <div class="span4">
+          <div class="well">
+            @views.common.html.wellRecipeList(connectedUserOpt, user, draftsWithImages, true)
+          </div>
+        </div>
+      }
+    }
   </div>
 }

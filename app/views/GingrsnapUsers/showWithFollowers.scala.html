@@ -8,7 +8,7 @@
   totalMakeCount: Long,
   followingCount: Long,
   followerCount: Long,
-  recipeFeed: Seq[(models.Recipe, models.GingrsnapUser, Option[(String, String)])]
+  followersWithImages: Seq[(models.GingrsnapUser, Option[Boolean], Option[(String, String)])]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -61,22 +61,22 @@
       </div>
 
       <ul class="nav nav-tabs">
-        <li class="active">
-          <a href="@action(GingrsnapUsers.showWithRecipes(user.slug))" title="@user.fullname's recipes">Recipes</a>
-        </li>
+        <li><a href="@action(GingrsnapUsers.showWithRecipes(user.slug))" title="@user.fullname's recipes">Recipes</a></li>
         <li class="spacer"></li>
         <li><a href="@action(GingrsnapUsers.showWithEvents(user.slug))" title="@user.fullname's latest activity">Activity</a></li>
         <li class="spacer"></li>
         <li><a href="@action(GingrsnapUsers.showWithFollowing(user.slug))">@followingCount following</a></li>
         <li class="spacer"></li>
-        <li><a href="@action(GingrsnapUsers.showWithFollowers(user.slug))">@followerCount followers</a></li>
+        <li class="active">
+          <a href="@action(GingrsnapUsers.showWithFollowers(user.slug))">@followerCount followers</a>
+        </li>
       </ul>
 
       <div class="header-with-subtitle">
-        <h2>Recipes</h2>
-        <span>@user.fullname's recipe collection</span>
+        <h2>Followers</h2>
+        <span>People that follow @user.fullname</span>
       </div>
-      @views.common.html.recipeFeed(RecipeFeedType.SingleUser.id, recipeFeed, Some(user.id()))
+      @views.common.html.userList(followersWithImages)
     </div>
 
     @connectedUserOpt.map { connectedUser =>

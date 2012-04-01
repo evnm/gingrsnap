@@ -1,0 +1,35 @@
+@(
+  usersWithImages: Seq[(models.GingrsnapUser, Option[Boolean], Option[(String, String)])]
+)
+
+@import controllers.GingrsnapUsers
+
+<ol class="feed feed-user">
+  @usersWithImages.map { case (user, isFollowedByConnectedUserOpt, imageUrlOpt) =>
+    <li>
+      <div class="user-card-image">
+        @imageUrlOpt.map { case (baseUrl, extension) =>
+          <a href="@action(GingrsnapUsers.show(user.slug))">
+            <img src="@(baseUrl + "_thumbnail." + extension)" />
+          </a>
+        }
+      </div>
+      <h3>
+        <a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a>
+      </h3>
+
+      @isFollowedByConnectedUserOpt.map { isFollowedByConnectedUser =>
+        <div class="pull-right">
+          <span id="user-id" style="display: none;">@user.id()</span>
+          @if(isFollowedByConnectedUser) {
+            <button class="btn unfollow-user btn-danger" href="#">Unfollow</button>
+          } else {
+            <button class="btn follow-user" href="#">Follow</button>
+          }
+        </div>
+      }
+
+      <div style="clear:left;"></div>
+    </li>
+  }
+</ol>

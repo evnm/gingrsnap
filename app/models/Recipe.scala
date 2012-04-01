@@ -214,8 +214,8 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     SQL("""
         select distinct r.* from Recipe r
         left outer join Follow f on f.objectid = r.authorId
-        where (r.authorId = {userId} or f.subjectid = {userId})
-          and f.followType = {followType} and r.publishedAt IS NOT NULL
+        where (r.authorId = {userId} or (f.subjectid = {userId} and f.followType = {followType}))
+          and r.publishedAt IS NOT NULL
         order by r.modifiedAt desc
         limit {n}
         """)
@@ -267,8 +267,8 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
       select distinct r.* from Recipe r
       left outer join Follow f on f.objectId = r.authorId
       where r.modifiedAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS')
-        and (r.authorId = {userId} or f.subjectid = {userId})
-        and f.followType = {followType} and r.publishedAt IS NOT NULL
+        and (r.authorId = {userId} or (f.subjectid = {userId} and f.followType = {followType}))
+        and r.publishedAt IS NOT NULL
       order by r.modifiedAt desc
       limit {n}"""
     ).on(

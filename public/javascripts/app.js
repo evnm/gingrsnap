@@ -47,6 +47,10 @@ $(document).ready(function() {
   $(".disabled").click(function(event) {
     event.preventDefault();
   });
+
+  $(".active").click(function(event) {
+    event.preventDefault();
+  });
 });
 
 /**
@@ -234,7 +238,6 @@ $(document).ready(function() {
   $("button.follow-user").live("click", function(event) {
     var that = $(this);
     var userInfoDiv = $(that).parent("div");
-    console.log($("#user-id", userInfoDiv).text());
     $.ajax({
       type: "POST",
       dataType: "text json",

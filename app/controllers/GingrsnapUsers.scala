@@ -257,12 +257,12 @@ object GingrsnapUsers extends BaseController with Secure {
     val recipeFeed = Recipe.getPublishedByUserId(user.id()) map {
       Recipe.hydrate(_)
     }
-    val connectedUser = Authentication.getLoggedInUser
-    val isFollowedByConnectedUser = (connectedUser map { connectedUser =>
+    val connectedUserOpt = Authentication.getLoggedInUser
+    val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
       Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
     }).getOrElse(false)
     val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
-      (if (connectedUser.nonEmpty && user.id() == connectedUser.get.id()) {
+      (if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
         Recipe.getDraftsByUserId(user.id())
       } else {
         Seq.empty
@@ -272,12 +272,14 @@ object GingrsnapUsers extends BaseController with Secure {
 
     html.showWithRecipes(
       user,
-      connectedUser,
+      connectedUserOpt,
       isFollowedByConnectedUser,
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
       draftsWithImages,
       Make.getCountByUserId(user.id()),
+      GingrsnapUser.getFollowingCount(user.id()),
+      GingrsnapUser.getFollowerCount(user.id()),
       recipeFeed)
   } getOrElse {
     NotFound("No such user")
@@ -290,12 +292,12 @@ object GingrsnapUsers extends BaseController with Secure {
     val eventFeed = Event.getMostRecentByUserId(user.id(), 10) map { e =>
       Event.hydrate(e)
     }
-    val connectedUser = Authentication.getLoggedInUser
-    val isFollowedByConnectedUser = (connectedUser map { connectedUser =>
+    val connectedUserOpt = Authentication.getLoggedInUser
+    val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
       Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
     }).getOrElse(false)
     val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
-      (if (connectedUser.nonEmpty && user.id() == connectedUser.get.id()) {
+      (if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
         Recipe.getDraftsByUserId(user.id())
       } else {
         Seq.empty
@@ -305,14 +307,108 @@ object GingrsnapUsers extends BaseController with Secure {
 
     html.showWithEvents(
       user,
-      connectedUser,
+      connectedUserOpt,
       isFollowedByConnectedUser,
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
       draftsWithImages,
       Make.getCountByUserId(user.id()),
+      GingrsnapUser.getFollowingCount(user.id()),
+      GingrsnapUser.getFollowerCount(user.id()),
       eventFeed)
   } getOrElse {
     NotFound("No such user")
   }
+
+  /**
+   * Show a user's profile with a list of the users that they follow..
+   */
+  @NonSecure def showWithFollowing(userSlug: String) =
+    GingrsnapUser.getBySlug(userSlug) map { user =>
+      val connectedUserOpt = Authentication.getLoggedInUser
+
+      val followingWithImages = GingrsnapUser.getFollowing(user.id()) map { following =>
+        val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
+          Some(Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), following.id()))
+        }).getOrElse(None)
+
+        (following, isFollowedByConnectedUser, Image.getBaseUrlByUserId(following.id()))
+      }
+
+      val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
+        Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
+      }).getOrElse(false)
+
+      val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
+        (if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
+          Recipe.getDraftsByUserId(user.id())
+        } else {
+          Seq.empty
+        }) map { recipe =>
+          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+        }
+
+      html.showWithFollowing(
+        user,
+        connectedUserOpt,
+        isFollowedByConnectedUser,
+        Account.getByGingrsnapUserId(user.id()).get,
+        Image.getBaseUrlByUserId(user.id()),
+        draftsWithImages,
+        Make.getCountByUserId(user.id()),
+        GingrsnapUser.getFollowingCount(user.id()),
+        GingrsnapUser.getFollowerCount(user.id()),
+        followingWithImages)
+    } getOrElse {
+      NotFound("No such user")
+    }
+
+  /**
+   * Show a user's profile with a list of their followers.
+   */
+  @NonSecure def showWithFollowers(userSlug: String) =
+    GingrsnapUser.getBySlug(userSlug) map { user =>
+      val connectedUserOpt = Authentication.getLoggedInUser
+
+      val followersWithImages = GingrsnapUser.getFollowers(user.id()) map { follower =>
+        val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
+          Some(Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), follower.id()))
+        }).getOrElse(None)
+
+       (follower, isFollowedByConnectedUser, Image.getBaseUrlByUserId(follower.id()))
+      }
+
+      val eventFeed = Event.getMostRecentByUserId(user.id(), 10) map { e =>
+        Event.hydrate(e)
+      }
+
+
+
+      val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
+        Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
+      }).getOrElse(false)
+
+      val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
+        (if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
+          Recipe.getDraftsByUserId(user.id())
+        } else {
+          Seq.empty
+        }) map { recipe =>
+          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
+        }
+
+      html.showWithFollowers(
+        user,
+        connectedUserOpt,
+        isFollowedByConnectedUser,
+        Account.getByGingrsnapUserId(user.id()).get,
+        Image.getBaseUrlByUserId(user.id()),
+        draftsWithImages,
+        Make.getCountByUserId(user.id()),
+        GingrsnapUser.getFollowingCount(user.id()),
+        GingrsnapUser.getFollowerCount(user.id()),
+        followersWithImages)
+    } getOrElse {
+      NotFound("No such user")
+    }
 }

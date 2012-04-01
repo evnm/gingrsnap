@@ -221,4 +221,48 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
       .on("token" -> token.getToken, "secret" -> token.getTokenSecret)
       .first()
   }
+
+  /**
+   * Get the number of users that a given user follows.
+   */
+  def getFollowingCount(userId: Long) = {
+    Follow.count("subjectId = {userId} and followType = {followType}")
+      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .single()
+  }
+
+  /**
+   * Get the number of users that follow a given user.
+   */
+  def getFollowerCount(userId: Long) = {
+    Follow.count("objectId = {userId} and followType = {followType}")
+      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .single()
+  }
+
+  /**
+   * Get a Seq[GingrsnapUser] of those who a given user follows.
+   */
+  def getFollowing(userId: Long): Seq[GingrsnapUser] = {
+    SQL("""
+        select gu.* from GingrsnapUser gu
+        join Follow f on f.objectId = gu.id
+        where f.subjectId = {userId} and f.followType = {followType}
+        """)
+      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .as(GingrsnapUser *)
+  }
+
+  /**
+   * Get a Seq[GingrsnapUser] of a given user's followers.
+   */
+  def getFollowers(userId: Long): Seq[GingrsnapUser] = {
+    SQL("""
+        select gu.* from GingrsnapUser gu
+        join Follow f on f.subjectId = gu.id
+        where f.objectId = {userId} and f.followType = {followType}
+        """)
+      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .as(GingrsnapUser *)
+  }
 }
