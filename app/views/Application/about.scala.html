@@ -10,41 +10,43 @@
 @import controllers.{GingrsnapUsers, OAuth}
 
 @main("About") {
+  <div class="row about-masthead">
+    <div class="span4">
+      <h1 class="hero">A simple tool for cataloging recipes.</h1>
+      @if(!userIsConnected) {
+        <div class="well well-promo">
+          <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Try it for free today!</a>
+          <p><strong>Signup is a snap</strong>. Find out how easy publishing recipes can be.</p>
+        </div>
+      }
+    </div>
+    <div class="span8">
+      <img class="img-example-recipe pull-right" src="https://s3.amazonaws.com/gingrsnap.prod/public/img/example-recipe.png" />
+    </div>
+  </div>
+
   <div class="row">
-    <div class="span7">
-      <h1>A simple tool for cataloging recipes.</h1>
+    <div class="span4">
       <section>
         <h3>The process of collecting and storing recipes hasn't kept up with how people interact with information.</h3>
         <p>Traditionally, people kept recipes in a paper filing system. More tech-savvy folks might write them in text files. These solutions are effective for <em>storing</em> the recipes, but break down when you want to share what you've been cooking.</p>
         <p><strong>Instead of photocopying a recipe or typing it up in an email, the goal of Gingrsnap is to make recipes easily linkable.</strong</p>
       </section>
+    </div>
 
+    <div class="span4">
       <section>
         <h3>Aggregation and discovery is a solved problem.</h3>
         <p>The internet is already a great place to look for ideas on things to cook. There are numerous websites and apps that list recipes from professional cooks and food bloggers. However, if you're someone who likes to fiddle with recipes or come up with new culinary creations, the current set of applications don't suit your needs.</p>
         <p><strong>Gingrsnap is the recipe-collecting tool that creative cooks need.</strong> Now you don't have to be a dedicated food blogger to have a simple outlet for your cooking.</p>
       </section>
+    </div>
 
+    <div class="span4">
       <section>
         <h3>Bring recipe-collecting into the 21st century.</h3>
         <p>The next time you have friends or family over for dinner and someone requests the recipe for the delicious seared salmon you prepared or pumpkin bread you baked, send them a link to your recipe on Gingrsnap.</p>
       </section>
-    </div>
-
-    <div class="span4 pull-right">
-      <div class="well">
-        @if(userIsConnected) {
-
-        } else {
-          <h2>Sign up for today!</h2>
-          <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Create an account</a>
-          <p>Gingrsnap is a free service and signup is quick.</p>
-          <a class="btn btn-primary btn-large btn-twitter" href="@action(OAuth.connect("twitter"))">
-            <i class="icon-twitter-large"></i>Connect with Twitter
-          </a>
-          <p>Streamline the signup process by connecting with your Twitter account.</p>
-        }
-      </div>
     </div>
   </div>
 }
