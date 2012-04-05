@@ -13,7 +13,7 @@
   <div class="row">
     <form id="LoginForm" class="form-stacked action left" name="LoginForm" method="POST" action="@action(Authentication.authenticate)">
 		  <label for="username">Email address</label>
-		  <input type="text" name="username" id="username" value="@flash.get("username")" tabindex="1" />
+		  <input type="email" name="username" id="username" value="@flash.get("username")" tabindex="1" />
 
 		  <label for="password">Password <a href="@action(Accounts.passwordResetPrompt())">Forgot?</a></label>
 		  <input type="password" name="password" id="password" value="" tabindex="2" />

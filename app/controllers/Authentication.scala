@@ -81,15 +81,16 @@ object Authentication extends Controller {
    * @see secure.Security
    */
   def authenticate[U <: Credential](username: String, credential: U) = {
+    val lcUsername = username.toLowerCase
     var url = flash.get("url")
 
     try {
-      Security.authenticate(username, credential)
+      Security.authenticate(lcUsername, credential)
 
       // process the remember me request
-      rememberMe(params.get("remember"), username)
+      rememberMe(params.get("remember"), lcUsername)
 
-      session.put("username", Crypto.encryptAES(username));
+      session.put("username", Crypto.encryptAES(lcUsername));
       flash.keep
       redirectToOriginalURL()
     } catch {
@@ -121,7 +122,7 @@ object Authentication extends Controller {
    * Logs out the user and redirects to the root URL ("/").
    */
   def logout = {
-    val username = session.get("username")
+    val username = session.get("username").toLowerCase
     session.clear
     flash.remove("username")
     response.removeCookie("rememberme")
@@ -140,7 +141,7 @@ object Authentication extends Controller {
    * Redirects user to the requested URL post login.
    */
   private def redirectToOriginalURL() = {
-    val username = session.get("username")
+    val username = session.get("username").toLowerCase
     Security.onSuccessfulLogin(username)
     var url = flash.get("url");
     if (url == null) {
