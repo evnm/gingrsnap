@@ -81,7 +81,7 @@ h2, legend {
 h3 {
   margin-bottom: .8em;
   font-size: 15px;
-  color: #666;
+  color: #555;
 }
 
 img {
@@ -328,7 +328,7 @@ ul.secondary-nav li {
   margin: 0;
 }
 
-.hero-unit img {
+.hero-unit img, .about-info img {
   margin: 0;
   border: 0;
   outline: 0;
@@ -355,16 +355,33 @@ ul.secondary-nav li {
   box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
 }
 
+.about-info h3 {
+  font-size: 16px;
+}
+
+.about-info {
+  margin-bottom: 5em;
+}
+
+.about-info p {
+  font-size: 14px;
+}
+
 .well-signup p {
   margin-bottom: 0;
 }
 
 .well-promo {
-  margin-bottom: 3em;
+  margin-bottom: 5em;
+}
+
+.well-promo p {
+  font-size: 15px;
 }
 
 .well-promo h2 {
   margin-bottom: 0.4em;
+  font-size: 22px;
 }
 
 .well-promo .row .pull-right {
