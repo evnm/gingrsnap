@@ -285,6 +285,11 @@ $(document).ready(function() {
  * Account editing form.
  */
 $(document).ready(function() {
+  $("div.oauth-connection-badge a.close").tooltip({
+    animation: true,
+    placement: "bottom"
+  });
+
   $("div.oauth-connection-badge a.close").click(function(event) {
     if (confirm("Are you sure you want to revoke the connection of your Twitter account to Gingrsnap?")) {
       var form = document.createElement("form");

@@ -9,6 +9,7 @@ object Constants {
   val GingrsnapUserObjKey = "userObj"
   val RecipeObjKey = "recipeObj"
   val EncryptedEmailToUserIdKey = "encryptedEmailToUserId"
+  val EncryptedTwTokenToUserIdKey = "encryptedTwTokenToUserId"
   val SlugToUserIdKey = "slugToUserId"
   val AccountObjKey = "accountObj"
   val FeatureKey = "feature"

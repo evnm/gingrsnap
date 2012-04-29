@@ -46,11 +46,9 @@ object Accounts extends BaseController with Secure {
     }
 
     if (newPassword.nonEmpty) {
-      Validation.required("oldPassword", oldPassword)
-      .message("Old password is required when updating to new one")
       Validation.isTrue(
         "oldPassword",
-        GingrsnapUser.validatePassword(user, oldPassword)
+        user.password.isEmpty || GingrsnapUser.validatePassword(user, oldPassword)
       ).message("Old password is incorrect")
     }
 
@@ -71,7 +69,7 @@ object Accounts extends BaseController with Secure {
           user.emailAddr,
           play.configuration("application.baseUrl"),
           user.slug,
-          user.twAccessToken.isDefined && user.twAccessTokenSecret.isDefined,
+          user.twUsername,
           account.location.getOrElse(""),
           account.url.getOrElse(""),
           Image.getBaseUrlByUserId(user.id()))
@@ -110,15 +108,16 @@ object Accounts extends BaseController with Secure {
         } else {
           GingrsnapUser.update(
             user.copy(
-              emailAddr = if (emailAddr.isEmpty) user.emailAddr else emailAddr,
+              fullname = if (fullname.isEmpty) user.fullname else fullname,
+              emailAddr = if (emailAddr.isEmpty) user.emailAddr else Some(emailAddr),
               slug = if (slug.isEmpty) user.slug else slug,
               password = {
                 if (newPassword.isEmpty)
                   user.password
                 else
-                  Crypto.passwordHash(user.salt + newPassword)
-              },
-              fullname = if (fullname.isEmpty) user.fullname else fullname))
+                  Some(Crypto.passwordHash(user.salt + newPassword))
+              }
+            ))
 
           val newLocation = if (location.isEmpty) None else Some(location)
           val newUrl = if (url.isEmpty) None else Some(url)
@@ -157,12 +156,12 @@ object Accounts extends BaseController with Secure {
    * Handles password-reset POST request.
    */
   @NonSecure def sendPasswordResetRequest(emailAddr: String) = GingrsnapUser.getByEmail(emailAddr) match {
-    case Some(user) => {
+    case Some(user) if user.emailAddr.isDefined => {
       // One reset per 24-hour period.
       val prevReset = PasswordResetRequest.getMostRecentByUserId(user.id())
       if (prevReset.isEmpty || !PasswordResetRequest.isCompletable(prevReset.get)) {
         (Account.passwordReset(user) map { _: PasswordResetRequest =>
-          html.passwordResetEmailSent(user.emailAddr)
+          html.passwordResetEmailSent(user.emailAddr.get)
         }).toOptionLoggingError.getOrElse {
           flash.error("A problem arose during the password reset process")
           Action(Application.index)
@@ -215,10 +214,12 @@ object Accounts extends BaseController with Secure {
           .message("Password must be at least 6 characters long")
 
         if (!Validation.hasErrors) {
-          GingrsnapUser.updatePassword(user, newPassword)
-          Authentication.authenticate(user.emailAddr, PasswordCredential(newPassword))
-          PasswordResetRequest.update(pwdResetRequest.copy(resetCompleted = true))
-          flash.success("Password successfully updated")
+          user.emailAddr map { emailAddr =>
+            GingrsnapUser.updatePassword(user, newPassword)
+            Authentication.authenticate(emailAddr, PasswordCredential(newPassword))
+            PasswordResetRequest.update(pwdResetRequest.copy(resetCompleted = true))
+            flash.success("Password successfully updated")
+          }
           Action(Accounts.edit)
         } else {
           html.passwordResetForm(user.id(), user.fullname, pwdResetRequestId)

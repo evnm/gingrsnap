@@ -1,10 +1,6 @@
 @(
-  fullname: Option[String] = None,
-  location: Option[String] = None,
-  imgUrl: Option[String] = None,
-  twUserId: Option[Long] = None,
-  twAccessToken: Option[String] = None,
-  twAccessTokenSecret: Option[String] = None
+  fullnameOpt: Option[String] = None,
+  emailAddrOpt: Option[String] = None
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -16,25 +12,16 @@
 
 @main("Create an account") {
   <div class="well">
-    <h1>Create an identity on Gingrsnap</h1>
+    <h1>Get started with Gingrsnap</h1>
     <div class="row">
       <div class="span6">
+        <h2>Sign up with an email address and a password</h2>
         <form id="signup-form" class="form-stacked" method="POST">
-          @twUserId.map { twUserId =>
-            <input name="twUserId" type="hidden" value="@twUserId" />
-          }
-          @twAccessToken.map { twAccessToken =>
-            <input name="twAccessToken" type="hidden" value="@twAccessToken" />
-          }
-          @twAccessTokenSecret.map { twAccessTokenSecret =>
-            <input name="twAccessTokenSecret" type="hidden" value="@twAccessTokenSecret" />
-          }
-
           <label for="fullname">Name</label>
-          <input class="medium span5" id="fullname" name="fullname" type="text" value="@fullname" />
+          <input class="medium span5" id="fullname" name="fullname" type="text" value="@fullnameOpt.getOrElse("")" />
 
           <label for="emailAddr">Email Address</label>
-          <input class="medium span5" id="emailAddr" name="emailAddr" type="text" />
+          <input class="medium span5" id="emailAddr" name="emailAddr" type="text" value="@emailAddrOpt.getOrElse("")" />
 
           <label for="password">Password</label>
           <input class="medium span5" id="password" name="password" type="password" />
@@ -42,29 +29,20 @@
           <label for="confirmpassword">Confirm Password</label>
           <input class="medium span5" id="confirmpassword" name="confirmpassword" type="password" />
 
-          <div class="form-actions">
-            <input class="btn btn-primary" type="submit" value="Create account"/>
-          </div>
+          <input class="btn btn-primary" type="submit" value="Create account"/>
         </form>
       </div>
 
-      <div class="span5 signup-sidebar pull-right">
-        @if(twAccessToken.isEmpty && twAccessTokenSecret.isEmpty) {
-          <a class="btn btn-twitter" href="@action(OAuth.connect("twitter"))">
-            <i class="icon-twitter-small"></i>Connect with Twitter&raquo;
-          </a>
-          <p>Connecting will let you sign into Gingrsnap with a single click when you're already logged into Twitter.</p>
-        } else {
-          <div>
-            @imgUrl.map { imgUrl =>
-              <img src="@imgUrl" />
-            }
-            <a class="btn btn-twitter disabled" href="@action(GingrsnapUsers.neue())">
-              <i class="icon-twitter-small"></i>Connected with Twitter
-            </a>
-          </div>
-          <p>We've received your credentials from Twitter. Complete the signup process by providing your email address and a password.</p>
-        }
+      <div class="span1">
+        <h1>OR</h1>
+      </div>
+
+      <div class="span4 pull-right">
+        <a class="btn btn-large btn-twitter" href="@action(OAuth.connect("twitter"))">
+          <i class="icon-twitter-large"></i>Connect with Twitter
+        </a>
+        <p><strong>Sign up with your Twitter account so you don't have to remember another email+password combination.</strong></p>
+        <p>Connecting will let you sign into Gingrsnap with a single click when you're already logged into Twitter.</p>
       </div>
     </div>
   </div>

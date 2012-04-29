@@ -1,9 +1,9 @@
 @(
   fullname: String,
-  emailAddr: String,
+  emailAddrOpt: Option[String],
   appBaseUrl: String,
   slug: String,
-  hasTwitterConnection: Boolean,
+  connectedTwUsernameOpt: Option[String],
   location: String = "",
   url: String = "",
   profileImageUrlOpt: Option[(String, String)]
@@ -30,7 +30,7 @@
             <input id="fullname" name="fullname" type="text" value="@fullname" />
 
             <label for="emailAddr">Email Address</label>
-            <input id="emailAddr" name="emailAddr" type="text" value="@emailAddr"/>
+            <input id="emailAddr" name="emailAddr" type="text" value="@emailAddrOpt.getOrElse("")" />
 
             <label for="slug">Gingrsnap URL</label>
             <p>This is the URL of your Gingrsnap profile. Your recipes will be end up at <code>@(appBaseUrl)@slug/title+of+your+recipe</code>.</p>
@@ -48,7 +48,7 @@
 
           <fieldset>
             <legend>Password</legend>
-            <label for="oldPassword">Old Password</label>
+            <label for="oldPassword">Old Password (if you have one)</label>
             <input id="oldPassword" name="oldPassword" type="password" />
 
             <label for="newPassword">New Password</label>
@@ -74,15 +74,20 @@
           <fieldset>
             <legend>Connections</legend>
             <p>Connect to sign into Gingrsnap with your Twitter account and easily share recipes with your followers.</p>
-            @if(hasTwitterConnection) {
-              <div class="oauth-connection-badge">
-                <span class="twitter-icon">Twitter</span>
-                <a class="close">&times;</a>
-              </div>
-            } else {
-              <a class="btn btn-twitter" href="@action(OAuth.connect("twitter"))">
-                <i class="icon-twitter-small"></i>Connect with Twitter &raquo;
-              </a>
+
+            @connectedTwUsernameOpt match {
+              case Some(connectedTwUsername) => {
+                <div class="oauth-connection-badge">
+                  <span class="twitter-icon">Connected to @@@connectedTwUsername</span>
+                  <a class="close" title="Revoke connection">&times;</a>
+                </div>
+              }
+
+              case None => {
+                <a class="btn btn-twitter" href="@action(OAuth.connect("twitter"))">
+                  <i class="icon-twitter-small"></i>Connect with Twitter &raquo;
+                </a>
+              }
             }
           </fieldset>
         </div>

@@ -8,7 +8,6 @@ import play.mvc.Controller
 import play.data.validation.Validation
 import scala.collection.JavaConversions._
 import secure.{NonSecure, PasswordCredential, TwAuthCredential}
-import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 
 object GingrsnapUsers extends BaseController with Secure {
@@ -159,41 +158,11 @@ object GingrsnapUsers extends BaseController with Secure {
    * Handles GET to signup page.
    */
   @NonSecure def neue(
-    twUserId: Long = -1,
-    twAccessToken: String = "",
-    twAccessTokenSecret: String = ""
+    fullnameOpt: Option[String] = None,
+    emailAddrOpt: Option[String] = None
   ) = Authentication.getLoggedInUser match {
     case Some(_) => Action(Application.index)
-    case None => {
-      if (twUserId > 0 && twAccessToken.nonEmpty && twAccessTokenSecret.nonEmpty) {
-        val accessToken = new AccessToken(twAccessToken, twAccessTokenSecret)
-
-        // Log user in with a message if they're already registered.
-        GingrsnapUser.getByTwAuth(accessToken) match {
-          case Some(user) =>
-            Authentication.authenticate(user.emailAddr, TwAuthCredential(accessToken))
-            flash.success("You've already registered on Gingrsnap by connecting your Twitter account")
-            Action(Application.index)
-          case None => {
-            val twitterIface = new TwitterFactory().getInstance()
-            twitterIface.setOAuthAccessToken(accessToken)
-            val twUser = twitterIface.verifyCredentials()
-            val (fullname, location, imgUrl) =
-              (twUser.getName(), twUser.getLocation(), twUser.getProfileImageURL().toString)
-
-            html.neue(
-              Some(fullname),
-              Some(location),
-              Some(imgUrl),
-              Some(twUserId),
-              Some(twAccessToken),
-              Some(twAccessTokenSecret))
-          }
-        }
-      } else {
-        html.neue()
-      }
-    }
+    case None => html.neue(fullnameOpt, emailAddrOpt)
   }
 
   /**
@@ -201,41 +170,63 @@ object GingrsnapUsers extends BaseController with Secure {
    */
   @NonSecure def create(
     fullname: String,
-    emailAddr: String,
-    password: String,
+    location: String = "",
+    url: String = "",
+    emailAddr: String = "",
+    password: String = "",
     twUserId: Long = -1,
+    twUsername: String = "",
     twAccessToken: String = "",
     twAccessTokenSecret: String = ""
   ) = Authentication.getLoggedInUser match {
     case Some(_) => Action(Application.index)
     case None => {
       Validation.required("fullname", fullname).message("Name is required")
+      if (emailAddr.nonEmpty) {
+        Validation.email("emailAddr", emailAddr).message("Must provide a valid email address")
+        Validation.isTrue(
+          "emailAddr",
+          GingrsnapUser.count("emailAddr = {emailAddr}").on("emailAddr" -> emailAddr).single() == 0
+        ).message("Email address has already been registered")
+        Validation.required("password", password)
+          .message("Password is required when email address is provided")
+      }
+
       Validation.isTrue(
-        "fullname",
-        fullname.matches("[a-zA-Z]+( [a-zA-z]+)*")
-      ).message("Full name must contain only letters and spaces")
-      Validation.required("emailAddr", emailAddr).message("Email address is required")
-      Validation.email("emailAddr", emailAddr).message("Must provide a valid email address")
-      Validation.isTrue(
-        "emailAddr",
-      GingrsnapUser.count("emailAddr = {emailAddr}").on("emailAddr" -> emailAddr).single() == 0
-      ).message("Email address has already been registered")
-      Validation.required("password", password).message("Password is required")
+        "auth_required",
+        (emailAddr.nonEmpty && password.nonEmpty)
+          || (twUserId > 0 && twUsername.nonEmpty && twAccessToken.nonEmpty && twAccessTokenSecret.nonEmpty)
+      ).message("User can't be created without either email+password or Twitter auth credentials.")
+
+      if (url.nonEmpty) {
+        Validation.url("url", url).message("Provided website URL must be a valid URL")
+      }
 
       if (Validation.hasErrors) {
-        neue()
+        neue(Some(fullname), Some(emailAddr))
       } else {
-        val twId = if (twUserId > 0) Some(twUserId) else None
-        val twToken = if (twAccessToken.nonEmpty) Some(twAccessToken.split(", ")(0)) else None
-        val twSecret = if (twAccessTokenSecret.nonEmpty) Some(twAccessTokenSecret.split(", ")(0)) else None
+        val emailAddrOpt = if (emailAddr.nonEmpty) Some(emailAddr) else None
+        val passwordOpt = if (password.nonEmpty) Some(password) else None
+        val twIdOpt = if (twUserId > 0) Some(twUserId) else None
+        val twUsernameOpt = if (twUsername.nonEmpty) Some(twUsername) else None
+        val twTokenOpt = if (twAccessToken.nonEmpty) Some(twAccessToken.split(", ")(0)) else None
+        val twSecretOpt =
+          if (twAccessTokenSecret.nonEmpty) Some(twAccessTokenSecret.split(", ")(0)) else None
         // TODO: Why the fuck is the .split(", ")(0) necessary??
 
         GingrsnapUser.create(
-          GingrsnapUser(emailAddr, password, fullname, twId, twToken, twSecret)
+          GingrsnapUser(fullname, emailAddrOpt, passwordOpt, twIdOpt, twUsernameOpt, twTokenOpt, twSecretOpt)
         ).toOptionLoggingError map { createdUser =>
-          Authentication.authenticate(emailAddr, PasswordCredential(password))
+          if (emailAddr.nonEmpty) {
+            Mails.welcome(createdUser)
+            Authentication.authenticate(emailAddr, PasswordCredential(password))
+          } else {
+            Authentication.authenticate(
+              twAccessToken,
+              TwAuthCredential(new AccessToken(twAccessToken, twAccessTokenSecret)))
+          }
+
           flash.success("Welcome to Gingrsnap, " + fullname)
-          Mails.welcome(createdUser)
           Action(Application.index)
         } getOrElse {
           flash.error("Unfortunately, there was an error while creating your account")

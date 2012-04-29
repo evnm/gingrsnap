@@ -64,7 +64,7 @@ object Account extends Magic[Account] {
       val confirmationUrl = "%saccount/password_reset/%s".format(
         play.configuration("application.baseUrl"),
         pwdResetRequest.id())
-      Mails.resetPassword(user.emailAddr, user.fullname, confirmationUrl)
+      Mails.resetPassword(user.emailAddr.get, user.fullname, confirmationUrl)
       pwdResetRequest
     }
   }
