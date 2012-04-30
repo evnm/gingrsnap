@@ -5,7 +5,8 @@
   author: models.GingrsnapUser,
   ingredients: Seq[String],
   bodyHtml: String,
-  publishedAt: Option[java.sql.Timestamp],
+  publishedAt: java.sql.Timestamp,
+  modifiedAt: java.sql.Timestamp,
   tips: Option[Seq[(models.Tip, models.GingrsnapUser, Option[(String, String)])]],
   imageBaseUrlOpt: Option[(String, String)],
   totalMakeCount: Long,
@@ -20,6 +21,12 @@
   renderArgs: play.mvc.Scope.RenderArgs
 )
 
+@maybeModifiedAt(publishedAt: java.sql.Timestamp, modifiedAt: java.sql.Timestamp) = {
+  @if(publishedAt != modifiedAt) {
+    , last updated on @DateFormat.getDateInstance.format(modifiedAt)
+  }
+}
+
 @import controllers._
 @import java.text.DateFormat
 @import models.{Feature, Make}
@@ -31,9 +38,7 @@
       <span id="recipe-id" style="display: none;">@recipeId</span>
       <h1>@title</h1>
       <p class="attribution">Published by <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
-        @publishedAt.map { publishedAt =>
-          on @DateFormat.getDateInstance.format(publishedAt)
-        }
+        on @DateFormat.getDateInstance.format(publishedAt)@maybeModifiedAt(publishedAt, modifiedAt).toString.trim
       </p>
       <h2>Ingredients</h2>
       <ul id="ingredients">

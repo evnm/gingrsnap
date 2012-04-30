@@ -319,7 +319,7 @@ object Recipes extends BaseController with Secure {
       Recipe.getBySlugs(userSlug, recipeSlug) map { case (recipe, ingredients) =>
         // Only show recipe if it's published.
         recipe.publishedAt match {
-          case Some(_) => {
+          case Some(publishedAt) => {
             val recipeUrl = play.configuration("application.baseUrl") +
               URLEncoder.encode(author.slug, "utf8") + "/" +
               URLEncoder.encode(recipe.slug, "utf8")
@@ -343,7 +343,8 @@ object Recipes extends BaseController with Secure {
               author,
               ingredients map { _.name },
               recipe.body,
-              recipe.publishedAt,
+              publishedAt,
+              recipe.modifiedAt,
               tips,
               Image.getBaseUrlByRecipeId(recipe.id()),
               totalMakeCount,

@@ -123,13 +123,13 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   /**
    * Update a recipe, replacing the ingredient list and optionally its associated image.
    *
-   * prevIsPublished is the isPublished state of the recipe prior to this update.
+   * prevIsModified is the isModified state of the recipe prior to this update.
    */
   def update(
     recipe: Recipe,
     ingredients: Seq[String],
     imageOpt: Option[File] = None,
-    prevPublishedAt: Option[Timestamp]
+    prevModifiedAt: Option[Timestamp]
   ): Unit = {
     // Replace recipe's ingredient list.
     Ingredient.deleteByRecipeId(recipe.id())
@@ -155,10 +155,10 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     // * This is a draft being published, or
     // * The recipe is published and there hasn't been an identical event recently.
     val lastUpdated = recipe.modifiedAt.getTime
-    val lastPublished: Long = prevPublishedAt.map { _.getTime } getOrElse(0)
+    val lastModified: Long = prevModifiedAt.map { _.getTime } getOrElse(0)
     val threshold = 21600000
 
-    if (!prevPublishedAt.isDefined && recipe.publishedAt.isDefined && (now - lastPublished > threshold)) {
+    if (!prevModifiedAt.isDefined && recipe.publishedAt.isDefined && (now - lastModified > threshold)) {
       Event.create(
         Event(EventType.RecipePublish.id, recipe.authorId, recipe.id()))
     } else if (recipe.publishedAt.isDefined && (now - lastUpdated > threshold)) {

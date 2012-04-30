@@ -1,7 +1,6 @@
 import com.amazonaws.services.s3.model.{
   CannedAccessControlList, DeleteObjectRequest, ObjectMetadata, PutObjectRequest}
 import java.io.{File, FileOutputStream}
-import java.sql.Timestamp
 import models._
 import org.apache.commons.net.io
 import play.{Logger, Play}
@@ -30,9 +29,9 @@ import twitter4j.auth.AccessToken
         }
 
         // SnakeYAML can't handle Option[Timestamp]s, so hand-publish each recipe.
-        val timestamp = new Timestamp(System.currentTimeMillis())
+        Logger.info("Bootstrap task: Backfilling recipe publishedAts")
         Recipe.find().list() foreach { recipe =>
-          Recipe.update(recipe.copy(publishedAt = Some(timestamp)))
+          Recipe.update(recipe.copy(publishedAt = Some(recipe.modifiedAt)))
         }
       }
 

@@ -24,7 +24,7 @@
         <label for="title">Title</label>
         <input class="big" id="title" name="title" type="text" value="@title" />
 
-        <label for="slug">URL</label>
+        <label for="slug">Recipe URL</label>
         <div class="input-prepend" id="recipe-url">
           <span class="add-on">http://gingrsnap.com/@userSlug/</span>
           <input id="slug" name="slug" type="text" value="@recipeSlug" />
@@ -44,7 +44,7 @@
           }
         </ul>
         <div class="input-append" id="ingredient">
-          <input type="text" placeholder="Email address" />
+          <input type="text" placeholder="Add an ingredient" />
           <span class="add-on">
             <button id="add-ingredient" class="btn btn-success" type="button">
               <i class="icon-plus icon-white"></i>
@@ -53,6 +53,7 @@
         </div>
       </fieldset>
 
+      <label for="instructions">Instructions</label>
       <textarea class="wysiwyg" id="recipeBody" name="recipeBody" type="text">@recipeBody</textarea>
 
       <div class="form-actions">
