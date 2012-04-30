@@ -2,7 +2,7 @@ body {
   background: #ad7351 url(/public/img/ad7351-noise.gif) repeat;
   font-family: 'Open Sans', helvetica neue, helvetica, sans-serif;
   font-weight: 400;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 170%;
 }
 
@@ -361,10 +361,6 @@ ul.secondary-nav li {
   margin-bottom: 5em;
 }
 
-.about-info p {
-  font-size: 14px;
-}
-
 .well-signup p {
   margin-bottom: 0;
 }
@@ -559,6 +555,7 @@ ul.nav-tabs li.spacer {
 
 .feed-event li .event-body {
   display: inline;
+  font-size: 13px;
 }
 
 .feed-recipe li {
@@ -566,6 +563,7 @@ ul.nav-tabs li.spacer {
 }
 
 .feed-recipe .recipe-card-image, .feed-user .user-card-image {
+  margin-top: 4px;
   float: left;
 }
 
@@ -1081,7 +1079,6 @@ ul#ingredients li:last-child {
 
 #recipe-body {
   width: 94%;
-  font-size: 14px;
   line-height: 26px;
   -webkit-font-smoothing: antialiased;
 }
