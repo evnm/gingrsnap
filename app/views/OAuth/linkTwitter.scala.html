@@ -13,9 +13,14 @@
 
 @overlay(
   title = "Connect with Twitter",
-  h1Text = Some("Connect with Twitter"),
+  h1Text = None,
   focusElement = Some("input#emailAddr")
 ) {
+  @if(!imgUrl.isEmpty) {
+    <img src="@imgUrl" />
+  }
+  <h2>@@@twUsername on Twitter isn't connected to Gingrsnap yet</h2>
+
   <div class="row">
     <form id="connect-twitter-form" class="form-stacked action left" method="POST">
       <input name="twUsername" type="hidden" value="@twUsername" />
@@ -35,10 +40,7 @@
 	  </form>
 
     <div class="copy right">
-      @if(!imgUrl.isEmpty) {
-      <img src="@imgUrl" />
-      }
-      <p>The Twitter account <a href="https://twitter.com/@twUsername">@@@twUsername</a> isn't connected to Gingrsnap. Enter your Gingrsnap credentials to complete the process.</p>
+      <h3>Already have a Gingrsnap account? Enter your Gingrsnap credentials here to complete the linking process.</h3>
     </div>
   </div>
 

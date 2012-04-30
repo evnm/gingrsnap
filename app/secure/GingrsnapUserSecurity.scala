@@ -8,11 +8,14 @@ import twitter4j.auth.AccessToken
 
 class GingrsnapUserSecurity extends Security[GingrsnapUser] {
   override def authenticate[U <: Credential](
-    emailAddr: String, credential: U
+    username: String, credential: U
   ) = {
     val optGingrsnapUser = credential match {
-      case PasswordCredential(password) => GingrsnapUser.getByEmailAndPass(emailAddr, password)
-      case TwAuthCredential(token) => GingrsnapUser.getByTwAuth(token)
+      case PasswordCredential(password) =>
+        GingrsnapUser.getByEmailAndPass(username, password)
+
+      case TwAuthCredential(token) =>
+        GingrsnapUser.getByTwAuth(token)
     }
     optGingrsnapUser match {
       case Some(user: GingrsnapUser) => user
@@ -22,12 +25,12 @@ class GingrsnapUserSecurity extends Security[GingrsnapUser] {
 
   override def authorize(token: GingrsnapUser, role: String) = false
 
-  override def onSuccessfulLogin(emailAddr: String) = Authentication.getLoggedInUser match {
+  override def onSuccessfulLogin(token: String) = Authentication.getLoggedInUser match {
     case Some(user) => Cache.add(GingrsnapUserObjKey, user, "30mn")
     case None => // TODO: Add logging.
   }
 
-  override def onSuccessfulLogout(emailAddr: String) = {
+  override def onSuccessfulLogout(token: String) = {
     Cache.delete(GingrsnapUserObjKey)
   }
 }

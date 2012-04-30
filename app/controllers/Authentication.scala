@@ -35,9 +35,10 @@ object Authentication extends Controller {
    */
   def getLoggedInUser: Option[GingrsnapUser] = {
     session.get("username") match {
-      case encryptedEmail: String => {
+      case encrypted: String => {
         try {
-          GingrsnapUser.getByEncryptedEmail(encryptedEmail)
+          GingrsnapUser.getByEncryptedEmail(encrypted) orElse
+            GingrsnapUser.getByEncryptedTwToken(encrypted)
         } catch {
           case e => None
         }
@@ -76,21 +77,24 @@ object Authentication extends Controller {
   def authenticate: Redirect =
     authenticate(params.get("username"), PasswordCredential(params.get("password")))
 
+  def authenticate(username: String, pwdCredential: PasswordCredential): Redirect = {
+    authenticate(username.toLowerCase, pwdCredential.asInstanceOf[Credential])
+  }
+
   /**
    * Authenticates passed user inputs against the security realm.
    * @see secure.Security
    */
   def authenticate[U <: Credential](username: String, credential: U) = {
-    val lcUsername = username.toLowerCase
     var url = flash.get("url")
 
     try {
-      Security.authenticate(lcUsername, credential)
+      Security.authenticate(username, credential)
 
       // process the remember me request
-      rememberMe(params.get("remember"), lcUsername)
+      rememberMe(params.get("remember"), username)
 
-      session.put("username", Crypto.encryptAES(lcUsername));
+      session.put("username", Crypto.encryptAES(username));
       flash.keep
       redirectToOriginalURL()
     } catch {

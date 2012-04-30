@@ -1,6 +1,6 @@
 package models
 
-import controllers.Constants.{EncryptedEmailToUserIdKey, GingrsnapUserObjKey, SlugToUserIdKey}
+import controllers.Constants._
 import java.io.{File, FileOutputStream}
 import java.net.URL
 import java.nio.channels.Channels
@@ -16,13 +16,14 @@ import twitter4j.auth.AccessToken
 
 case class GingrsnapUser(
   id: Pk[Long],
-  emailAddr: String,
-  password: String,
+  emailAddr: Option[String],
+  password: Option[String],
   salt: String,
   fullname: String,
   slug: String,
   createdAt: Timestamp,
   twUserId: Option[Long] = None,
+  twUsername: Option[String] = None,
   twAccessToken: Option[String] = None,
   twAccessTokenSecret: Option[String] = None
 )
@@ -58,32 +59,34 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
   }
 
   def apply(
-    emailAddr: String,
-    password: String,
     fullname: String,
-    twUserId: Option[Long],
-    twToken: Option[String],
-    twSecret: Option[String]
+    emailAddrOpt: Option[String],
+    passwordOpt: Option[String],
+    twUserIdOpt: Option[Long],
+    twUsernameOpt: Option[String],
+    twTokenOpt: Option[String],
+    twSecretOpt: Option[String]
   ) = {
     val salt = scala.util.Random.nextInt.abs.toString
     val slug = findUniqueSlug(fullname.toLowerCase().replace(" ", "+"))
 
     new GingrsnapUser(
       NotAssigned,
-      emailAddr,
-      Crypto.passwordHash(salt + password),
+      emailAddrOpt,
+      passwordOpt map { password => Crypto.passwordHash(salt + password) },
       salt,
       fullname,
       slug,
       new Timestamp(System.currentTimeMillis()),
-      twUserId,
-      twToken,
-      twSecret)
+      twUserIdOpt,
+      twUsernameOpt,
+      twTokenOpt,
+      twSecretOpt)
   }
 
   override def create(user: GingrsnapUser) = {
     super.create(user) map { createdUser =>
-      val twUser: Option[TwitterUser] = user.twUserId map { twUserId =>
+      val twUserOpt: Option[TwitterUser] = user.twUserId map { twUserId =>
         // Scrape the user's Twitter profile image.
         // TODO: What if they have a default Twitter avatar?
         val twitterIface = new TwitterFactory().getInstance()
@@ -107,7 +110,14 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         twUser
       }
 
-      Account.create(Account(NotAssigned, createdUser.id(), twUser map { _.getLocation() }))
+      Account.create(
+        Account(
+          NotAssigned,
+          createdUser.id(),
+          twUserOpt map { _.getLocation },
+          twUserOpt flatMap { twUser =>
+            if (twUser.getURL != null) Some(twUser.getURL.toString) else None
+          }))
       Cache.set(userIdCacheKey(createdUser.id()), createdUser, "6h")
       createdUser
     }
@@ -126,14 +136,17 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    */
   def updatePassword(user: GingrsnapUser, newPassword: String) = {
     GingrsnapUser.update(
-      user.copy(password = Crypto.passwordHash(user.salt + newPassword)))
+      user.copy(password = Some(Crypto.passwordHash(user.salt + newPassword))))
   }
 
   /**
    * Validates a user against a password string.
    */
-  def validatePassword(user: GingrsnapUser, password: String): Boolean =
-    user.password == Crypto.passwordHash(user.salt + password)
+  def validatePassword(user: GingrsnapUser, password: String): Boolean = {
+    user.password map { actualPassword =>
+      actualPassword == Crypto.passwordHash(user.salt + password)
+    } getOrElse(false)
+  }
 
   protected[this] def userIdCacheKey(userId: Long) = GingrsnapUserObjKey + ":" + userId
 
@@ -175,8 +188,8 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
     EncryptedEmailToUserIdKey + ":" + encryptedEmail
 
   /**
-   * Looks up a user by encrypted password. Caches secondary index and returns
-   * the looked-up user, if it exists.
+   * Looks up a user by encrypted email address. Caches secondary index and
+   * returns the looked-up user, if it exists.
    */
   def getByEncryptedEmail(encryptedEmail: String): Option[GingrsnapUser] = {
     Cache.get[java.lang.Long](encryptedEmailToUserIdCacheKey(encryptedEmail)) match {
@@ -185,6 +198,28 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         // Set encrypted email addr -> user id secondary index.
         Cache.add(
           encryptedEmailToUserIdCacheKey(encryptedEmail),
+          java.lang.Long.valueOf(user.id()),
+          "6h")
+        Cache.add(userIdCacheKey(user.id()), user, "6h")
+        user
+      }
+    }
+  }
+
+  protected[this] def encryptedTwTokenToUserIdCacheKey(encryptedTwToken: String) =
+    EncryptedTwTokenToUserIdKey + ":" + encryptedTwToken
+
+  /**
+   * Looks up a user by encrypted Twitter auth token. Caches secondary index and
+   * returns the looked-up user, if it exists.
+   */
+  def getByEncryptedTwToken(encryptedTwToken: String): Option[GingrsnapUser] = {
+    Cache.get[java.lang.Long](encryptedTwTokenToUserIdCacheKey(encryptedTwToken)) match {
+      case Some(userId) => getById(userId.longValue)
+      case None => getByTwToken(Crypto.decryptAES(encryptedTwToken)) map { user =>
+        // Set encrypted email addr -> user id secondary index.
+        Cache.add(
+          encryptedTwTokenToUserIdCacheKey(encryptedTwToken),
           java.lang.Long.valueOf(user.id()),
           "6h")
         Cache.add(userIdCacheKey(user.id()), user, "6h")
@@ -208,7 +243,10 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    */
   def getByEmailAndPass(emailAddr: String, password: String): Option[GingrsnapUser] = {
     getByEmail(emailAddr) match {
-      case Some(user) if Crypto.passwordHash(user.salt + password) == user.password => Some(user)
+      case Some(user) if user.password map { actualPassword =>
+        Crypto.passwordHash(user.salt + password) == actualPassword
+      } getOrElse(false) => Some(user)
+
       case _ => None
     }
   }
@@ -219,6 +257,15 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
   def getByTwAuth(token: AccessToken) = {
     GingrsnapUser.find("twAccessToken = {token} and twAccessTokenSecret = {secret}")
       .on("token" -> token.getToken, "secret" -> token.getTokenSecret)
+      .first()
+  }
+
+  /**
+   * Looks up a user by Twitter access token.
+   */
+  def getByTwToken(token: String) = {
+    GingrsnapUser.find("twAccessToken = {token}")
+      .on("token" -> token)
       .first()
   }
 

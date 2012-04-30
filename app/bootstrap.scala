@@ -1,7 +1,6 @@
 import com.amazonaws.services.s3.model.{
   CannedAccessControlList, DeleteObjectRequest, ObjectMetadata, PutObjectRequest}
 import java.io.{File, FileOutputStream}
-import java.sql.Timestamp
 import models._
 import org.apache.commons.net.io
 import play.{Logger, Play}
@@ -11,6 +10,7 @@ import play.jobs.{OnApplicationStart, Job}
 import play.libs.Images
 import play.test._
 import s3.S3
+import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 
 @OnApplicationStart class Bootstrap extends Job {
@@ -29,9 +29,9 @@ import twitter4j.auth.AccessToken
         }
 
         // SnakeYAML can't handle Option[Timestamp]s, so hand-publish each recipe.
-        val timestamp = new Timestamp(System.currentTimeMillis())
+        Logger.info("Bootstrap task: Backfilling recipe publishedAts")
         Recipe.find().list() foreach { recipe =>
-          Recipe.update(recipe.copy(publishedAt = Some(timestamp)))
+          Recipe.update(recipe.copy(publishedAt = Some(recipe.modifiedAt)))
         }
       }
 
@@ -113,18 +113,18 @@ import twitter4j.auth.AccessToken
     tempFile.delete()
 */
     /**
-     * Twitter user id backfill.
+     * Twitter username backfill.
+     */
+    val twitterIface = new TwitterFactory().getInstance()
 
-    Logger.info("Bootstrap task: Backfilling Twitter user ids")
+    Logger.info("Bootstrap task: Backfilling Twitter usernames")
     GingrsnapUser.find().list() filter { user =>
-      user.twAccessToken.nonEmpty && user.twAccessTokenSecret.nonEmpty
+      user.twAccessToken.nonEmpty && user.twAccessTokenSecret.nonEmpty && user.twUserId.nonEmpty
     } foreach { user =>
+      val twUser = twitterIface.showUser(user.twUserId.get)
       GingrsnapUser.update(
-        user.copy(twUserId = Some(
-          new AccessToken(user.twAccessToken.get, user.twAccessTokenSecret.get)
-            .getUserId())))
+        user.copy(twUsername = Some(twUser.getScreenName)))
     }
-    */
 
     // Reset all cached feature flags.
     Feature.find().list() foreach { feature =>

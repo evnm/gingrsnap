@@ -32,7 +32,6 @@ a.close {
   vertical-align: text-top;
   position: relative;
   top: -3px;
-  left: -1px;
   font-size: 26px;
   font-family: helvetica neue, helvetica, sans-serif;
 }
@@ -175,7 +174,6 @@ img {
 }
 
 .oauth-connection-badge {
-  width: 100px;
   padding: 6px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -838,7 +836,7 @@ form#recipe-form ul#ingredients-inputs li input {
 
 form#recipe-form ul#ingredients-inputs li input, #ingredient input {
   padding: 4px 6px;
-  width: 220px;
+  width: 300px;
 }
 #recipe-form ul#ingredients span.add-on,
 #recipe-form ul#ingredients-inputs + div.input-append span.add-on {
@@ -900,8 +898,12 @@ div.overlay {
   -moz-box-shadow: 1px 1px 2px #666;
 }
 
+div.overlay .brand {
+  margin-bottom: 20px;
+}
+
 div.overlay h1 {
-  margin: 20px 0 28px 0;
+  margin: 0 0 28px 0;
 }
 
 div.overlay div.row {
