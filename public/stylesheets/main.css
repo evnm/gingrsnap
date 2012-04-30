@@ -121,6 +121,11 @@ img {
   text-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
 }
 
+.btn-large {
+  font-size: 18px;
+  padding: 10px 18px;
+}
+
 .btn-success {
   background-color: hsl(74, 52%, 39%) !important;
   background-repeat: repeat-x;
@@ -340,13 +345,16 @@ ul.secondary-nav li {
 .about-masthead {
   margin-top: 1em;
   margin-bottom: 5em;
+  text-align: center;
 }
 
 .about-masthead h1 {
   margin-bottom: 1em;
+  font-size: 42px;
 }
 
 .about-masthead img {
+  width: 660px;
   border: none;
   outline: none;
   text-align: center;
@@ -365,7 +373,8 @@ ul.secondary-nav li {
   margin-bottom: 0;
 }
 
-.well-promo {
+.about-masthead + .well-promo {
+  padding: 20px 24px;
   margin-bottom: 5em;
 }
 

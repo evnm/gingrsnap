@@ -10,24 +10,27 @@
 @import controllers.{GingrsnapUsers, OAuth}
 
 @main("About") {
-  <div class="row about-masthead">
-    <div class="span4">
-      <h1 class="hero">A simple tool for cataloging recipes.</h1>
-      @if(!userIsConnected) {
-        <div class="well well-promo">
-          <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Try it for free today!</a>
-          <p><strong>Signup is a snap</strong>. Find out how easy publishing recipes can be.</p>
-        </div>
-      }
-    </div>
-    <div class="span8">
-      <img class="img-example-recipe pull-right" src="https://s3.amazonaws.com/gingrsnap.prod/public/img/example-recipe.png" />
-    </div>
+  <div class="about-masthead">
+    <h1>A simple tool for cataloging recipes.</h1>
+    <img class="img-example-recipe" src="https://s3.amazonaws.com/gingrsnap.prod/public/img/example-recipe.png" />
   </div>
 
   <div class="well well-promo">
-    <h2>Gingrsnap is the recipe-collecting tool that creative cooks need.</h2>
-    <p>Now you don't have to be a dedicated food blogger to publish the food that you make.</p>
+    @if(!userIsConnected) {
+      <div class="row">
+        <div class="span6">
+          <h2>Gingrsnap is the recipe-collecting tool that creative cooks need.</h2>
+          <p>Now you don't have to be a dedicated food blogger to publish the food that you make.</p>
+        </div>
+        <div class="span4 pull-right">
+          <a class="btn btn-primary btn-large" href="@action(GingrsnapUsers.neue())">Try it today!</a>
+          <p><strong>Signup is a snap</strong>. Find out how easy publishing recipes can be.</p>
+        </div>
+      </div>
+    } else {
+      <h2>Gingrsnap is the recipe-collecting tool that creative cooks need.</h2>
+      <p>Now you don't have to be a dedicated food blogger to publish the food that you make.</p>
+    }
   </div>
 
   <div class="row about-info">
