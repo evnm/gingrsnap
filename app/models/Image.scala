@@ -149,7 +149,7 @@ object Image extends Magic[Image] {
     getByUserId(userId) map { image =>
       ("https://s3.amazonaws.com/%s.%s/%s".format(
         play.configuration("application.name"),
-        play.configuration("application.mode"),
+        "prod",//play.configuration("application.mode"),
         image.s3Key), image.extension)
     }
   }
@@ -175,7 +175,7 @@ object Image extends Magic[Image] {
     getByRecipeId(recipeId) map { image =>
       ("https://s3.amazonaws.com/%s.%s/%s".format(
         play.configuration("application.name"),
-        play.configuration("application.mode"),
+        "prod",//play.configuration("application.mode"),
         image.s3Key), image.extension)
     }
   }

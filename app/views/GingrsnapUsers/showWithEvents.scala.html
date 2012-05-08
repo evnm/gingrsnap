@@ -4,7 +4,7 @@
   isFollowedByConnectedUser: Boolean,
   account: models.Account,
   profileImageUrlOpt: Option[(String, String)],
-  draftsWithImages: Seq[(models.Recipe, Option[(String, String)])],
+  drafts: Seq[models.Recipe],
   totalMakeCount: Long,
   followingCount: Long,
   followerCount: Long,
@@ -83,7 +83,7 @@
       @if(connectedUser.id() == user.id()) {
         <div class="span4">
           <div class="well">
-            @views.common.html.wellRecipeList(connectedUserOpt, user, draftsWithImages, true)
+            @views.common.html.wellRecipeList(connectedUserOpt, user, drafts, true)
           </div>
         </div>
       }

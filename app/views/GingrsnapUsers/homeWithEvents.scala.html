@@ -1,6 +1,6 @@
 @(
   connectedUser: models.GingrsnapUser,
-  recipes: Seq[(models.Recipe, Option[(String, String)])],
+  connectedUserRecipes: Seq[models.Recipe],
   eventFeedType: Int,
   eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
 )(
@@ -68,7 +68,7 @@
 
     <div class="span4">
       <div class="well">
-        @views.common.html.wellRecipeList(Some(connectedUser), connectedUser, recipes, false)
+        @views.common.html.wellRecipeList(Some(connectedUser), connectedUser, connectedUserRecipes, false)
       </div>
     </div>
   </div>

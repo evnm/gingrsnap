@@ -1,7 +1,7 @@
 @(
   viewerOpt: Option[models.GingrsnapUser],
   user: models.GingrsnapUser,
-  recipes: Seq[(models.Recipe, Option[(String, String)])],
+  recipes: Seq[models.Recipe],
   isDraftList: Boolean
 )
 
@@ -27,26 +27,19 @@
   }
   @if(recipes.nonEmpty) {
     <ul>
-      @recipes.map { case (recipe, imageUrlOpt) =>
+      @recipes.map { recipe =>
         <li>
           <div class="recipe-card">
-            @imageUrlOpt.map { case (baseUrl, extension) =>
-              <a href="@action(Recipes.show(user.slug, recipe.slug))">
-                <img src="@(baseUrl + "_portrait." + extension)" />
-              </a>
+            @if(recipe.publishedAt.isEmpty) {
+              <label>
+                <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
+              </label>
+              <span class="label">Draft</span>
+            } else {
+              <label>
+                <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
+              </label>
             }
-            <div>
-              @if(recipe.publishedAt.isEmpty) {
-                <label>
-                  <a href="@action(Recipes.edit(recipe.id()))">@recipe.title</a>
-                </label>
-                <span class="label">Draft</span>
-              } else {
-                <label>
-                  <a href="@action(Recipes.show(user.slug, recipe.slug))">@recipe.title</a>
-                </label>
-              }
-            </div>
           </div>
         </li>
       }

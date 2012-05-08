@@ -23,9 +23,7 @@ object GingrsnapUsers extends BaseController with Secure {
   def followingRecipes: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.UserFollowing)) {
-        val connectedUserRecipes = Recipe.getAllByUserId(user.id()) map { recipe =>
-          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
-        }
+        val connectedUserRecipes = Recipe.getAllByUserId(user.id())
         val recipeFeed = Recipe.getMostRecentFollowed(user.id(), 20) map {
           Recipe.hydrate(_)
         }
@@ -46,9 +44,7 @@ object GingrsnapUsers extends BaseController with Secure {
    */
   def globalRecipes: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
-      val connectedUserRecipes = Recipe.getAllByUserId(user.id()) map { recipe =>
-        (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
-      }
+      val connectedUserRecipes = Recipe.getAllByUserId(user.id())
       val recipeFeed = Recipe.getMostRecent(20) map {
         Recipe.hydrate(_)
       }
@@ -66,9 +62,7 @@ object GingrsnapUsers extends BaseController with Secure {
   def twitterRecipes: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.TwitterEventFeeds)) {
-        val connectedUserRecipes = Recipe.getAllByUserId(user.id()) map { recipe =>
-          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
-        }
+        val connectedUserRecipes = Recipe.getAllByUserId(user.id())
         val recipeFeed = Recipe.getMostRecentFollowed(user.id(), 20) map {
           Recipe.hydrate(_)
         }
@@ -93,16 +87,14 @@ object GingrsnapUsers extends BaseController with Secure {
   def followingEvents: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.UserFollowing)) {
-        val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
-          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
-       }
+        val connectedUserRecipes = Recipe.getAllByUserId(user.id())
         val events = Event.getMostRecentFollowed(user.id(), 20) map {
           Event.hydrate(_)
         }
 
         views.GingrsnapUsers.html.homeWithEvents(
           user,
-          recipesWithImages,
+          connectedUserRecipes,
           EventFeedType.GingrsnapFollowing.id,
           events
         )
@@ -117,13 +109,11 @@ object GingrsnapUsers extends BaseController with Secure {
    */
   def globalEvents: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
-      val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
-        (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
-      }
+      val connectedUserRecipes = Recipe.getAllByUserId(user.id())
       val events = Event.getMostRecent(20).map(Event.hydrate)
       views.GingrsnapUsers.html.homeWithEvents(
         user,
-        recipesWithImages,
+        connectedUserRecipes,
         EventFeedType.Global.id,
         events)
     case None => Application.index
@@ -135,16 +125,14 @@ object GingrsnapUsers extends BaseController with Secure {
   def twitterEvents: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       if (Feature(Constants.TwitterEventFeeds)) {
-        val recipesWithImages = Recipe.getAllByUserId(user.id()) map { recipe =>
-          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
-        }
+        val connectedUserRecipes = Recipe.getAllByUserId(user.id())
         val events = Event.getMostRecentFollowed(user.id(), 20) map {
           Event.hydrate(_)
         }
 
         views.GingrsnapUsers.html.homeWithEvents(
           user,
-          recipesWithImages,
+          connectedUserRecipes,
           EventFeedType.GingrsnapFollowing.id,
           events
         )
@@ -252,13 +240,11 @@ object GingrsnapUsers extends BaseController with Secure {
     val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
       Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
     }).getOrElse(false)
-    val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
-      (if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
+    val drafts: Seq[Recipe] =
+      if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
         Recipe.getDraftsByUserId(user.id())
       } else {
         Seq.empty
-      }) map { recipe =>
-        (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
       }
 
     html.showWithRecipes(
@@ -267,7 +253,7 @@ object GingrsnapUsers extends BaseController with Secure {
       isFollowedByConnectedUser,
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
-      draftsWithImages,
+      drafts,
       Make.getCountByUserId(user.id()),
       GingrsnapUser.getFollowingCount(user.id()),
       GingrsnapUser.getFollowerCount(user.id()),
@@ -287,13 +273,11 @@ object GingrsnapUsers extends BaseController with Secure {
     val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
       Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
     }).getOrElse(false)
-    val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
-      (if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
+    val drafts: Seq[Recipe] =
+      if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
         Recipe.getDraftsByUserId(user.id())
       } else {
         Seq.empty
-      }) map { recipe =>
-        (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
       }
 
     html.showWithEvents(
@@ -302,7 +286,7 @@ object GingrsnapUsers extends BaseController with Secure {
       isFollowedByConnectedUser,
       Account.getByGingrsnapUserId(user.id()).get,
       Image.getBaseUrlByUserId(user.id()),
-      draftsWithImages,
+      drafts,
       Make.getCountByUserId(user.id()),
       GingrsnapUser.getFollowingCount(user.id()),
       GingrsnapUser.getFollowerCount(user.id()),
@@ -330,13 +314,11 @@ object GingrsnapUsers extends BaseController with Secure {
         Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
       }).getOrElse(false)
 
-      val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
-        (if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
+      val drafts: Seq[Recipe] =
+        if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
           Recipe.getDraftsByUserId(user.id())
         } else {
           Seq.empty
-        }) map { recipe =>
-          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
         }
 
       html.showWithFollowing(
@@ -345,7 +327,7 @@ object GingrsnapUsers extends BaseController with Secure {
         isFollowedByConnectedUser,
         Account.getByGingrsnapUserId(user.id()).get,
         Image.getBaseUrlByUserId(user.id()),
-        draftsWithImages,
+        drafts,
         Make.getCountByUserId(user.id()),
         GingrsnapUser.getFollowingCount(user.id()),
         GingrsnapUser.getFollowerCount(user.id()),
@@ -379,13 +361,11 @@ object GingrsnapUsers extends BaseController with Secure {
         Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
       }).getOrElse(false)
 
-      val draftsWithImages: Seq[(Recipe, Option[(String, String)])] =
-        (if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
+      val drafts: Seq[Recipe] =
+        if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
           Recipe.getDraftsByUserId(user.id())
         } else {
           Seq.empty
-        }) map { recipe =>
-          (recipe, Image.getBaseUrlByRecipeId(recipe.id()))
         }
 
       html.showWithFollowers(
@@ -394,7 +374,7 @@ object GingrsnapUsers extends BaseController with Secure {
         isFollowedByConnectedUser,
         Account.getByGingrsnapUserId(user.id()).get,
         Image.getBaseUrlByUserId(user.id()),
-        draftsWithImages,
+        drafts,
         Make.getCountByUserId(user.id()),
         GingrsnapUser.getFollowingCount(user.id()),
         GingrsnapUser.getFollowerCount(user.id()),
