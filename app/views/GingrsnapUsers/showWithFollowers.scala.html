@@ -76,7 +76,7 @@
         <h2>Followers</h2>
         <span>People that follow @user.fullname</span>
       </div>
-      @views.common.html.userList(followersWithImages)
+      @views.common.html.userList(connectedUserOpt.map(_.id()).getOrElse(-1), followersWithImages)
     </div>
 
     @connectedUserOpt.map { connectedUser =>

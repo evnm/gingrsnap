@@ -1,4 +1,5 @@
 @(
+  connectedUserId: Long,
   usersWithImages: Seq[(models.GingrsnapUser, Option[Boolean], Option[(String, String)])]
 )
 
@@ -18,16 +19,20 @@
         <a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a>
       </h3>
 
-      @isFollowedByConnectedUserOpt.map { isFollowedByConnectedUser =>
-        <div class="pull-right">
-          <span id="user-id" style="display: none;">@user.id()</span>
-          @if(isFollowedByConnectedUser) {
-            <button class="btn unfollow-user btn-danger" href="#">Unfollow</button>
-          } else {
-            <button class="btn follow-user" href="#">Follow</button>
+      <div class="pull-right">
+        @if(connectedUserId != user.id()) {
+          @isFollowedByConnectedUserOpt.map { isFollowedByConnectedUser =>
+            <span id="user-id" style="display: none;">@user.id()</span>
+            @if(isFollowedByConnectedUser) {
+              <button class="btn unfollow-user btn-danger" href="#">Unfollow</button>
+            } else {
+              <button class="btn follow-user" href="#">Follow</button>
+            }
           }
-        </div>
-      }
+        } else {
+          <span class="help-block">This is you!</span>
+        }
+      </div>
 
       <div style="clear:left;"></div>
     </li>
