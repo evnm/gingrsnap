@@ -512,7 +512,8 @@ $(document).ready(function() {
           $(lastLi).remove();
         } else {
           $.each(response.recipes, function(i, recipe) {
-            var recipeImgStr = (recipe.recipeImgBaseUrl && recipe.recipeImgExtension) ?
+            var recipeHasImage = recipe.recipeImgBaseUrl && recipe.recipeImgExtension
+            var recipeImgStr = (recipeHasImage) ?
               '<a class="recipe-card-image" href="/' + recipe.authorSlug + '/' +
               recipe.recipeSlug + '"><img src="' + recipe.recipeImgBaseUrl +
               '_portrait.' + recipe.recipeImgExtension + '" /></a>'
@@ -523,9 +524,17 @@ $(document).ready(function() {
               recipe.recipeTitle + '</a></h3>'
             var citeStr = '<cite>Published by <a href="/' + recipe.authorSlug + '">' +
               recipe.authorFullname + '</a></cite>'
-            var result = '<li class="recipe-card"><span id="recipe-timestamp" style="display: none;">' +
-              recipe.modifiedAt + '</span>' + recipeImgStr + h3Str + citeStr +
-              '<div style="clear:left;"></div></li>';
+
+            var result =
+              '<li class="recipe-card"><span id="recipe-timestamp" style="display: none;">' +
+              recipe.modifiedAt + '</span>'
+
+            if (recipeHasImage) {
+              result += '<div class="text">' + h3Str + citeStr + '</div>' +
+                recipeImgStr + '<div style="clear: both;"></div></li>';
+            } else {
+              result += h3Str + citeStr + '</li>';
+            }
 
             $(lastLi).before(result)
           });

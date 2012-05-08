@@ -573,14 +573,21 @@ ul.nav-tabs li.spacer {
 
 .feed-recipe .recipe-card-image, .feed-user .user-card-image {
   margin-top: 4px;
-  float: left;
+  float: right;
 }
 
 .feed-recipe .recipe-card-image img {
   border-bottom: none;
-  border-right: 1px dashed rgba(0, 0, 0, 0.07);
-  margin-right: 14px;
-  padding: 0 10px 0 0;
+  border-left: 1px dashed rgba(0, 0, 0, 0.07);
+  margin-left: 14px;
+  padding: 0 0 0 14px;
+  width: 220px;
+}
+
+.feed-recipe .recipe-card div.text {
+  max-width: 320px;
+  display: inline-block;
+  vertical: text-top;
 }
 
 .feed-recipe .recipe-card h3 {

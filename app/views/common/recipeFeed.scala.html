@@ -13,18 +13,31 @@
   @recipeFeed.map { case (recipe, author, imageUrlOpt) =>
     <li class="recipe-card">
       <span id="recipe-timestamp" style="display: none;">@recipe.modifiedAt</span>
-      @imageUrlOpt.map { case (baseUrl, extension) =>
-        <a class="recipe-card-image" href="@action(Recipes.show(author.slug, recipe.slug))">
-          <img src="@(baseUrl + "_portrait." + extension)" />
-        </a>
+
+      @if(imageUrlOpt.nonEmpty) {
+        <div class="text">
+          <h3>
+            <a href="@action(Recipes.show(author.slug, recipe.slug))">@recipe.title</a>
+          </h3>
+          <cite>
+            Published by <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
+          </cite>
+        </div>
+
+        @imageUrlOpt.map { case (baseUrl, extension) =>
+          <a class="recipe-card-image" href="@action(Recipes.show(author.slug, recipe.slug))">
+            <img src="@(baseUrl + "_portrait." + extension)" />
+          </a>
+        }
+        <div style="clear: both;"></div>
+      } else {
+        <h3>
+          <a href="@action(Recipes.show(author.slug, recipe.slug))">@recipe.title</a>
+        </h3>
+        <cite>
+          Published by <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
+        </cite>
       }
-      <h3>
-        <a href="@action(Recipes.show(author.slug, recipe.slug))">@recipe.title</a>
-      </h3>
-      <cite>
-        Published by <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
-      </cite>
-      <div style="clear:left;"></div>
     </li>
   }
   <li id="pagination-control">
