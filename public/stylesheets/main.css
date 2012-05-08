@@ -579,7 +579,7 @@ ul.nav-tabs li.spacer {
   margin: 0 0 18px 0;
 }
 
-.feed-recipe .recipe-card-image, .feed-user .user-card-image {
+.feed-recipe .recipe-card-image {
   margin-top: 4px;
   float: right;
 }
