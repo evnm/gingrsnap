@@ -68,7 +68,11 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
     twSecretOpt: Option[String]
   ) = {
     val salt = scala.util.Random.nextInt.abs.toString
-    val slug = findUniqueSlug(fullname.toLowerCase().replace(" ", "+"))
+    val slug =
+      if (twUsernameOpt.nonEmpty)
+        findUniqueSlug(twUsernameOpt.get.toLowerCase())
+      else
+        findUniqueSlug(fullname.toLowerCase().replace(" ", "+"))
 
     new GingrsnapUser(
       NotAssigned,
