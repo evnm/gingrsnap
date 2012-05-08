@@ -111,7 +111,7 @@ import twitter4j.auth.AccessToken
 
     originalFile.delete()
     tempFile.delete()
-*/
+
     /**
      * Twitter username backfill.
      */
@@ -125,7 +125,7 @@ import twitter4j.auth.AccessToken
       GingrsnapUser.update(
         user.copy(twUsername = Some(twUser.getScreenName)))
     }
-
+*/
     // Reset all cached feature flags.
     Feature.find().list() foreach { feature =>
       Cache.set(Feature.cacheKey(feature.id()), feature.state, "24h")
