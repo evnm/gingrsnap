@@ -1067,6 +1067,7 @@ dl {
 
 dt {
   float: left;
+  height: 1.3em;
   width: 37%;
   font-weight: normal;
   color: #999;
@@ -1074,11 +1075,14 @@ dt {
   margin-right: 14px;
   border-bottom: 1px solid #eee;
   border-right: 1px solid #eee;
+  vertical-align: middle;
 }
 
 dd {
   padding: 8px 10px;
   border-bottom: 1px solid #eee;
+  height: 1.3em;
+  vertical-align: middle;
 }
 
 /**
