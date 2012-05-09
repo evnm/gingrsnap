@@ -249,6 +249,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     SQL("""
         select * from Recipe
         where modifiedAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS')
+          and publishedAt IS NOT NULL
         order by modifiedAt desc
         limit {n}
         """)
@@ -288,6 +289,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     SQL("""
         select * from Recipe r
         where r.modifiedAt < to_timestamp({lastTimestamp}, 'YYYY-MM-DD HH24:MI:SS.MS')
+          and r.publishedAt IS NOT NULL
         and r.authorId = {userId}
         order by r.modifiedAt desc
         limit {n}
