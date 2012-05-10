@@ -72,11 +72,11 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
       if (twUsernameOpt.nonEmpty)
         findUniqueSlug(twUsernameOpt.get.toLowerCase())
       else
-        findUniqueSlug(fullname.toLowerCase().replace(" ", "+"))
+        findUniqueSlug(fullname.toLowerCase.replace(" ", "+"))
 
     new GingrsnapUser(
       NotAssigned,
-      emailAddrOpt,
+      emailAddrOpt map { _.toLowerCase },
       passwordOpt map { password => Crypto.passwordHash(salt + password) },
       salt,
       fullname,
@@ -238,7 +238,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    * NOTE: Does not verify password.
    */
   def getByEmail(emailAddr: String): Option[GingrsnapUser] = {
-    GingrsnapUser.find("emailAddr = {e}").on("e" -> emailAddr).first()
+    GingrsnapUser.find("lower(emailAddr) = {e}").on("e" -> emailAddr).first()
   }
 
   /**
