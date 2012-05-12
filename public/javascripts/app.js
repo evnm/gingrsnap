@@ -93,10 +93,10 @@ $(document).ready(function() {
 
   // Add ingredient button click action.
   $("button#add-ingredient").click(function() {
-    var ingrInput = $("#ingredient input")
+    var ingrInput = $("#ingredient input");
     if (ingrInput.val()) {
-      $("ul#ingredients-inputs")
-        .append('<li><div class="input-append"><input class="span4" type="text" value="' +
+      ingrInput.parents("li")
+        .before('<li><div class="input-append"><input class="span4" type="text" value="' +
                 ingrInput.val().replace(/\"/g, "&#34;") + '" /><span class="add-on">' +
                 '<a class="close" href="#">&times;</a></span></div>');
       ingrInput.val("").focus();
@@ -114,7 +114,9 @@ $(document).ready(function() {
     $("ul#ingredients-inputs")
       .find("li input")
       .each(function(i, input) {
-        $(input).attr("name", "ingredients[" + i + "]");
+        if (!$(input).val().trim().length == 0) {
+          $(input).attr("name", "ingredients[" + i + "]");
+        }
       });
   });
 
