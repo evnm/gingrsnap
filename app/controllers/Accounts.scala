@@ -25,7 +25,7 @@ object Accounts extends BaseController with Secure {
     newPassword: String,
     image: File
   ) = {
-    if (emailAddr.nonEmpty && emailAddr != user.emailAddr) {
+    if (emailAddr.nonEmpty && (user.emailAddr.isEmpty || emailAddr != user.emailAddr.get)) {
       Validation.email("emailAddr", emailAddr).message("Must provide a valid email address")
       Validation.isTrue(
         "emailAddr",
