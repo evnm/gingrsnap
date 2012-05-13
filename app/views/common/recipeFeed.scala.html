@@ -20,8 +20,9 @@
             <a href="@action(Recipes.show(author.slug, recipe.slug))">@recipe.title</a>
           </h3>
           <cite>
-            Published by <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
+            By <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
           </cite>
+          <p class="recipe-timestamp">Last Updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
         </div>
 
         @imageUrlOpt.map { case (baseUrl, extension) =>
@@ -35,8 +36,9 @@
           <a href="@action(Recipes.show(author.slug, recipe.slug))">@recipe.title</a>
         </h3>
         <cite>
-          Published by <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
+          By <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
         </cite>
+        <p class="recipe-timestamp">Last Updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
       }
     </li>
   }

@@ -80,6 +80,7 @@ h2, legend {
 h3 {
   margin-bottom: .8em;
   font-size: 15px;
+  line-height: 120%;
   color: #555;
 }
 
@@ -560,7 +561,7 @@ ul.nav-tabs li.spacer {
   min-height: 40px;
   line-height: 40px;
   margin-bottom: 1em;
-  padding: 6px 12px;
+  padding: 12px 12px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -607,7 +608,17 @@ ul.nav-tabs li.spacer {
 }
 
 .feed-recipe .recipe-card h3 {
-  margin-bottom: 0.4em;
+  margin-bottom: 0;
+}
+
+.feed-recipe .recipe-card cite {
+  margin-bottom: 0;
+  line-height: 100%;
+}
+
+.feed-recipe .recipe-card p.recipe-timestamp {
+  margin-bottom: 0;
+  font-size: 80%;
 }
 
 .feed-user .user-card-image img {
