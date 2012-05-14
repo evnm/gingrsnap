@@ -22,7 +22,7 @@
           <cite>
             By <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
           </cite>
-          <p class="recipe-timestamp">Last Updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
+          <p class="recipe-timestamp">Last updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
         </div>
 
         @imageUrlOpt.map { case (baseUrl, extension) =>
@@ -38,7 +38,7 @@
         <cite>
           By <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
         </cite>
-        <p class="recipe-timestamp">Last Updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
+        <p class="recipe-timestamp">Last updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
       }
     </li>
   }
