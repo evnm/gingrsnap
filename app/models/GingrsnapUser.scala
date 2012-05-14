@@ -278,7 +278,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    */
   def getFollowingCount(userId: Long) = {
     Follow.count("subjectId = {userId} and followType = {followType}")
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id)
       .single()
   }
 
@@ -287,7 +287,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    */
   def getFollowerCount(userId: Long) = {
     Follow.count("objectId = {userId} and followType = {followType}")
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id)
       .single()
   }
 
@@ -300,7 +300,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         join Follow f on f.objectId = gu.id
         where f.subjectId = {userId} and f.followType = {followType}
         """)
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id)
       .as(GingrsnapUser *)
   }
 
@@ -313,7 +313,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         join Follow f on f.subjectId = gu.id
         where f.objectId = {userId} and f.followType = {followType}
         """)
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id)
       .as(GingrsnapUser *)
   }
 }

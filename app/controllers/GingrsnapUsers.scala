@@ -238,7 +238,7 @@ object GingrsnapUsers extends BaseController with Secure {
     }
     val connectedUserOpt = Authentication.getLoggedInUser
     val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
-      Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
+      Follow.exists(FollowType.UserToUser, connectedUser.id(), user.id())
     }).getOrElse(false)
     val drafts: Seq[Recipe] =
       if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
@@ -271,7 +271,7 @@ object GingrsnapUsers extends BaseController with Secure {
     }
     val connectedUserOpt = Authentication.getLoggedInUser
     val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
-      Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
+      Follow.exists(FollowType.UserToUser, connectedUser.id(), user.id())
     }).getOrElse(false)
     val drafts: Seq[Recipe] =
       if (connectedUserOpt.nonEmpty && user.id() == connectedUserOpt.get.id()) {
@@ -304,14 +304,14 @@ object GingrsnapUsers extends BaseController with Secure {
 
       val followingWithImages = GingrsnapUser.getFollowing(user.id()) map { following =>
         val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
-          Some(Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), following.id()))
+          Some(Follow.exists(FollowType.UserToUser, connectedUser.id(), following.id()))
         }).getOrElse(None)
 
         (following, isFollowedByConnectedUser, Image.getBaseUrlByUserId(following.id()))
       }
 
       val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
-        Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
+        Follow.exists(FollowType.UserToUser, connectedUser.id(), user.id())
       }).getOrElse(false)
 
       val drafts: Seq[Recipe] =
@@ -345,7 +345,7 @@ object GingrsnapUsers extends BaseController with Secure {
 
       val followersWithImages = GingrsnapUser.getFollowers(user.id()) map { follower =>
         val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
-          Some(Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), follower.id()))
+          Some(Follow.exists(FollowType.UserToUser, connectedUser.id(), follower.id()))
         }).getOrElse(None)
 
        (follower, isFollowedByConnectedUser, Image.getBaseUrlByUserId(follower.id()))
@@ -358,7 +358,7 @@ object GingrsnapUsers extends BaseController with Secure {
 
 
       val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
-        Follow.exists(FollowType.GingrsnapUser, connectedUser.id(), user.id())
+        Follow.exists(FollowType.UserToUser, connectedUser.id(), user.id())
       }).getOrElse(false)
 
       val drafts: Seq[Recipe] =

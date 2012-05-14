@@ -9,7 +9,7 @@ import play.db.anorm.SqlParser._
 /**
  * Follow ~= "subject follows object"
  *
- * Subject is always a user.
+ * i.e. "user follows users", "list follows recipe"
  */
 case class Follow(
   id: Pk[Long],
@@ -19,16 +19,22 @@ case class Follow(
   createdAt: Timestamp
 )
 
-// Subject and Object class hierarchies.
+/**
+ * Subject and Object class hierarchies.
+ */
 sealed trait FollowObject
 case class GingrsnapUserFollowObject(obj: GingrsnapUser) extends FollowObject
 case class RecipeFollowObject(author: GingrsnapUser, recipe: Recipe) extends FollowObject
-// TODO: IngredientObject
+// TODO: IngredientObject?
 
+/**
+ * Enum value names are of the form <subject type>To<object type>.
+ */
 object FollowType extends Enumeration {
   type FollowType = Value
-  val GingrsnapUser = Value(0)
-  val Recipe = Value(1)
+  val UserToUser = Value(0)
+  val UserToRecipe = Value(1)
+  val ListToRecipe = Value(2)
 }
 
 object Follow extends Magic[Follow] with Timestamped[Follow] {
@@ -62,11 +68,11 @@ object Follow extends Magic[Follow] with Timestamped[Follow] {
     val user = GingrsnapUser.getById(follow.subjectId).get
     val recipe = Recipe.getById(follow.objectId).get
     val followObject = follow.followType match {
-      case FollowType.GingrsnapUser => {
+      case FollowType.UserToUser => {
         GingrsnapUserFollowObject(
           GingrsnapUser.getById(follow.objectId).get)
       }
-      case FollowType.Recipe => {
+      case FollowType.UserToRecipe => {
         (Recipe.getById(follow.objectId) map { recipe =>
           RecipeFollowObject(GingrsnapUser.getById(recipe.authorId).get, recipe)
         }).get

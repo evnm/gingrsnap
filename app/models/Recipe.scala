@@ -219,7 +219,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
         order by r.modifiedAt desc
         limit {n}
         """)
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id, "n" -> n)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id, "n" -> n)
       .as(Recipe *) filter { recipe =>
         recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
       }
@@ -275,7 +275,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     ).on(
       "userId" -> userId,
       "lastTimestamp" -> lastTimestamp,
-      "followType" -> FollowType.GingrsnapUser.id,
+      "followType" -> FollowType.UserToUser.id,
       "n" -> n
     ).as(Recipe *) filter { recipe =>
       recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
