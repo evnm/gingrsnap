@@ -31,6 +31,9 @@
         case (createdAt, GingrsnapUserEventSubject(subject), imgUrl, EventType.GingrsnapUserFollow, GingrsnapUserEventObject(obj)) => {
           @views.common.eventItems.html.gingrsnapUserFollow(subject, obj, imgUrl)
         }
+        case (createdAt, GingrsnapUserEventSubject(subject), imgUrl, EventType.RecipeListCreate, RecipeListEventObject(obj)) => {
+          @views.common.eventItems.html.recipeListCreate(subject, obj, imgUrl)
+        }
       }
       <span class="timeago" title="@eventTuple._1"></span>
       <span id="event-timestamp" style="display: none;">@eventTuple._1</span>

@@ -22,8 +22,7 @@ object Tip extends Magic[Tip] with Timestamped[Tip] {
   override def create(tip: Tip) = {
     super.create(tip) map { createdTip =>
       Event.create(
-        Event(EventType.TipLeave.id, createdTip.userId, createdTip.recipeId)
-      )
+        Event(EventType.TipLeave.id, createdTip.userId, createdTip.recipeId))
       createdTip
     }
   }

@@ -51,14 +51,14 @@ object Follow extends Magic[Follow] with Timestamped[Follow] {
       new Timestamp(System.currentTimeMillis()))
   }
 
-  override def create(follow: Follow) = {
+/*  override def create(follow: Follow) = {
     super.create(follow) map { createdFollow =>
       Event.create(
         Event(EventType.GingrsnapUserFollow.id, createdFollow.subjectId, createdFollow.objectId)
       )
       createdFollow
     }
-  }
+  }*/
 
   /**
    * Hydrates a Follow into a renderable tuple of (subject, object).

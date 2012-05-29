@@ -12,6 +12,8 @@
   totalMakeCount: Long,
   userMakeCountOpt: Option[Long],
   isMakable: Boolean,
+  globalRecipeLists: Seq[(String, models.RecipeList)],
+  connectedUserListsOpt: Option[(Seq[models.RecipeList], Seq[models.RecipeList])],
   connectedUserOpt: Option[models.GingrsnapUser]
 )(
   implicit
@@ -134,16 +136,83 @@
           </dl>
 
           @connectedUserOpt.map { connectedUser =>
-          <span id="user-id" style="display: none;">@connectedUser.id()</span>
-          <div>
-            @if(isMakable) {
-              <button class="btn make-recipe" data-loading-text="Loading..." data-complete-text="You made this">I made this!</button>
-            } else {
-              <button class="btn" disabled="true" title="You've made this recipe too recently to make again!">You made this recipe recently</button>
+            <span id="user-id" style="display: none;">@connectedUser.id()</span>
+            <div>
+              @if(isMakable) {
+                <button class="btn make-recipe" data-loading-text="Loading..." data-complete-text="You made this">I made this!</button>
+              } else {
+                <button class="btn" disabled="true" title="You've made this recipe too recently to make again!">You made this recipe recently</button>
+              }
+            </div>
+          }
+        </div>
+
+        @if(globalRecipeLists.nonEmpty || connectedUserOpt.nonEmpty) {
+          <div class="recipe-lists">
+            <h2>Lists</h2>
+            @if(globalRecipeLists.nonEmpty) {
+              <h3>Lists that contain this recipe:</h3>
+              <ul>
+                @globalRecipeLists.map { case (creatorSlug, list) =>
+                  <li>
+                    <div class="list-card">
+                      <label>
+                        <a href="@action(GingrsnapUsers.show(creatorSlug))">
+                          @creatorSlug
+                        </a>/<a href="@action(RecipeLists.show(creatorSlug, list.slug))">
+                          @list.title
+                        </a>
+                      </label>
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+
+            @connectedUserOpt.map { connectedUser =>
+              @connectedUserListsOpt.map { case (listsContaining, listsNotContaining) =>
+                @if(listsContaining.nonEmpty) {
+                  <h3>Your lists that contain this recipe:</h3>
+                  <ul>
+                    @listsContaining.map { list =>
+                      <li>
+                        <div class="list-card">
+                          <label>
+                            <a href="@action(GingrsnapUsers.show(connectedUser.slug))">
+                              @connectedUser.slug
+                            </a>/<a href="@action(RecipeLists.show(connectedUser.slug, list.slug))">
+                              @list.title
+                            </a>
+                          </label>
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                }
+
+                @if(listsNotContaining.nonEmpty) {
+                  <div class="btn-group">
+                    <button class="btn">Add to list</button>
+                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      @listsNotContaining.map { list =>
+                        <li>
+                          <span id="list-id" style="display: none;">@list.id()</span>
+                          <span id="recipe-id" style="display: none;">@recipeId</span>
+                          <a class="add-recipe-to-list" href="@action(Follows.newRecipeListFollow(list.id(), recipeId))">
+                            <i class="icon-plus"></i>@list.title
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+              }
             }
           </div>
         }
-        </div>
 
         <h2>Share this recipe</h2>
         <ul class="share-buttons">
@@ -178,4 +247,5 @@
       </div>
     </div>
   </div>
+  <script type="text/javascript" src="@asset("public/javascripts/bootstrap-dropdown.js")"></script>
 }

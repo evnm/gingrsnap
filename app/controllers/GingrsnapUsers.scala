@@ -24,18 +24,23 @@ object GingrsnapUsers extends BaseController with Secure {
     case Some(user) =>
       if (Feature(Constants.UserFollowing)) {
         val connectedUserRecipes = Recipe.getAllByUserId(user.id())
+        val connectedUserRecipeLists = RecipeList.getByUserId(user.id())
         val recipeFeed = Recipe.getMostRecentFollowed(user.id(), 20) map {
           Recipe.hydrate(_)
         }
 
+        // Hack in order to be able to refresh page upon list creation.
+        flash.put("url", request.url)
         views.GingrsnapUsers.html.homeWithRecipes(
           user,
           connectedUserRecipes,
+          connectedUserRecipeLists,
           RecipeFeedType.GingrsnapFollowing.id,
           recipeFeed)
       } else {
         GingrsnapUsers.globalRecipes
       }
+
     case None => Application.index
   }
 
@@ -45,14 +50,20 @@ object GingrsnapUsers extends BaseController with Secure {
   def globalRecipes: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       val connectedUserRecipes = Recipe.getAllByUserId(user.id())
+      val connectedUserRecipeLists = RecipeList.getByUserId(user.id())
       val recipeFeed = Recipe.getMostRecent(20) map {
         Recipe.hydrate(_)
       }
+
+      // Hack in order to be able to refresh page upon list creation.
+      flash.put("url", request.url)
       views.GingrsnapUsers.html.homeWithRecipes(
         user,
         connectedUserRecipes,
+        connectedUserRecipeLists,
         RecipeFeedType.Global.id,
         recipeFeed)
+
     case None => Application.index
   }
 
@@ -63,18 +74,23 @@ object GingrsnapUsers extends BaseController with Secure {
     case Some(user) =>
       if (Feature(Constants.TwitterEventFeeds)) {
         val connectedUserRecipes = Recipe.getAllByUserId(user.id())
+        val connectedUserRecipeLists = RecipeList.getByUserId(user.id())
         val recipeFeed = Recipe.getMostRecentFollowed(user.id(), 20) map {
           Recipe.hydrate(_)
         }
 
+        // Hack in order to be able to refresh page upon list creation.
+        flash.put("url", request.url)
         views.GingrsnapUsers.html.homeWithRecipes(
           user,
           connectedUserRecipes,
+          connectedUserRecipeLists,
           RecipeFeedType.GingrsnapFollowing.id,
           recipeFeed)
       } else {
         GingrsnapUsers.globalRecipes
       }
+
     case None => Application.index
   }
 
@@ -88,19 +104,24 @@ object GingrsnapUsers extends BaseController with Secure {
     case Some(user) =>
       if (Feature(Constants.UserFollowing)) {
         val connectedUserRecipes = Recipe.getAllByUserId(user.id())
+        val connectedUserRecipeLists = RecipeList.getByUserId(user.id())
         val events = Event.getMostRecentFollowed(user.id(), 20) map {
           Event.hydrate(_)
         }
 
+        // Hack in order to be able to refresh page upon list creation.
+        flash.put("url", request.url)
         views.GingrsnapUsers.html.homeWithEvents(
           user,
           connectedUserRecipes,
+          connectedUserRecipeLists,
           EventFeedType.GingrsnapFollowing.id,
           events
         )
       } else {
         GingrsnapUsers.globalEvents
       }
+
     case None => Application.index
   }
 
@@ -110,12 +131,18 @@ object GingrsnapUsers extends BaseController with Secure {
   def globalEvents: templates.Html = Authentication.getLoggedInUser match {
     case Some(user) =>
       val connectedUserRecipes = Recipe.getAllByUserId(user.id())
+      val connectedUserRecipeLists = RecipeList.getByUserId(user.id())
       val events = Event.getMostRecent(20).map(Event.hydrate)
+
+      // Hack in order to be able to refresh page upon list creation.
+      flash.put("url", request.url)
       views.GingrsnapUsers.html.homeWithEvents(
         user,
         connectedUserRecipes,
+        connectedUserRecipeLists,
         EventFeedType.Global.id,
         events)
+
     case None => Application.index
   }
 
@@ -126,19 +153,24 @@ object GingrsnapUsers extends BaseController with Secure {
     case Some(user) =>
       if (Feature(Constants.TwitterEventFeeds)) {
         val connectedUserRecipes = Recipe.getAllByUserId(user.id())
+        val connectedUserRecipeLists = RecipeList.getByUserId(user.id())
         val events = Event.getMostRecentFollowed(user.id(), 20) map {
           Event.hydrate(_)
         }
 
+        // Hack in order to be able to refresh page upon list creation.
+        flash.put("url", request.url)
         views.GingrsnapUsers.html.homeWithEvents(
           user,
           connectedUserRecipes,
+          connectedUserRecipeLists,
           EventFeedType.GingrsnapFollowing.id,
           events
         )
       } else {
         GingrsnapUsers.globalEvents
       }
+
     case None => Application.index
   }
 
@@ -246,6 +278,7 @@ object GingrsnapUsers extends BaseController with Secure {
       } else {
         Seq.empty
       }
+    val recipeLists = RecipeList.getByUserId(user.id())
 
     html.showWithRecipes(
       user,
@@ -257,7 +290,8 @@ object GingrsnapUsers extends BaseController with Secure {
       Make.getCountByUserId(user.id()),
       GingrsnapUser.getFollowingCount(user.id()),
       GingrsnapUser.getFollowerCount(user.id()),
-      recipeFeed)
+      recipeFeed,
+      recipeLists)
   } getOrElse {
     NotFound("No such user")
   }
@@ -279,6 +313,7 @@ object GingrsnapUsers extends BaseController with Secure {
       } else {
         Seq.empty
       }
+    val recipeLists = RecipeList.getByUserId(user.id())
 
     html.showWithEvents(
       user,
@@ -290,7 +325,8 @@ object GingrsnapUsers extends BaseController with Secure {
       Make.getCountByUserId(user.id()),
       GingrsnapUser.getFollowingCount(user.id()),
       GingrsnapUser.getFollowerCount(user.id()),
-      eventFeed)
+      eventFeed,
+      recipeLists)
   } getOrElse {
     NotFound("No such user")
   }
@@ -320,6 +356,7 @@ object GingrsnapUsers extends BaseController with Secure {
         } else {
           Seq.empty
         }
+      val recipeLists = RecipeList.getByUserId(user.id())
 
       html.showWithFollowing(
         user,
@@ -331,7 +368,8 @@ object GingrsnapUsers extends BaseController with Secure {
         Make.getCountByUserId(user.id()),
         GingrsnapUser.getFollowingCount(user.id()),
         GingrsnapUser.getFollowerCount(user.id()),
-        followingWithImages)
+        followingWithImages,
+        recipeLists)
     } getOrElse {
       NotFound("No such user")
     }
@@ -355,8 +393,6 @@ object GingrsnapUsers extends BaseController with Secure {
         Event.hydrate(e)
       }
 
-
-
       val isFollowedByConnectedUser = (connectedUserOpt map { connectedUser =>
         Follow.exists(FollowType.UserToUser, connectedUser.id(), user.id())
       }).getOrElse(false)
@@ -367,6 +403,7 @@ object GingrsnapUsers extends BaseController with Secure {
         } else {
           Seq.empty
         }
+      val recipeLists = RecipeList.getByUserId(user.id())
 
       html.showWithFollowers(
         user,
@@ -378,7 +415,8 @@ object GingrsnapUsers extends BaseController with Secure {
         Make.getCountByUserId(user.id()),
         GingrsnapUser.getFollowingCount(user.id()),
         GingrsnapUser.getFollowerCount(user.id()),
-        followersWithImages)
+        followersWithImages,
+        recipeLists)
     } getOrElse {
       NotFound("No such user")
     }

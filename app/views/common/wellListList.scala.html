@@ -1,0 +1,44 @@
+@(
+  viewerOpt: Option[models.GingrsnapUser],
+  user: models.GingrsnapUser,
+  lists: Seq[models.RecipeList]
+)
+
+@import controllers.RecipeLists
+
+<div class="list-list">
+  @viewerOpt match {
+    case Some(viewer) if user.id() == viewer.id() => {
+      <h2>Your lists</h2>
+      <a class="btn btn-primary new-item" data-controls-modal="new-list-modal" data-backdrop="true" data-keyboard="true">
+        <i class="icon-plus icon-white"></i>New List
+      </a>
+      @views.common.html.newListModal(user.id())
+    }
+    case _ => {
+      <h2>@user.fullname's lists</h2>
+    }
+  }
+  @if(lists.nonEmpty) {
+    <ul>
+      @lists.map { list =>
+        <li>
+          <div class="list-card">
+            <label>
+              <a href="@action(RecipeLists.show(user.slug, list.slug))">@list.title</a>
+            </label>
+          </div>
+        </li>
+      }
+    </ul>
+  } else {
+    @viewerOpt match {
+      case Some(viewer) if user.id() == viewer.id() => {
+        <span class="help-block">You haven't created any lists yet.</span>
+      }
+      case _ => {
+        <span class="help-block">@user.fullname hasn't created any lists yet.</span>
+      }
+    }
+  }
+</div>

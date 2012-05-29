@@ -73,14 +73,14 @@ h1 {
 h2, legend {
   font-size: 18px;
   font-weight: 700;
-  line-height: 140%;
+  line-height: 18px;
   margin-bottom: .8em;
 }
 
 h3 {
-  margin-bottom: .8em;
+  margin-bottom: .6em;
   font-size: 15px;
-  line-height: 120%;
+  line-height: 15px;
   color: #555;
 }
 
@@ -122,6 +122,11 @@ img {
 .btn-primary:hover {
   font-weight: 600;
   text-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.btn-small {
+  padding: 3px 5px;
+  margin: 0;
 }
 
 .btn-large {
@@ -245,7 +250,7 @@ a.brand:hover {
 
 header input {
   margin-right: 12px;
-  padding: 3px 5px;
+  padding: 3px 4px;
   width: 180px;
   font-size: 13px;
 }
@@ -648,21 +653,21 @@ ul.nav-tabs li.spacer {
   position: relative;
 }
 
-.recipe-list {
+.recipe-list, .list-list {
   position: relative;
 }
 
-.well .recipe-list ul {
+.well .recipe-list ul, .well .list-list ul {
   margin-left: -8px;
   width: 266px;
 }
 
-.recipe-list li {
+.recipe-list li, .list-list li {
   margin-bottom: .4em;
 }
 
-.recipe-card {
-  padding: 8px;
+.recipe-card, .list-card {
+  padding: 6px 8px;
   background-color: #fcfcfc;
   outline: 1px solid #f7f6f5;
   border: 1px solid rgba(0, 0, 0, 0.07);
@@ -684,14 +689,14 @@ ul.nav-tabs li.spacer {
   -moz-box-shadow: none;
 }
 
-.recipe-card label, .recipe-card cite {
+.recipe-card label, .recipe-card cite, .list-card label {
   display: inline-block;
-  margin-right: 6px;
+  margin: 0 6px 0 0;
 }
 
-.well a.new-recipe {
+.well a.new-item {
   position: absolute;
-  top: 2px;
+  top: -3px;
   right: -4px;
   padding: 3px 8px;
 }
@@ -726,6 +731,10 @@ ul.nav-tabs li.spacer {
   margin-right: 2px;
   position: relative;
   top: 0px;
+}
+
+.btn-group .btn {
+  margin-bottom: 0;
 }
 
 /**
@@ -784,6 +793,14 @@ fieldset {
   margin-right: 8px;
 }
 
+.modal-header h3 {
+  margin: 0;
+}
+
+.modal-header p {
+  margin: 0.8em 0 0 0;
+}
+
 .form-actions, .modal-footer {
   margin: 0;
   padding: 14px;
@@ -800,7 +817,7 @@ input, textarea {
   -webkit-box-shadow: inset 1px 1px 1px #ccc;
   -moz-box-shadow: inset 1px 1px 1px #ccc;
   font-size: 14px;
-  padding: 6px 8px;
+  padding: 6px;
 }
 
 input:focus, textarea:focus {
@@ -927,6 +944,10 @@ div#contact-modal form {
 div#contact-modal textarea {
   resize: none;
   height: 200px;
+  width: 518px;
+}
+
+form#new-list-form input, form#new-list-form textarea {
   width: 518px;
 }
 
@@ -1146,11 +1167,15 @@ ul#ingredients li:last-child {
   margin-bottom: 1em;
 }
 
-.recipe-actions, .recipe-stats {
-  margin-bottom: 24px;
+.recipe-actions, .list-actions, .recipe-stats, .recipe-lists {
+  margin-bottom: 28px;
 }
 
-div.recipe-actions .btn {
+.recipe-lists ul {
+  margin-bottom: 18px;
+}
+
+.recipe-actions .btn, .list-actions .btn {
   margin-right: 8px;
 }
 

@@ -219,6 +219,24 @@ $(document).ready(function() {
 });
 
 /**
+ * Recipe list show page logic.
+ */
+$(document).ready(function() {
+  // Delete recipe button.
+  $("a#delete-list").click(function(event) {
+    if (confirm("Are you sure you want to delete this list?")) {
+      var form = document.createElement("form");
+      form.style.display = "none";
+      this.parentNode.appendChild(form);
+      form.method = "POST";
+      form.action = "/lists/delete/" + $("span#list-id").text();
+      form.submit();
+    }
+    event.preventDefault();
+  });
+});
+
+/**
  * User show page logic.
  */
 $(document).ready(function() {
@@ -466,6 +484,11 @@ $(document).ready(function() {
                 '</div><div class="event-body"><a href="/' + event.subjectSlug + '">' +
                 event.subjectFullname + '</a> started following <a href="/' +
                 event.objSlug + '">' + event.objFullname + '</a>';
+            } else if (event.eventType == 7) {
+              result += '<div class="event-subject-icon">' + thumbnailStr +
+                '</div><div class="event-body"><a href="/' + event.subjectSlug + '">' +
+                event.subjectFullname + '</a> created a list called <a href="/' +
+                event.listSlug + '">' + event.listTitle + '</a>';
             }
 
 
