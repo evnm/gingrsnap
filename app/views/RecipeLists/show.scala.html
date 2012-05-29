@@ -70,7 +70,11 @@
                 </cite>
                 <p class="recipe-timestamp">Last updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
               }
-              <a class="btn btn-small" href="@action(Follows.deleteRecipeListFollow(listId, recipe.id()))" title="Remove from list">Remove from list</a>
+              @connectedUserOpt.map { connectedUser =>
+                @if(connectedUser.id() == creator.id()) {
+                  <a class="btn btn-small" href="@action(Follows.deleteRecipeListFollow(listId, recipe.id()))" title="Remove from list">Remove from list</a>
+                }
+             }
             </li>
           }
         </ul>
