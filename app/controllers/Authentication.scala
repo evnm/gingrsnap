@@ -87,6 +87,7 @@ object Authentication extends Controller {
    */
   def authenticate[U <: Credential](username: String, credential: U) = {
     var url = flash.get("url")
+    flash.discard("url")
 
     try {
       Security.authenticate(username, credential)

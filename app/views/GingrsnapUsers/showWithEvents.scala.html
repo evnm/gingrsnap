@@ -8,7 +8,8 @@
   totalMakeCount: Long,
   followingCount: Long,
   followerCount: Long,
-  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)]
+  eventFeed: Seq[(java.sql.Timestamp, models.EventSubject, Option[String], models.EventType.Value, models.EventObject)],
+  lists: Seq[models.RecipeList]
 )(
   implicit
   params: play.mvc.Scope.Params,
@@ -79,14 +80,19 @@
       @views.common.html.eventFeed(EventFeedType.SingleUser.id, eventFeed, Some(user.id()))
     </div>
 
-    @connectedUserOpt.map { connectedUser =>
-      @if(connectedUser.id() == user.id()) {
-        <div class="span4">
-          <div class="well">
-            @views.common.html.wellRecipeList(connectedUserOpt, user, drafts, true)
-          </div>
+    @if((connectedUserOpt.nonEmpty && connectedUserOpt.get.id() == user.id()) || lists.nonEmpty) {
+      <div class="span4">
+        @connectedUserOpt.map { connectedUser =>
+          @if(connectedUser.id() == user.id()) {
+            <div class="well">
+              @views.common.html.wellRecipeList(connectedUserOpt, user, drafts, true)
+            </div>
+          }
+        }
+        <div class="well">
+          @views.common.html.wellListList(connectedUserOpt, user, lists)
         </div>
-      }
+      </div>
     }
   </div>
 }

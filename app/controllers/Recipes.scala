@@ -275,9 +275,14 @@ object Recipes extends BaseController with Secure {
             flash += ("warning" -> "You can't delete recipes that aren't yours")
             _show(recipeId)
           } else {
-            Recipe.delete(recipeId)
-            flash.success("Successfully deleted " + recipe.title)
-            Action(Application.index)
+            if (!Recipe.delete(recipeId)) {
+              flash.success("Successfully deleted " + recipe.title)
+              Action(Application.index)
+            } else {
+              Logger.error("Recipe.delete failed for recipeId(%s)".format(recipeId))
+              flash.error("Failed to delete this recipe")
+              show(user.slug, recipe.slug)
+            }
           }
         }
         case None => {
@@ -307,10 +312,10 @@ object Recipes extends BaseController with Secure {
   }
 
   /**
-   * Look up and show a recipe by userId and recipe slug.
+   * Look up and show a recipe by user and recipe slugs.
    */
   @NonSecure def show(userSlug: String, recipeSlug: String) = {
-    val connectedUser = Authentication.getLoggedInUser
+    val connectedUserOpt = Authentication.getLoggedInUser
 
     // Store request url so we can redirect back in case user subsequently logs in.
     flash.put("url", request.url)
@@ -329,13 +334,23 @@ object Recipes extends BaseController with Secure {
               None
             }
             val totalMakeCount = Make.getCountByRecipeId(recipe.id())
-            val userMakeCountOpt = connectedUser map { u =>
+            val userMakeCountOpt = connectedUserOpt map { u =>
               Make.getCountByUserAndRecipe(u.id(), recipe.id())
             }
-            val isMakable = connectedUser map { u: GingrsnapUser =>
-              Recipe.isMakable(u.id(), recipe.id())
-            } getOrElse(false
-)
+            val isMakable = connectedUserOpt map { connectedUser =>
+              Recipe.isMakable(connectedUser.id(), recipe.id())
+            } getOrElse(false)
+            val globalLists = RecipeList.getByRecipeId(recipe.id()) flatMap { list =>
+              GingrsnapUser.getById(list.creatorId) map { creator =>
+                (creator.slug, list)
+              }
+            }
+            val connectedUserListsOpt = connectedUserOpt map { connectedUser =>
+              RecipeList.getByUserId(connectedUser.id()) partition { list =>
+                Follow.exists(FollowType.ListToRecipe, list.id(), recipe.id())
+              }
+            }
+
             html.show(
               recipe.id(),
               recipeUrl,
@@ -350,7 +365,9 @@ object Recipes extends BaseController with Secure {
               totalMakeCount,
               userMakeCountOpt,
               isMakable,
-              connectedUser)
+              globalLists,
+              connectedUserListsOpt,
+              connectedUserOpt)
           }
           case None => NotFound("No such recipe")
         }

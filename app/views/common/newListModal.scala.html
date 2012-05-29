@@ -1,0 +1,22 @@
+@(
+  connectedUserId: Long
+)
+
+<div id="new-list-modal" class="modal hide fade" style="display: none;">
+  <form id="new-list-form" method="POST" action="@action(controllers.RecipeLists.create())">
+    <input type="hidden" name="creatorId" value="@connectedUserId" />
+    <div class="modal-header">
+      <a href="#" class="close">&times;</a>
+      <h3>Create a new recipe list</h3>
+    </div>
+    <div class="modal-body">
+      <label for="title">Title</label>
+      <input name="title" type="text" />
+      <label for="description">Description</label>
+      <textarea name="description"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" type="submit">Create</button>
+    </div>
+  </form>
+</div>

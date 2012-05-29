@@ -219,7 +219,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
         order by r.modifiedAt desc
         limit {n}
         """)
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id, "n" -> n)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id, "n" -> n)
       .as(Recipe *) filter { recipe =>
         recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
       }
@@ -275,7 +275,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     ).on(
       "userId" -> userId,
       "lastTimestamp" -> lastTimestamp,
-      "followType" -> FollowType.GingrsnapUser.id,
+      "followType" -> FollowType.UserToUser.id,
       "n" -> n
     ).as(Recipe *) filter { recipe =>
       recipe.parentRecipe.isEmpty || Feature(Constants.Forking)
@@ -367,7 +367,7 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   }
 
   /**
-   * Looks up a recipe by userId and url slug. Optionally returns the looked-up recipe.
+   * Looks up a recipe by user and recipe slugs. Optionally returns the looked-up recipe.
    */
   def getBySlugs(
     userSlug: String, recipeSlug: String
@@ -383,6 +383,19 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   }
 
   /**
+   * Get all recipes followed by a given list.
+   */
+  def getByListId(listId: Long): Seq[Recipe] = {
+    SQL("""
+        select * from Recipe r
+        join Follow f on f.objectId = r.id
+        where f.subjectId = {listId} and f.followType = {followType}
+        """)
+      .on("listId" -> listId, "followType" -> FollowType.ListToRecipe.id)
+      .as(Recipe *)
+  }
+
+  /**
    * Deletes a recipe.
    *
    * TODO: Delete from cache, once recipes are cached.
@@ -391,7 +404,10 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
     //Cache.delete(recipeIdCacheKey(recipeId))
     SQL("delete from Event where objectId = {recipeId}")
       .on("recipeId" -> recipeId)
-      .execute()
+      .execute() ||
+    SQL("delete from Follow where followType = {followType} and objectId = {recipeId}")
+      .on("followType" -> FollowType.ListToRecipe.id, "recipeId" -> recipeId)
+      .execute() ||
     SQL("delete from Recipe where id = {recipeId}")
       .on("recipeId" -> recipeId)
       .execute()

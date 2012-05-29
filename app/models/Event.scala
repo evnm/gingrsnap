@@ -29,6 +29,7 @@ case class GingrsnapUserEventSubject(subject: GingrsnapUser) extends EventSubjec
 sealed trait EventObject
 case class GingrsnapUserEventObject(obj: GingrsnapUser) extends EventObject
 case class RecipeEventObject(obj: (Recipe, GingrsnapUser)) extends EventObject
+case class RecipeListEventObject(obj: RecipeList) extends EventObject
 
 object EventType extends Enumeration {
   type EventType = Value
@@ -39,6 +40,8 @@ object EventType extends Enumeration {
   val TipLeave = Value(4)
   val GingrsnapUserFollow = Value(5)
   val RecipeFollow = Value(6)
+  val RecipeListCreate = Value(7)
+  val RecipeAddToList = Value(8)
 }
 
 /**
@@ -78,9 +81,19 @@ object Event extends Magic[Event] with Timestamped[Event] {
         "\", \"recipeSlug\": \"" + recipe.slug + "\", \"authorSlug\": \"" + author.slug +
         "\", \"recipeTitle\": \"" + recipe.title + "\""
       }
+
       case (GingrsnapUserEventSubject(subject), GingrsnapUserEventObject(obj)) => {
         "\"subjectFullname\": \"" + subject.fullname + "\", \"subjectSlug\": \"" + subject.slug +
         "\", \"objFullname\": \"" + obj.fullname + "\", \"objSlug\": \"" + obj.slug + "\""
+      }
+
+      case (GingrsnapUserEventSubject(subject), RecipeListEventObject(list)) => {
+        /*val recipePart = recipeOpt map { recipe =>
+          ", \"recipeTitle\": \"" + recipe.title + "\", \"recipeSlug\": \"" + recipe.slug
+        } getOrElse("")*/
+
+        "\"subjectFullname\": \"" + subject.fullname + "\", \"subjectSlug\": \"" + subject.slug +
+        "\", \"listTitle\": \"" + list.title + "\", \"listSlug\": \"" + list.slug + "\""
       }
     }
 
@@ -114,6 +127,19 @@ object Event extends Magic[Event] with Timestamped[Event] {
           GingrsnapUserEventObject(obj)
         )
       }
+
+      case EventType.RecipeListCreate => {
+        val list = RecipeList.getById(event.objectId).get
+
+        (
+          event.createdAt,
+          GingrsnapUserEventSubject(user),
+          userThumbnailOpt,
+          EventType(event.eventType),
+          RecipeListEventObject(list)
+        )
+      }
+
       case _ => {
         val recipe = Recipe.getById(event.objectId).get
         val author = GingrsnapUser.getById(recipe.authorId).get

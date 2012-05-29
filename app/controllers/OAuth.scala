@@ -65,6 +65,7 @@ object OAuth extends BaseController with Secure {
           Cache.delete(mkCacheKey(TwIfaceCacheKey))
 
           val url = flash.get("url")
+          flash.discard("url")
           if (url != null) {
             Redirect(url)
           } else {

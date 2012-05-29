@@ -15,7 +15,7 @@
       } else {
         <h2>Your recipes</h2>
       }
-      <a class="btn btn-primary new-recipe" href="@action(Recipes.neue())">
+      <a class="btn btn-primary new-item" href="@action(Recipes.neue())">
         <i class="icon-plus icon-white"></i>New recipe
       </a>
     }
@@ -48,14 +48,14 @@
     @viewerOpt match {
       case Some(viewer) if user.id() == viewer.id() => {
         @if(isDraftList) {
-          <p>You don't have any drafts at the moment.</p>
+          <span class="help-block">You don't have any drafts at the moment.</span>
         } else {
-          <p>You haven't published any recipes yet.</p>
+          <span class="help-block">You haven't published any recipes yet.</span>
         }
       }
       case _ => {
         @if(!isDraftList) {
-          <p>@user.fullname hasn't published any recipes yet.</p>
+          <span class="help-block">@user.fullname hasn't published any recipes yet.</span>
         }
       }
     }

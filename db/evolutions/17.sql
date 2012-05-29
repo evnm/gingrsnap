@@ -5,7 +5,8 @@ CREATE TABLE Follow (
     followType int NOT NULL,
     subjectId bigInt NOT NULL,
     objectId bigInt NOT NULL,
-    createdAt timestamp NOT NULL
+    createdAt timestamp NOT NULL,
+    PRIMARY KEY (id)
 );
 INSERT INTO Feature (id, state) VALUES ('user-following', false);
 

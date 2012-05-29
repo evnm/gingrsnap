@@ -1,0 +1,17 @@
+@(
+  user: models.GingrsnapUser,
+  list: models.RecipeList,
+  thumbnailUrlOpt: Option[String] = None
+)
+
+@import controllers.{GingrsnapUsers, RecipeLists}
+
+<div class="event-subject-icon">
+  @thumbnailUrlOpt.map { thumbnailUrl =>
+    <a href="@action(GingrsnapUsers.show(user.slug))">
+      <img src="@thumbnailUrl" />
+    </a>
+  }
+</div>
+<div class="event-body">
+<a href="@action(GingrsnapUsers.show(user.slug))">@user.fullname</a> created a list called <a href="@action(RecipeLists.show(user.slug, list.slug))">@list.title</a>

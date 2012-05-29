@@ -1,6 +1,7 @@
 @(
   connectedUser: models.GingrsnapUser,
   connectedUserRecipes: Seq[models.Recipe],
+  connectedUserRecipeLists: Seq[models.RecipeList],
   recipeFeedType: Int,
   recipeFeed: Seq[(models.Recipe, models.GingrsnapUser, Option[(String, String)])]
 )(
@@ -61,6 +62,9 @@
     <div class="span4">
       <div class="well">
         @views.common.html.wellRecipeList(Some(connectedUser), connectedUser, connectedUserRecipes, false)
+      </div>
+      <div class="well">
+        @views.common.html.wellListList(Some(connectedUser), connectedUser, connectedUserRecipeLists)
       </div>
     </div>
   </div>

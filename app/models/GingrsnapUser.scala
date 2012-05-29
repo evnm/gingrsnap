@@ -35,7 +35,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
   /**
    * Returns whether or not a slug is unique across all extant user slugs.
    */
-  def slugIsUnique(slug: String): Boolean = {
+  def slugIsUniq(slug: String): Boolean = {
     GingrsnapUser.find("slug = {slug}")
       .on("slug" -> slug)
       .first()
@@ -46,12 +46,12 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    * Returns a unique user slug, which is either the argument slug or
    * the argument slug with a numerical suffix.
    */
-  def findUniqueSlug(slug: String) = {
-    if (slugIsUnique(slug))
+  def findUniqSlug(slug: String) = {
+    if (slugIsUniq(slug))
       slug
     else {
-      var suffix = 0
-      while (!slugIsUnique(slug + suffix)) {
+      var suffix = 2
+      while (!slugIsUniq(slug + suffix)) {
         suffix += 1
       }
       slug + suffix
@@ -70,9 +70,9 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
     val salt = scala.util.Random.nextInt.abs.toString
     val slug =
       if (twUsernameOpt.nonEmpty)
-        findUniqueSlug(twUsernameOpt.get.toLowerCase())
+        findUniqSlug(twUsernameOpt.get.toLowerCase())
       else
-        findUniqueSlug(fullname.toLowerCase.replace(" ", "+"))
+        findUniqSlug(fullname.toLowerCase.replace(" ", "+"))
 
     new GingrsnapUser(
       NotAssigned,
@@ -278,7 +278,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    */
   def getFollowingCount(userId: Long) = {
     Follow.count("subjectId = {userId} and followType = {followType}")
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id)
       .single()
   }
 
@@ -287,7 +287,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    */
   def getFollowerCount(userId: Long) = {
     Follow.count("objectId = {userId} and followType = {followType}")
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id)
       .single()
   }
 
@@ -300,7 +300,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         join Follow f on f.objectId = gu.id
         where f.subjectId = {userId} and f.followType = {followType}
         """)
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id)
       .as(GingrsnapUser *)
   }
 
@@ -313,7 +313,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         join Follow f on f.subjectId = gu.id
         where f.objectId = {userId} and f.followType = {followType}
         """)
-      .on("userId" -> userId, "followType" -> FollowType.GingrsnapUser.id)
+      .on("userId" -> userId, "followType" -> FollowType.UserToUser.id)
       .as(GingrsnapUser *)
   }
 }

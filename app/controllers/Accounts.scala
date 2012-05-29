@@ -36,7 +36,7 @@ object Accounts extends BaseController with Secure {
     if (slug.nonEmpty && slug != user.slug) {
       Validation.isTrue(
         "slug",
-        GingrsnapUser.slugIsUnique(slug)
+        GingrsnapUser.slugIsUniq(slug)
       ).message("Gingrsnap URL is taken by someone else. Please choose another.")
     }
 

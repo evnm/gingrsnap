@@ -1,0 +1,130 @@
+@(
+  listId: Long,
+  listUrl: String,
+  title: String,
+  descriptionOpt: Option[String],
+  creator: models.GingrsnapUser,
+  createdAt: java.sql.Timestamp,
+  modifiedAt: java.sql.Timestamp,
+  recipes: Seq[(models.Recipe, models.GingrsnapUser, Option[(String, String)])],
+  connectedUserOpt: Option[models.GingrsnapUser]
+)(
+  implicit
+  params: play.mvc.Scope.Params,
+  flash: play.mvc.Scope.Flash,
+  errors: Map[String, play.data.validation.Error],
+  renderArgs: play.mvc.Scope.RenderArgs
+)
+
+@maybeModifiedAt(createdAt: java.sql.Timestamp, modifiedAt: java.sql.Timestamp) = {
+  @if(createdAt != modifiedAt) {
+    , last updated on @DateFormat.getDateInstance.format(modifiedAt)
+  }
+}
+
+@import controllers._
+@import java.text.DateFormat
+@import models.{Feature, Make}
+@import play.templates.JavaExtensions
+
+@main(title) {
+  <div class="row">
+    <div class="span8">
+      <span id="list-id" style="display: none;">@listId</span>
+      <h1>@title</h1>
+      <p class="attribution">Created by <a href="@action(GingrsnapUsers.show(creator.slug))">@creator.fullname</a>
+        on @DateFormat.getDateInstance.format(createdAt)@maybeModifiedAt(createdAt, modifiedAt).toString.trim
+      </p>
+
+      @if(recipes.isEmpty) {
+        <p>This list is empty!</p>
+      } else {
+        <ul class="feed feed-recipe">
+          @recipes.map { case (recipe, author, imageUrlOpt) =>
+            <li class="recipe-card">
+              <span id="recipe-timestamp" style="display: none;">@recipe.modifiedAt</span>
+
+              @if(imageUrlOpt.nonEmpty) {
+                <div class="text">
+                  <h3>
+                    <a href="@action(Recipes.show(author.slug, recipe.slug))">@recipe.title</a>
+                  </h3>
+                  <cite>
+                    By <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
+                  </cite>
+                  <p class="recipe-timestamp">Last updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
+                </div>
+
+                @imageUrlOpt.map { case (baseUrl, extension) =>
+                  <a class="recipe-card-image" href="@action(Recipes.show(author.slug, recipe.slug))">
+                    <img src="@(baseUrl + "_portrait." + extension)" />
+                  </a>
+                }
+                <div style="clear: both;"></div>
+              } else {
+                <h3>
+                  <a href="@action(Recipes.show(author.slug, recipe.slug))">@recipe.title</a>
+                </h3>
+                <cite>
+                  By <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
+                </cite>
+                <p class="recipe-timestamp">Last updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
+              }
+              <a class="btn btn-small" href="@action(Follows.deleteRecipeListFollow(listId, recipe.id()))" title="Remove from list">Remove from list</a>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <div class="span4">
+      <div class="well">
+        @descriptionOpt.map { description =>
+          <p>@description</p>
+        }
+
+        @connectedUserOpt.map { connectedUser =>
+          @if(connectedUser.id() == creator.id()) {
+            <div class="list-actions">
+              <h2>Actions</h2>
+              <a class="btn btn-danger" id="delete-list">
+                <i class="icon-trash icon-white"></i>Delete
+              </a>
+            </div>
+          }
+        }
+
+        <h2>Share this list</h2>
+        <ul class="share-buttons">
+          @if(Feature(Constants.TweetButtons)) {
+            <li>
+              <a href="https://twitter.com/share" class="twitter-share-button" data-text="@title:" data-via="gingrsnap">Tweet this list</a>
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+            </li>
+          }
+
+          @if(Feature(Constants.FbLikeButtons)) {
+            <li>
+              <div id="fb-root"></div>
+              <script>
+                (function(d, s, id) {
+                  var js, fjs = d.getElementsByTagName(s)[0];
+                  if (d.getElementById(id)) return;
+                  js = d.createElement(s); js.id = id;
+                  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+                  fjs.parentNode.insertBefore(js, fjs);
+                }(document, 'script', 'facebook-jssdk'));
+              </script>
+              <div class="fb-like" data-send="false" data-width="10" data-show-faces="false" data-layout="button_count"></div>
+            </li>
+          }
+          <li>
+            <a class="btn" href="mailto:?subject=@title on Gingrsnap&body=@listUrl." target="_blank">
+              <i class="icon-envelope"></i>Email
+            </a>
+          </li>
+        </div>
+      </div>
+    </div>
+  </div>
+}
