@@ -376,6 +376,15 @@ object Recipes extends BaseController with Secure {
   }
 
   /**
+   * Performs a recipe search and renders the results page.
+   */
+  def showSearchResults(q: String = "") = {
+    val results = Recipe.search(q) map { Recipe.hydrate(_) }
+
+    html.searchResults(q, results)
+  }
+
+  /**
    * Fetches the next n recipes for a given recipe feed type.
    */
   @NonSecure def getNextPage(recipeFeedType: Int, lastTimestamp: String, userId: Long, n: Int) = {

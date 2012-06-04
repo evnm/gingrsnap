@@ -259,6 +259,13 @@ header .btn-twitter i {
   margin: 0;
 }
 
+input#recipe-search {
+  margin: 0 auto;
+  margin-bottom: 1em;
+  width: 250px;
+  display: block;
+}
+
 /**
  * Flash/alert message bar.
  */

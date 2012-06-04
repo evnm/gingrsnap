@@ -28,6 +28,7 @@
 @import play.templates.JavaExtensions
 
 @main(title) {
+  @views.common.html.recipeSearchBox()
   <div class="row">
     <div class="span8">
       <span id="list-id" style="display: none;">@listId</span>

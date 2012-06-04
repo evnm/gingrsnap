@@ -396,6 +396,19 @@ object Recipe extends Magic[Recipe] with Timestamped[Recipe] {
   }
 
   /**
+   * Get all recipes whose title or body match a given string.
+   */
+  def search(query: String) = {
+    SQL("""
+        select * from Recipe
+        where to_tsvector(title || ' ' || body) @@ to_tsquery({query})
+          and publishedAt is not null
+        """)
+      .on("query" -> query.replace(' ', '|'))
+      .as(Recipe *)
+  }
+
+  /**
    * Deletes a recipe.
    *
    * TODO: Delete from cache, once recipes are cached.

@@ -1,0 +1,73 @@
+@(
+  query: String,
+  recipes: Seq[(models.Recipe, models.GingrsnapUser, Option[(String, String)])]
+)(
+  implicit
+  params: play.mvc.Scope.Params,
+  flash: play.mvc.Scope.Flash,
+  errors: Map[String, play.data.validation.Error],
+  renderArgs: play.mvc.Scope.RenderArgs
+)
+
+@maybeModifiedAt(createdAt: java.sql.Timestamp, modifiedAt: java.sql.Timestamp) = {
+  @if(createdAt != modifiedAt) {
+    , last updated on @DateFormat.getDateInstance.format(modifiedAt)
+  }
+}
+
+@import controllers._
+@import java.text.DateFormat
+@import models.{Feature, Make}
+@import play.templates.JavaExtensions
+
+@main("Search results for \"" + query + "\"") {
+  @views.common.html.recipeSearchBox()
+  <div class="row">
+    <div class="span8">
+      <h1>Search results for "@query"</h1>
+
+      @if(recipes.isEmpty) {
+        <p>No results</p>
+      } else {
+        <ul class="feed feed-recipe">
+          @recipes.map { case (recipe, author, imageUrlOpt) =>
+            <li class="recipe-card">
+              <span id="recipe-timestamp" style="display: none;">@recipe.modifiedAt</span>
+
+              @if(imageUrlOpt.nonEmpty) {
+                <div class="text">
+                  <h3>
+                    <a href="@action(Recipes.show(author.slug, recipe.slug))">@recipe.title</a>
+                  </h3>
+                  <cite>
+                    By <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
+                  </cite>
+                  <p class="recipe-timestamp">Last updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
+                </div>
+
+                @imageUrlOpt.map { case (baseUrl, extension) =>
+                  <a class="recipe-card-image" href="@action(Recipes.show(author.slug, recipe.slug))">
+                    <img src="@(baseUrl + "_portrait." + extension)" />
+                  </a>
+                }
+                <div style="clear: both;"></div>
+              } else {
+                <h3>
+                  <a href="@action(Recipes.show(author.slug, recipe.slug))">@recipe.title</a>
+                </h3>
+                <cite>
+                  By <a href="@action(GingrsnapUsers.show(author.slug))">@author.fullname</a>
+                </cite>
+                <p class="recipe-timestamp">Last updated <span class="timeago" title="@recipe.modifiedAt"></span></p>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <div class="span4">
+
+    </div>
+  </div>
+}
