@@ -6,7 +6,8 @@ CREATE TABLE Make (
     recipeId bigInt NOT NULL,
     createdAt timestamp NOT NULL,
     FOREIGN KEY (userId) REFERENCES GingrsnapUser(id) ON DELETE CASCADE,
-    FOREIGN KEY (recipeId) REFERENCES Recipe(id) ON DELETE CASCADE
+    FOREIGN KEY (recipeId) REFERENCES Recipe(id) ON DELETE CASCADE,
+    PRIMARY KEY (id)
 );
 
 # --- !Downs
