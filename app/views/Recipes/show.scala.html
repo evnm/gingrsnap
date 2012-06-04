@@ -200,7 +200,6 @@
                       @listsNotContaining.map { list =>
                         <li>
                           <span id="list-id" style="display: none;">@list.id()</span>
-                          <span id="recipe-id" style="display: none;">@recipeId</span>
                           <a class="add-recipe-to-list" href="@action(Follows.newRecipeListFollow(list.id(), recipeId))">
                             <i class="icon-plus"></i>@list.title
                           </a>
