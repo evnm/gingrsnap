@@ -378,7 +378,7 @@ object Recipes extends BaseController with Secure {
   /**
    * Performs a recipe search and renders the results page.
    */
-  def showSearchResults(q: String = "") = {
+  @NonSecure def showSearchResults(q: String = "") = {
     val results = Recipe.search(q) map { Recipe.hydrate(_) }
 
     html.searchResults(q, results)
