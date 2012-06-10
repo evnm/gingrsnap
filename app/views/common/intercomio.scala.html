@@ -8,7 +8,11 @@
       <script id="IntercomSettingsScriptTag">
         var intercomSettings = {
           app_id: 'enymhi37',
+          user_id: @connectedUser.id(),
           email: @connectedUser.emailAddr,
+          @connectedUser.twUsername.map { twUsername =>
+            twitter_username: @twUsername,
+          }
           created_at: @(connectedUser.createdAt.getTime / 1000)
         };
       </script>
