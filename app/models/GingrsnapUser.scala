@@ -122,7 +122,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
           twUserOpt flatMap { twUser =>
             if (twUser.getURL != null) Some(twUser.getURL.toString) else None
           }))
-      Cache.set(userIdCacheKey(createdUser.id()), createdUser, "6h")
+      Cache.set(userIdCacheKey(createdUser.id()), createdUser, "24h")
       createdUser
     }
   }
@@ -131,7 +131,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
    * Overridden update method to update cache as well as underlying store.
    */
   override def update(user: GingrsnapUser) = {
-    Cache.set(userIdCacheKey(user.id()), user, "6h")
+    Cache.set(userIdCacheKey(user.id()), user, "24h")
     super.update(user)
   }
 
@@ -160,7 +160,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
   def getById(userId: Long): Option[GingrsnapUser] = {
     Cache.get[GingrsnapUser](userIdCacheKey(userId)) orElse {
       GingrsnapUser.find("id = {userId}").on("userId" -> userId).first() map { user =>
-        Cache.add(userIdCacheKey(userId), user, "6h")
+        Cache.add(userIdCacheKey(userId), user, "24h")
         user
       }
     }
@@ -181,8 +181,8 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         Cache.add(
           slugToUserIdCacheKey(userSlug),
           java.lang.Long.valueOf(user.id()),
-          "6h")
-        Cache.add(userIdCacheKey(user.id()), user, "6h")
+          "24h")
+        Cache.add(userIdCacheKey(user.id()), user, "24h")
         user
       }
     }
@@ -203,8 +203,8 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         Cache.add(
           encryptedEmailToUserIdCacheKey(encryptedEmail),
           java.lang.Long.valueOf(user.id()),
-          "6h")
-        Cache.add(userIdCacheKey(user.id()), user, "6h")
+          "24h")
+        Cache.add(userIdCacheKey(user.id()), user, "24h")
         user
       }
     }
@@ -225,8 +225,8 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         Cache.add(
           encryptedTwTokenToUserIdCacheKey(encryptedTwToken),
           java.lang.Long.valueOf(user.id()),
-          "6h")
-        Cache.add(userIdCacheKey(user.id()), user, "6h")
+          "24h")
+        Cache.add(userIdCacheKey(user.id()), user, "24h")
         user
       }
     }
