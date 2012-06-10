@@ -98,8 +98,8 @@
         <p>&copy; 2011-2012 <a href="http://evanmeagher.net">Evan Meagher<a/></p>
       </div>
     </footer>
+    @views.common.html.contactModal()
     @views.common.html.gauges()
     @views.common.html.intercomio(renderArgs.get(Constants.GingrsnapUserObjKey).asInstanceOf[Option[models.GingrsnapUser]])
-    @views.common.html.contactModal()
   </body>
 </html>
