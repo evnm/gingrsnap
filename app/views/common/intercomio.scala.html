@@ -1,37 +1,46 @@
 @(
-  connectedUserOpt: Option[models.GingrsnapUser]
+  implicit
+  renderArgs: play.mvc.Scope.RenderArgs = null // This is a hack
 )
 
-@if(play.Play.mode.isProd) {
-  @connectedUserOpt.map { connectedUser =>
-    @if(connectedUser.emailAddr.nonEmpty) {
-      <script id="IntercomSettingsScriptTag">
-        var intercomSettings = {
-          app_id: 'enymhi37',
-          user_id: @connectedUser.id(),
-          email: '@connectedUser.emailAddr',
-          @connectedUser.twUsername.map { twUsername =>
-            twitter_username: '@twUsername',
-          }
-          created_at: @(connectedUser.createdAt.getTime / 1000)
-        };
-      </script>
-      <script>
-        (function() {
-          function async_load() {
-            var s = document.createElement('script');
-            s.type = 'text/javascript'; s.async = true;
-            s.src = 'https://api.intercom.io/api/js/library.js';
-            var x = document.getElementsByTagName('script')[0];
-            x.parentNode.insertBefore(s, x);
-          }
-          if (window.attachEvent) {
-            window.attachEvent('onload', async_load);
-          } else {
-            window.addEventListener('load', async_load, false);
-          }
-        })();
-      </script>
-    }
+@import controllers.Constants
+
+@intercomBlock(connectedUser: models.GingrsnapUser) = {
+  @if(connectedUser.emailAddr.nonEmpty) {
+    <script id="IntercomSettingsScriptTag">
+      var intercomSettings = {
+        app_id: "enymhi37",
+        user_id: @connectedUser.id(),
+        email: "@connectedUser.emailAddr",
+        @connectedUser.twUsername.map { twUsername =>
+          twitter_username: "@twUsername",
+        }
+        created_at: @(connectedUser.createdAt.getTime / 1000)
+      };
+    </script>
+    <script>
+      (function() {
+        function async_load() {
+          var s = document.createElement("script");
+          s.type = "text/javascript";
+          s.async = true;
+          s.src = "https://api.intercom.io/api/js/library.js";
+          var x = document.getElementsByTagName("script")[0];
+          x.parentNode.insertBefore(s, x);
+        }
+        if (window.attachEvent) {
+          window.attachEvent("onload", async_load);
+        } else {
+          window.addEventListener("load", async_load, false);
+        }
+      })();
+    </script>
   }
+}
+
+@if(play.Play.mode.isProd && renderArgs != null) {
+  @(renderArgs.get(Constants.GingrsnapUserObjKey) match {
+    case Some(connectedUser: models.GingrsnapUser) => intercomBlock(connectedUser)
+    case None =>
+  })
 }
