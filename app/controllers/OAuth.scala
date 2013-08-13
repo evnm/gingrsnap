@@ -6,7 +6,7 @@ import play._
 import play.cache.Cache
 import play.mvc._
 import secure.{NonSecure, PasswordCredential, TwAuthCredential}
-import twitter4j.{ProfileImage, TwitterFactory}
+import twitter4j.{TwitterFactory}
 import twitter4j.auth.{AccessToken, RequestToken}
 
 /**
@@ -183,8 +183,7 @@ object OAuth extends BaseController with Secure {
     val twitterIface = new TwitterFactory().getInstance()
     twitterIface.setOAuthAccessToken(new AccessToken(twAccessToken, twAccessTokenSecret))
     val twUser = twitterIface.verifyCredentials()
-    val imgUrl =
-      twitterIface.getProfileImage(twUser.getScreenName(), ProfileImage.BIGGER).getURL
+    val imgUrl = twUser.getProfileImageURL()
     html.linkTwitter(twUsername, twUserId, twAccessToken, twAccessTokenSecret, imgUrl)
   } catch { case e: Throwable =>
     Logger.error("Exception thrown in OAuth.linkTwitterPrompt: " + e.getMessage)

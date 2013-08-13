@@ -11,7 +11,7 @@ import play.db.anorm._
 import play.db.anorm.defaults.Magic
 import play.db.anorm.SqlParser._
 import play.libs.Crypto
-import twitter4j.{ProfileImage, TwitterFactory, User => TwitterUser}
+import twitter4j.{TwitterFactory, User => TwitterUser}
 import twitter4j.auth.AccessToken
 
 case class GingrsnapUser(
@@ -95,8 +95,7 @@ object GingrsnapUser extends Magic[GingrsnapUser] with Timestamped[GingrsnapUser
         // TODO: What if they have a default Twitter avatar?
         val twitterIface = new TwitterFactory().getInstance()
         val twUser = twitterIface.showUser(twUserId)
-        val twProfileImgUrl =
-          new URL(twitterIface.getProfileImage(twUser.getScreenName(), ProfileImage.ORIGINAL).getURL)
+        val twProfileImgUrl = new URL(twUser.getProfileImageURL())
         val twProfileImgPath = twProfileImgUrl.getFile()
         val (_, twProfileImgFilename) = twProfileImgPath.splitAt(twProfileImgPath.lastIndexOf("/"))
         val (filename, extension) = twProfileImgFilename.splitAt(twProfileImgFilename.lastIndexOf("."))

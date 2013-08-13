@@ -25,7 +25,7 @@
         <li>
           <div class="list-card">
             <label>
-              <a href="@action(RecipeLists.show(user.slug, list.slug))">@list.title</a>
+              <a href="@action(RecipeLists.show(user.slug, play.utils.HTML.htmlEscape(list.slug)))">@list.title</a>
             </label>
           </div>
         </li>
