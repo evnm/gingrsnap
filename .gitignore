@@ -12,3 +12,5 @@ bin/
 data/
 TODO.md
 pg/
+conf/
+target/
